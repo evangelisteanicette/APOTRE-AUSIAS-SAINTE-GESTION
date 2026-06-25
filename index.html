@@ -1,969 +1,1622 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="theme-color" content="#0a2342"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="AAS Gestion"/>
-<meta name="description" content="Gestion comptable journalière - Apôtre Ausias Sainte"/>
-<title>APOTRE AUSIAS SAINTE GESTION</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>Apôtre Ausias Sainte Gestion</title>
+  <meta name="theme-color" content="#091A30">
+  <meta name="description" content="Cahier de caisse numérique – Apôtre Ausias Sainte Gestion">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AASG">
+  <link id="manifest-link" rel="manifest" href="">
+  <style>
+    :root{
+      --bg:#091A30;--card:#0D2344;--card2:#122B54;
+      --sky:#38BDF8;--sky-d:#0284C7;
+      --lime:#A3E635;--lime-d:#65A30D;
+      --gold:#F5C518;--gold-d:#D97706;
+      --red:#F87171;--text:#E2F0FB;--dim:#6EA8D0;
+      --border:rgba(56,189,248,0.15);--r:16px;--rs:10px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html{height:100%}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+      background:var(--bg);color:var(--text);min-height:100%;max-width:640px;
+      margin:0 auto;position:relative;overscroll-behavior:none}
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+    input[type=number]{-moz-appearance:textfield}
+    button{font-family:inherit}
 
-<script>
-/* ── PWA MANIFEST INLINE ── */
-const _mdata = {
-  name:"Apôtre Ausias Sainte Gestion",short_name:"AAS Gestion",
-  description:"Application de gestion comptable journalière",
-  start_url:"./",display:"standalone",background_color:"#0a2342",
-  theme_color:"#0a2342",orientation:"portrait-primary",
-  icons:[
-    {src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%230a2342'/%3E%3Ctext x='96' y='148' text-anchor='middle' font-size='130' font-family='serif' fill='%23FFD700'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"},
-    {src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230a2342'/%3E%3Ctext x='256' y='390' text-anchor='middle' font-size='350' font-family='serif' fill='%23FFD700'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E",sizes:"512x512",type:"image/svg+xml"}
-  ]
-};
-const _mb=new Blob([JSON.stringify(_mdata)],{type:'application/json'});
-document.write('<link rel="manifest" href="'+URL.createObjectURL(_mb)+'">');
-</script>
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='30' fill='%230a2342'/%3E%3Ctext x='90' y='135' text-anchor='middle' font-size='110' font-family='serif' fill='%23FFD700'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E"/>
+    /* ===== ADMIN ROLE SYSTEM ===== */
+    .admin-only{display:none!important}
+    body.is-admin .admin-only{display:block!important}
+    body.is-admin .admin-flex{display:flex!important}
+    .admin-flex{display:none!important}
 
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    /* ===== LOGIN SCREEN ===== */
+    #login-screen{
+      position:fixed;inset:0;z-index:2000;
+      background:linear-gradient(160deg,#091A30 0%,#0D2344 50%,#091A30 100%);
+      display:flex;align-items:center;justify-content:center;padding:20px;
+    }
+    .login-box{
+      width:100%;max-width:400px;
+      background:var(--card);border:1px solid var(--border);
+      border-radius:24px;padding:28px 24px;
+    }
+    .login-logo{text-align:center;margin-bottom:10px}
+    .login-logo canvas{border-radius:18px;box-shadow:0 0 30px rgba(245,197,24,0.2)}
+    .login-title{text-align:center;font-size:16px;font-weight:900;
+      color:var(--text);margin-bottom:3px;letter-spacing:0.03em}
+    .login-sub{text-align:center;font-size:12px;color:var(--dim);margin-bottom:20px}
+    .login-tabs{display:flex;gap:4px;background:var(--bg);
+      border-radius:var(--rs);padding:4px;margin-bottom:18px}
+    .login-tab{flex:1;padding:8px;border:none;background:none;
+      color:var(--dim);font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;
+      transition:all 0.2s}
+    .login-tab.active{background:var(--sky);color:#fff}
+    .lf{margin-bottom:12px}
+    .lf label{display:block;font-size:11px;color:var(--dim);
+      font-weight:600;letter-spacing:0.06em;margin-bottom:5px}
+    .lf input{width:100%;padding:11px 14px;background:var(--bg);
+      border:1px solid var(--border);border-radius:var(--rs);
+      color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s}
+    .lf input:focus{border-color:var(--sky)}
+    .lf input::placeholder{color:var(--dim)}
+    .login-err{font-size:12px;color:var(--red);text-align:center;
+      min-height:18px;margin-bottom:8px;font-weight:600}
+    .login-divider{text-align:center;font-size:11px;color:var(--dim);
+      margin:10px 0;position:relative}
+    .login-divider::before,.login-divider::after{
+      content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
+    .login-divider::before{left:0}.login-divider::after{right:0}
 
-<style>
-:root{
-  --navy:#0a2342;--navy2:#0d3b6e;--navy3:#0a4a6e;
-  --sky:#4fc3f7;--sky2:#0288d1;
-  --lime:#cddc39;--lime2:#afb42b;
-  --gold:#FFD700;--gold2:#c9a227;--gold3:#f5e27a;
-  --white:#f0f4f8;
-  --card:rgba(255,255,255,0.06);--border:rgba(255,215,0,0.22);
-  --ok:#66bb6a;--ko:#ef5350;
-  --muted:#90a4ae;
-  --r:16px;--sh:0 4px 24px rgba(0,0,0,.38);
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,var(--navy3) 100%);
-  color:var(--white);min-height:100vh;overflow-x:hidden;
-}
+    /* ===== INSTALL BANNER ===== */
+    #install-banner{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);
+      width:100%;max-width:640px;background:linear-gradient(135deg,#122B54,#091A30);
+      border-bottom:2px solid var(--gold);padding:10px 14px;z-index:900}
+    .ib-inner{display:flex;align-items:center;gap:10px}
+    .ib-icon{font-size:28px;flex-shrink:0}
+    .ib-text{flex:1;min-width:0}
+    .ib-title{font-size:13px;font-weight:700}
+    .ib-sub{font-size:11px;color:var(--dim)}
+    .ib-btn{padding:7px 12px;background:var(--gold);color:#091A30;border:none;
+      border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
+    .ib-close{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;flex-shrink:0;padding:4px}
 
-/* ─ HEADER ─ */
-.hdr{
-  background:linear-gradient(135deg,var(--navy),var(--navy2));
-  border-bottom:2px solid var(--gold2);
-  padding:12px 16px 9px;text-align:center;
-  position:sticky;top:0;z-index:120;
-  box-shadow:0 3px 20px rgba(0,0,0,.55);
-}
-.hdr .cross{font-size:20px;color:var(--gold);line-height:1}
-.hdr h1{
-  font-family:'Cinzel',serif;font-size:clamp(12px,3.8vw,20px);
-  font-weight:900;color:var(--gold);letter-spacing:.8px;line-height:1.15;
-  text-shadow:0 0 22px rgba(255,215,0,.45);
-}
-.hdr .sub{font-size:9.5px;color:var(--sky);letter-spacing:2.5px;text-transform:uppercase;margin-top:2px}
+    /* ===== APP SHELL ===== */
+    #app{display:none;flex-direction:column;min-height:100vh}
 
-/* ─ TABS ─ */
-.tabs{display:flex;background:rgba(10,35,66,.98);border-bottom:1px solid rgba(255,215,0,.18);overflow-x:auto;scrollbar-width:none;position:sticky;top:72px;z-index:110}
-.tabs::-webkit-scrollbar{display:none}
-.tab{flex:1;min-width:70px;padding:10px 6px;text-align:center;font-size:10.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .22s;white-space:nowrap;user-select:none}
-.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
-.tab:hover:not(.on){color:var(--sky)}
+    /* ===== HEADER ===== */
+    .app-header{position:sticky;top:0;z-index:100;
+      background:linear-gradient(135deg,#091A30 0%,#122B54 100%);
+      border-bottom:1px solid var(--border);padding:10px 14px 8px}
+    .hdr-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+    .hdr-brand{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;
+      letter-spacing:0.1em;color:var(--sky);text-transform:uppercase;flex:1;min-width:0}
+    .hdr-brand-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0}
+    .hdr-right{display:flex;align-items:center;gap:8px}
+    .fb-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:16px;border:1px solid;white-space:nowrap}
+    .fb-badge.online{color:var(--lime);border-color:rgba(163,230,53,0.4);background:rgba(163,230,53,0.07)}
+    .fb-badge.offline{color:var(--dim);border-color:var(--border);background:transparent}
+    .fb-badge.connecting{color:var(--gold);border-color:rgba(245,197,24,0.4);background:rgba(245,197,24,0.06)}
+    .user-badge{display:flex;align-items:center;gap:5px;
+      padding:3px 8px;border-radius:16px;border:1px solid var(--border);
+      background:rgba(255,255,255,0.04)}
+    .user-name{font-size:10px;font-weight:700;color:var(--text);max-width:90px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .admin-crown{font-size:10px}
+    .btn-logout{background:none;border:none;color:var(--dim);
+      font-size:10px;cursor:pointer;padding:2px 4px;font-weight:600}
+    .btn-logout:hover{color:var(--red)}
+    .hdr-date{font-size:14px;font-weight:700;color:var(--text)}
+    .hdr-viewing{display:none;font-size:11px;color:var(--gold);font-weight:700;margin-top:1px}
+    .branch-bar{margin-top:6px;padding:6px 10px;
+      background:linear-gradient(135deg,rgba(245,197,24,0.07),rgba(56,189,248,0.04));
+      border:1px solid rgba(245,197,24,0.18);border-radius:var(--rs);
+      display:none;flex-direction:column;gap:1px}
+    .bb-church{font-size:11px;font-weight:800;color:var(--text)}
+    .bb-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+    .bb-branch{font-size:10px;color:var(--sky);font-weight:700}
+    .bb-sep{color:var(--border);font-size:10px}
+    .bb-code{font-size:9px;color:var(--gold);font-weight:800;letter-spacing:0.1em;
+      background:rgba(245,197,24,0.09);padding:1px 6px;border-radius:10px;
+      border:1px solid rgba(245,197,24,0.22)}
+    .bb-city{font-size:10px;color:var(--dim)}
 
-/* ─ PAGES ─ */
-.pg{display:none;padding:14px 14px 62px;max-width:820px;margin:0 auto}
-.pg.on{display:block}
+    /* ===== VIEWS ===== */
+    .view{display:none;padding:14px 14px 90px}
+    .view.active{display:block}
 
-/* ─ DATE BANNER ─ */
-.dban{
-  background:linear-gradient(135deg,rgba(255,215,0,.14),rgba(79,195,247,.09));
-  border:1px solid var(--gold2);border-radius:var(--r);
-  padding:13px 16px;margin-bottom:15px;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-}
-.dban .dt{font-family:'Cinzel',serif;font-size:clamp(13px,4vw,19px);font-weight:600;color:var(--gold)}
-.dban .act-tag{display:inline-block;background:rgba(79,195,247,.18);border:1px solid var(--sky);color:var(--sky);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:600;margin-top:5px}
-.dban .nav-btns{display:flex;gap:6px;flex-shrink:0}
-.dban .nav-btns button{
-  background:rgba(255,215,0,.13);border:1px solid var(--gold2);color:var(--gold);
-  border-radius:8px;padding:7px 11px;cursor:pointer;font-size:15px;
-  transition:background .18s;font-family:'Inter',sans-serif;
-}
-.dban .nav-btns button:active{background:rgba(255,215,0,.3)}
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+      width:100%;max-width:640px;background:rgba(9,26,48,0.97);
+      border-top:1px solid var(--border);display:flex;z-index:200;backdrop-filter:blur(20px)}
+    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+      padding:8px 4px 10px;border:none;background:none;cursor:pointer;
+      color:var(--dim);font-size:9px;font-weight:700;letter-spacing:0.06em;
+      text-transform:uppercase;transition:color 0.2s}
+    .nav-btn .ni{font-size:22px;line-height:1}
+    .nav-btn.active{color:var(--sky)}
+    .nav-btn.active .ni{filter:drop-shadow(0 0 6px var(--sky))}
 
-/* ─ CARD ─ */
-.card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px;margin-bottom:14px;
-  backdrop-filter:blur(10px);box-shadow:var(--sh);
-}
-.ctitle{
-  font-family:'Cinzel',serif;font-size:13px;font-weight:700;
-  color:var(--sky);text-transform:uppercase;letter-spacing:1.4px;
-  margin-bottom:13px;display:flex;align-items:center;gap:7px;
-  border-bottom:1px solid rgba(79,195,247,.2);padding-bottom:9px;
-}
+    /* ===== CARDS ===== */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:12px}
+    .ct{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;
+      color:var(--sky);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .ct::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ─ FIELDS ─ */
-.frow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
-.frow label{flex:1.1;font-size:12.5px;color:var(--muted);font-weight:500;min-width:0;line-height:1.3}
-.frow input[type=number],.frow input[type=text],.frow select{
-  flex:1.2;background:rgba(255,255,255,.08);border:1px solid rgba(79,195,247,.28);
-  border-radius:9px;padding:9px 11px;color:var(--white);font-size:14px;
-  font-weight:500;outline:none;transition:border-color .18s,background .18s;min-width:0;
-}
-.frow input[type=number]:focus,.frow input[type=text]:focus,.frow select:focus{
-  border-color:var(--sky);background:rgba(255,255,255,.13)
-}
-.frow input[type=number]{text-align:right}
-.frow select option{background:var(--navy);color:var(--white)}
+    /* ===== FORM ===== */
+    .fr{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+    .fl{flex:1;font-size:13px;color:var(--dim);min-width:0}
+    .fi{width:128px;padding:8px 11px;background:var(--bg);border:1px solid var(--border);
+      border-radius:var(--rs);color:var(--text);font-size:14px;font-weight:600;
+      text-align:right;outline:none;transition:border-color 0.2s;flex-shrink:0}
+    .fi:focus{border-color:var(--sky)}
+    select.fi{text-align:left;width:100%;cursor:pointer}
+    .fi-full{width:100%;padding:10px 13px;background:var(--bg);border:1px solid var(--border);
+      border-radius:var(--rs);color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s}
+    .fi-full:focus{border-color:var(--sky)}
+    .fi-full::placeholder{color:var(--dim)}
+    .fi-full[readonly]{opacity:0.6;cursor:default}
 
-.fblock{margin-bottom:11px}
-.fblock label{font-size:12.5px;color:var(--muted);font-weight:500;display:block;margin-bottom:5px}
-.fblock input,.fblock select,.fblock textarea{
-  width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(79,195,247,.28);
-  border-radius:9px;padding:10px 13px;color:var(--white);font-size:14px;
-  outline:none;transition:border-color .18s;font-family:'Inter',sans-serif;
-}
-.fblock input:focus,.fblock select:focus,.fblock textarea:focus{border-color:var(--sky)}
-.fblock select option{background:var(--navy)}
+    /* ===== ACTIVITY ===== */
+    .act-wrap{display:flex;flex-direction:column;gap:8px}
+    .act-lbl{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:0.06em}
 
-/* ─ TOTALS ─ */
-.tot{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;margin-top:10px;font-weight:700}
-.tot-r{background:rgba(102,187,106,.18);border:1px solid rgba(102,187,106,.38);color:var(--ok)}
-.tot-d{background:rgba(239,83,80,.18);border:1px solid rgba(239,83,80,.38);color:var(--ko)}
-.tot-s{background:rgba(255,215,0,.14);border:1px solid rgba(255,215,0,.38);color:var(--gold);font-size:16px}
-.tot .lbl{font-size:12.5px}
-.tot .val{font-size:15px}
+    /* ===== EFFECTIF ===== */
+    .eff-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+    .eff-col{display:flex;flex-direction:column;align-items:center;gap:5px}
+    .eff-lbl{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
+    .eff-inp{width:100%;padding:10px 6px;background:var(--bg);border:1px solid var(--border);
+      border-radius:var(--rs);color:var(--text);font-size:18px;font-weight:800;
+      text-align:center;outline:none;transition:border-color 0.2s}
+    .eff-inp:focus{border-color:var(--sky)}
+    .eff-total{display:flex;justify-content:space-between;align-items:center;
+      padding:10px 14px;border-radius:var(--rs);margin-top:2px;
+      background:linear-gradient(135deg,rgba(56,189,248,0.1),rgba(56,189,248,0.04));
+      border:1px solid rgba(56,189,248,0.2)}
+    .eff-total-lbl{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--sky)}
+    .eff-total-val{font-size:22px;font-weight:900;color:var(--sky);font-variant-numeric:tabular-nums}
 
-/* ─ SOLDE GRID ─ */
-.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:10px}
-.sbox{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:11px;padding:11px 8px;text-align:center}
-.sbox.accent{background:rgba(255,215,0,.11);border-color:rgba(255,215,0,.35)}
-.sbox .sl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.sbox .sv{font-size:14px;font-weight:700;color:var(--gold);word-break:break-all}
+    /* ===== TOTALS ===== */
+    .tot-row{display:flex;justify-content:space-between;align-items:center;
+      padding:10px 13px;border-radius:var(--rs);margin-top:10px}
+    .tot-lbl{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase}
+    .tot-val{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
+    .tot-r{background:rgba(163,230,53,0.08)}.tot-r .tot-val{color:var(--lime)}
+    .tot-d{background:rgba(248,113,113,0.08)}.tot-d .tot-val{color:var(--red)}
 
-/* ─ BUTTONS ─ */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  padding:12px 18px;border-radius:11px;font-size:12.5px;font-weight:700;
-  cursor:pointer;border:none;transition:all .2s;letter-spacing:.4px;
-  text-transform:uppercase;font-family:'Inter',sans-serif;
-}
-.btn:active{transform:scale(.96)}
-.btn-g{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);box-shadow:0 4px 16px rgba(255,215,0,.32)}
-.btn-g:hover{box-shadow:0 6px 22px rgba(255,215,0,.5)}
-.btn-b{background:linear-gradient(135deg,var(--sky),var(--sky2));color:var(--navy)}
-.btn-l{background:linear-gradient(135deg,var(--lime),var(--lime2));color:var(--navy)}
-.btn-ko{background:linear-gradient(135deg,#ef5350,#c62828);color:#fff}
-.btn-wa{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 14px rgba(37,211,102,.32)}
-.btn-sm{padding:7px 13px;font-size:11px}
-.btn-blk{width:100%;margin-bottom:9px}
+    /* ===== BALANCES ===== */
+    .bal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+    .bal-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center}
+    .bal-lbl{font-size:9px;color:var(--dim);font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px}
+    .bal-val{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}
+    .cumule-box{background:linear-gradient(135deg,rgba(245,197,24,0.12),rgba(56,189,248,0.08));
+      border:1px solid rgba(245,197,24,0.35);border-radius:var(--r);
+      padding:18px;text-align:center;animation:gpulse 3s ease-in-out infinite}
+    @keyframes gpulse{0%,100%{box-shadow:0 0 0 rgba(245,197,24,0)}50%{box-shadow:0 0 28px rgba(245,197,24,0.18)}}
+    .cumule-lbl{font-size:10px;font-weight:800;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+    .cumule-val{font-size:30px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;
+      text-shadow:0 0 30px rgba(245,197,24,0.45)}
+    .cumule-unit{font-size:14px;font-weight:600;color:rgba(245,197,24,0.55);margin-left:4px}
 
-/* ─ EXTRA DEPENSES ─ */
-.exrow{display:flex;gap:7px;align-items:center;margin-bottom:8px;animation:sin .2s ease}
-.exrow input[type=text]{
-  flex:1.5;background:rgba(255,255,255,.08);border:1px solid rgba(79,195,247,.28);
-  border-radius:9px;padding:9px 11px;color:var(--white);font-size:13px;outline:none;
-}
-.exrow input[type=number]{
-  flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(79,195,247,.28);
-  border-radius:9px;padding:9px 11px;color:var(--white);font-size:13px;
-  text-align:right;outline:none;
-}
-.exrow .xdel{
-  background:rgba(239,83,80,.18);border:1px solid rgba(239,83,80,.38);
-  color:#ef5350;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:13px;
-  flex-shrink:0;
-}
-@keyframes sin{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+    /* ===== EXPENSES ===== */
+    .exp-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .exp-row .fl{flex:1;font-size:13px}
+    .btn-rm{width:28px;height:28px;border:1px solid rgba(248,113,113,0.35);
+      background:rgba(248,113,113,0.08);border-radius:50%;color:var(--red);
+      font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .btn-add-exp{width:100%;padding:10px;margin-top:8px;
+      border:1px dashed rgba(56,189,248,0.35);background:rgba(56,189,248,0.04);
+      border-radius:var(--rs);color:var(--sky);font-size:13px;font-weight:600;cursor:pointer}
 
-/* ─ RAPPORT PREVIEW ─ */
-.rp{
-  background:#fff;color:#1a1a2e;border-radius:var(--r);
-  padding:22px 18px;margin-top:14px;display:none;
-  font-family:'Inter',sans-serif;font-size:13px;
-}
-.rp.on{display:block}
-.rp h2{text-align:center;font-family:'Cinzel',serif;font-size:17px;color:#0a2342;margin-bottom:3px}
-.rp .rs{text-align:center;color:#666;font-size:11px;margin-bottom:5px}
-.rp table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:12px}
-.rp th{background:#0a2342;color:#FFD700;padding:8px 10px;text-align:left;font-size:12px}
-.rp td{padding:7px 10px;border-bottom:1px solid #e0e0e0}
-.rp tr:nth-child(even) td{background:#f7f7f7}
-.rp .rt td{background:#0d3b6e;color:#fff;font-weight:700}
-.rp .rn td{background:#FFD700;color:#0a2342;font-weight:800;font-size:14px}
-.rp .rh td{background:#e8f4ff;color:#0a2342;font-weight:700;font-family:'Cinzel',serif;font-size:11px}
+    /* ===== BUTTONS ===== */
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;padding:14px 20px;border-radius:var(--r);font-size:12px;font-weight:800;
+      letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:none;
+      transition:opacity 0.2s,transform 0.1s;margin-bottom:10px}
+    .btn:active{transform:scale(0.97);opacity:0.9}
+    .btn-sky{background:linear-gradient(135deg,var(--sky),var(--sky-d));color:#fff}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#091A30}
+    .btn-lime{background:linear-gradient(135deg,var(--lime),var(--lime-d));color:#091A30}
+    .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:12px}
+    .btn-sm{padding:9px 14px;font-size:11px;margin-bottom:0;width:auto}
+    .btn-row{display:flex;gap:10px;margin-bottom:10px}
+    .btn-row .btn{margin-bottom:0}
 
-/* ─ HISTORY ─ */
-.hi{
-  background:var(--card);border:1px solid var(--border);border-radius:12px;
-  padding:13px;margin-bottom:9px;cursor:pointer;transition:border-color .2s;
-}
-.hi:hover{border-color:var(--gold)}
-.hi .hd{font-weight:700;color:var(--gold);font-size:13.5px}
-.hi .ha{color:var(--sky);font-size:11.5px;margin-top:2px}
-.hi .hn{display:flex;gap:14px;margin-top:7px;flex-wrap:wrap}
-.hi .hr{color:var(--ok);font-size:12px}
-.hi .hx{color:var(--ko);font-size:12px}
-.hi .hs{color:var(--gold);font-size:12px;font-weight:700}
+    /* ===== INDICATORS ===== */
+    .save-ind{display:none;align-items:center;gap:5px;font-size:11px;
+      color:var(--lime);font-weight:600;margin:-4px 0 10px}
+    .back-today-btn{display:none;align-items:center;justify-content:center;gap:6px;
+      width:100%;padding:10px;margin-bottom:12px;
+      border:1px solid var(--gold);background:rgba(245,197,24,0.07);
+      border-radius:var(--rs);color:var(--gold);font-size:12px;font-weight:700;cursor:pointer}
+    .day-hdr{text-align:center;padding:10px 0 14px}
+    .day-wd{font-size:12px;color:var(--sky);font-weight:800;letter-spacing:0.15em;text-transform:uppercase}
+    .day-full{font-size:20px;font-weight:900;margin-top:3px}
 
-/* ─ STATUS BAR ─ */
-.sbar{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(10,35,66,.97);border-top:1px solid rgba(255,215,0,.18);
-  padding:5px 16px;text-align:center;font-size:11px;color:var(--muted);z-index:200;
-}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.dot.ok{background:var(--ok)} .dot.ko{background:var(--ko)} .dot.sync{background:var(--gold);animation:pulse 1.2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    /* ===== HISTORY ===== */
+    .h-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+      padding:13px 15px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s,background 0.2s}
+    .h-item:hover,.h-item:active{border-color:var(--sky);background:var(--card2)}
+    .h-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+    .h-date{font-size:14px;font-weight:700}.h-act{font-size:11px;color:var(--sky);font-weight:600;margin-top:2px}
+    .h-solde{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
+    .h-nums{display:flex;gap:12px;font-size:12px;color:var(--dim)}
+    .h-nums b{font-weight:700}
 
-/* ─ MODAL ─ */
-.ov{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);
-  z-index:500;align-items:center;justify-content:center;padding:16px;
-}
-.ov.on{display:flex}
-.mb{
-  background:linear-gradient(160deg,var(--navy2),var(--navy));
-  border:1px solid var(--gold);border-radius:18px;
-  padding:22px;width:100%;max-width:400px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-}
-.mb h3{font-family:'Cinzel',serif;color:var(--gold);margin-bottom:14px;font-size:15px}
-.wac{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 13px;background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);border-radius:11px;margin-bottom:9px;
-}
-.wac .wn{font-weight:600;font-size:13.5px}
-.wac .wp{color:var(--muted);font-size:11.5px}
+    /* ===== STATS ===== */
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+    .stat-lbl{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+    .stat-val{font-size:16px;font-weight:900;font-variant-numeric:tabular-nums}
 
-/* ─ TOAST ─ */
-#toast{
-  position:fixed;top:82px;left:50%;
-  transform:translateX(-50%) translateY(-16px);
-  background:rgba(10,20,40,.92);color:#fff;
-  padding:10px 20px;border-radius:20px;font-size:12.5px;
-  opacity:0;transition:all .28s;z-index:600;
-  pointer-events:none;white-space:nowrap;
-  border:1px solid rgba(255,215,0,.2);
-  max-width:90vw;text-align:center;
-}
-#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* ===== SETTINGS ===== */
+    .sg{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:12px}
+    .sg.featured{border-color:rgba(245,197,24,0.35);background:linear-gradient(135deg,rgba(245,197,24,0.04),var(--card))}
+    .sg-title{font-size:10px;font-weight:800;letter-spacing:0.15em;color:var(--sky);text-transform:uppercase;margin-bottom:14px}
+    .sg-title.gold{color:var(--gold)}.sg-title.firebase{color:#FFA500}
+    .sf{margin-bottom:11px}
+    .sf label{display:block;font-size:11px;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:0.05em}
+    .sf-sep{height:1px;background:var(--border);margin:14px 0}
 
-/* ─ LOADER ─ */
-.ld{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;gap:14px}
-.sp{width:38px;height:38px;border:3px solid rgba(255,215,0,.18);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+    /* ===== BRANCH INFO (readonly for non-admin) ===== */
+    .branch-info-view{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+    .biv-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+    .biv-row:last-child{border-bottom:none}
+    .biv-key{color:var(--dim);font-size:12px}
+    .biv-val{font-weight:600;text-align:right}
 
-/* ─ INSTALL BANNER ─ */
-#ib{
-  display:none;position:fixed;bottom:30px;left:14px;right:14px;
-  background:linear-gradient(135deg,var(--navy2),var(--navy));
-  border:1px solid var(--gold);border-radius:14px;padding:14px 16px;
-  z-index:400;box-shadow:0 10px 32px rgba(0,0,0,.55);
-  flex-direction:column;gap:10px;
-}
-#ib p{font-size:13px}
-#ib .ibr{display:flex;gap:10px}
+    /* ===== IMAGE UPLOAD ===== */
+    .img-upload-area{position:relative;border:2px dashed var(--border);
+      border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;margin-bottom:4px}
+    .img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .img-upload-icon{font-size:28px;margin-bottom:6px}
+    .img-upload-label{font-size:12px;color:var(--dim)}
+    .img-preview{width:100%;max-height:80px;object-fit:contain;border-radius:var(--rs);margin-top:8px;display:none}
+    .img-clear{font-size:11px;color:var(--red);cursor:pointer;background:none;border:none;margin-top:4px;display:none}
 
-.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.28),transparent);margin:15px 0}
+    /* ===== FIREBASE STATUS ===== */
+    .fb-status-bar{display:flex;align-items:center;gap:10px;padding:10px 12px;
+      border-radius:var(--rs);border:1px solid var(--border);margin-bottom:12px;background:var(--bg)}
+    .fb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .fb-dot.on{background:var(--lime);box-shadow:0 0 6px var(--lime)}
+    .fb-dot.off{background:var(--dim)}
+    .fb-dot.wait{background:var(--gold);animation:blink 1s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    .fb-status-text{flex:1;font-size:12px;font-weight:600}
+    .fb-section-toggle{font-size:11px;color:var(--sky);cursor:pointer;background:none;border:none;font-weight:700}
+    .fb-config-fields{display:none}
+    .fb-config-fields.open{display:block}
 
-@media(min-width:560px){
-  .frow label{font-size:13.5px}
-  .sgrid{gap:13px}
-}
-</style>
+    /* ===== MODALS ===== */
+    .mo{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);
+      z-index:500;display:none;align-items:flex-end;justify-content:center}
+    .mo.open{display:flex}
+    .mo-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;
+      width:100%;max-width:640px;padding:18px;max-height:80vh;overflow-y:auto}
+    .mo-title{font-size:14px;font-weight:800;margin-bottom:14px;
+      display:flex;justify-content:space-between;align-items:center}
+    .mo-close{background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer}
+    .mo-btn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;
+      background:var(--bg);border:1px solid var(--border);border-radius:var(--r);
+      color:var(--text);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:9px;text-align:left}
+    .mo-btn:hover{background:var(--card2)}
+    .mo-all{border-color:rgba(245,197,24,0.5);color:var(--gold);background:rgba(245,197,24,0.05)}
+    .mo-sub{font-size:11px;color:var(--dim);margin-bottom:10px}
+    .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    .cat-btn{padding:9px 10px;background:var(--bg);border:1px solid var(--border);
+      border-radius:var(--rs);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;text-align:left}
+    .cat-btn:hover{border-color:var(--sky);background:var(--card2)}
+
+    /* ===== REPORT PREVIEW ===== */
+    .rpt-pre{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);
+      padding:13px;font-family:'Courier New',monospace;font-size:11px;color:var(--dim);
+      white-space:pre;overflow-x:auto;max-height:180px;overflow-y:auto;margin-bottom:10px;line-height:1.5}
+
+    /* ===== SEARCH ===== */
+    .search-bar{width:100%;padding:11px 14px;background:var(--card);
+      border:1px solid var(--border);border-radius:var(--r);color:var(--text);
+      font-size:14px;outline:none;margin-bottom:14px}
+    .search-bar:focus{border-color:var(--sky)}
+    .search-bar::placeholder{color:var(--dim)}
+
+    /* ===== EMPTY ===== */
+    .empty{text-align:center;padding:40px 20px;color:var(--dim)}
+    .empty-i{font-size:38px;margin-bottom:10px}
+
+    /* ===== TOAST ===== */
+    #toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);
+      background:rgba(9,26,48,0.97);border:1px solid var(--sky);color:var(--text);
+      padding:9px 18px;border-radius:30px;font-size:13px;font-weight:600;
+      z-index:800;opacity:0;transition:opacity 0.3s;white-space:nowrap;pointer-events:none}
+    #toast.show{opacity:1}
+
+    .pos{color:var(--lime)}.neg{color:var(--red)}.gold{color:var(--gold)}
+    .sec-hdr{font-size:10px;font-weight:800;letter-spacing:0.15em;color:var(--sky);
+      text-transform:uppercase;padding:4px 0 12px}
+    ::-webkit-scrollbar{width:3px;height:3px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.2);border-radius:2px}
+  </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="hdr">
-  <div class="cross">✝</div>
-  <h1>APOTRE AUSIAS SAINTE GESTION</h1>
-  <div class="sub">✦ Cahier Comptable Journalier ✦</div>
-</header>
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <canvas id="login-canvas" width="72" height="72"></canvas>
+    </div>
+    <div class="login-title">Apôtre Ausias Sainte Gestion</div>
+    <div class="login-sub" id="login-sub">Connectez-vous à votre espace</div>
 
-<!-- TABS -->
-<nav class="tabs">
-  <div class="tab on"  onclick="goPg('pg-saisie',0)">📝 Saisie</div>
-  <div class="tab"     onclick="goPg('pg-rapport',1)">📊 Rapport</div>
-  <div class="tab"     onclick="goPg('pg-histo',2)">📅 Historique</div>
-  <div class="tab"     onclick="goPg('pg-params',3)">⚙️ Paramètres</div>
-</nav>
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-login" onclick="switchTab('login')">🔐 Connexion</button>
+      <button class="login-tab" id="tab-register" onclick="switchTab('register')">✏️ Inscription</button>
+    </div>
+
+    <!-- CONNEXION -->
+    <div id="form-login">
+      <div class="lf">
+        <label>Adresse e-mail</label>
+        <input type="email" id="l-email" placeholder="votre@email.com" autocomplete="email">
+      </div>
+      <div class="lf">
+        <label>Mot de passe</label>
+        <input type="password" id="l-pwd" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="login-err" id="login-err"></div>
+      <button class="btn btn-sky" id="btn-login">🔐 Se connecter</button>
+      <button class="btn btn-ghost" id="btn-reset-pwd" style="font-size:11px;padding:10px">
+        Mot de passe oublié ?
+      </button>
+    </div>
+
+    <!-- INSCRIPTION -->
+    <div id="form-register" style="display:none">
+      <div class="lf">
+        <label>Prénom et Nom complet</label>
+        <input type="text" id="r-name" placeholder="Ex : Frère Jean KOUTON">
+      </div>
+      <div class="lf">
+        <label>Adresse e-mail</label>
+        <input type="email" id="r-email" placeholder="votre@email.com" autocomplete="email">
+      </div>
+      <div class="lf">
+        <label>Numéro de téléphone (optionnel)</label>
+        <input type="tel" id="r-phone" placeholder="+229 97 00 00 00">
+      </div>
+      <div class="lf">
+        <label>Mot de passe (minimum 6 caractères)</label>
+        <input type="password" id="r-pwd" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="login-err" id="register-err"></div>
+      <button class="btn btn-lime" id="btn-register">✅ Créer mon compte</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+
+  <!-- INSTALL BANNER -->
+  <div id="install-banner">
+    <div class="ib-inner">
+      <div class="ib-icon">✝️</div>
+      <div class="ib-text">
+        <div class="ib-title">Apôtre Ausias Sainte Gestion</div>
+        <div class="ib-sub">Installer l'application</div>
+      </div>
+      <button class="ib-btn" id="ib-install">INSTALLER</button>
+      <button class="ib-close" id="ib-close">✕</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="app-header" id="app-header">
+    <div class="hdr-row1">
+      <div class="hdr-brand"><div class="hdr-brand-dot"></div>Apôtre Ausias Sainte Gestion</div>
+      <div class="hdr-right">
+        <span class="fb-badge offline" id="fb-badge">🔴</span>
+        <div class="user-badge" id="user-badge" style="display:none">
+          <span class="admin-crown" id="admin-crown" style="display:none">👑</span>
+          <span class="user-name" id="user-name">—</span>
+          <button class="btn-logout" id="btn-logout" title="Déconnexion">⏏</button>
+        </div>
+      </div>
+    </div>
+    <div class="hdr-date" id="hdr-date"></div>
+    <div class="hdr-viewing" id="hdr-viewing">📌 Consultation d'une journée passée</div>
+    <div class="branch-bar" id="branch-bar">
+      <div class="bb-church" id="bb-church"></div>
+      <div class="bb-row">
+        <span class="bb-branch" id="bb-branch"></span>
+        <span class="bb-sep">|</span>
+        <span class="bb-code" id="bb-code"></span>
+        <span class="bb-sep">·</span>
+        <span class="bb-city" id="bb-city"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW: AUJOURD'HUI -->
+  <div class="view active" id="view-today">
+    <div class="day-hdr">
+      <div class="day-wd" id="t-weekday"></div>
+      <div class="day-full" id="t-full"></div>
+    </div>
+    <button class="back-today-btn" id="btn-back-today">⬅ Retour à aujourd'hui</button>
+
+    <div class="card">
+      <div class="ct">📋 Activité du jour</div>
+      <div class="act-wrap">
+        <div class="act-lbl">Type d'activité</div>
+        <select class="fi" id="act-sel" style="width:100%">
+          <option value="">— Sélectionner —</option>
+          <option>Culte</option><option>Veillée</option><option>Réunion</option>
+          <option>Évangélisation</option><option>Formation</option>
+          <option>Action sociale</option><option>Baptême</option>
+          <option>Mariage</option><option>Conférence</option><option>Autre</option>
+        </select>
+        <input type="text" class="fi-full" id="act-other" placeholder="Préciser l'activité…" style="display:none">
+      </div>
+      <div style="margin-top:14px">
+        <div class="ct" style="margin-bottom:10px">👥 Effectif du culte</div>
+        <div class="eff-grid">
+          <div class="eff-col">
+            <div class="eff-lbl">Hommes</div>
+            <input type="number" class="eff-inp eff" id="eff-h" placeholder="0" min="0">
+          </div>
+          <div class="eff-col">
+            <div class="eff-lbl">Femmes</div>
+            <input type="number" class="eff-inp eff" id="eff-f" placeholder="0" min="0">
+          </div>
+          <div class="eff-col">
+            <div class="eff-lbl">Enfants</div>
+            <input type="number" class="eff-inp eff" id="eff-e" placeholder="0" min="0">
+          </div>
+        </div>
+        <div class="eff-total">
+          <div class="eff-total-lbl">Total Présents</div>
+          <div class="eff-total-val" id="eff-total">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">💰 Recettes</div>
+      <div class="fr"><div class="fl">Offrandes</div>        <input type="number" class="fi rec" id="r-off" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Dîmes</div>            <input type="number" class="fi rec" id="r-dim" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Action de grâce</div>  <input type="number" class="fi rec" id="r-gra" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Dons</div>             <input type="number" class="fi rec" id="r-don" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Matériels spirituels</div><input type="number" class="fi rec" id="r-mat" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Autres recettes</div>  <input type="number" class="fi rec" id="r-aut" placeholder="0" min="0"></div>
+      <div class="tot-row tot-r">
+        <div class="tot-lbl">Total Recettes</div>
+        <div class="tot-val" id="tot-rec">0 FCFA</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">📤 Dépenses</div>
+      <div id="dep-list"></div>
+      <button class="btn-add-exp" id="btn-add-dep">＋ Ajouter une dépense</button>
+      <div class="tot-row tot-d" style="margin-top:14px">
+        <div class="tot-lbl">Total Dépenses</div>
+        <div class="tot-val" id="tot-dep">0 FCFA</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">📊 Soldes</div>
+      <div class="bal-grid">
+        <div class="bal-card">
+          <div class="bal-lbl">Solde Précédent</div>
+          <div class="bal-val" id="bal-prec">0 FCFA</div>
+        </div>
+        <div class="bal-card">
+          <div class="bal-lbl">Reste du Jour</div>
+          <div class="bal-val" id="bal-jour">0 FCFA</div>
+        </div>
+      </div>
+      <div class="cumule-box">
+        <div class="cumule-lbl">✨ Solde Cumulé Général</div>
+        <div class="cumule-val" id="bal-cum">0<span class="cumule-unit">FCFA</span></div>
+      </div>
+    </div>
+
+    <button class="btn btn-lime" id="btn-save">💾 Enregistrer la journée</button>
+    <div class="save-ind" id="save-ind">✅ Journée enregistrée</div>
+    <div class="btn-row">
+      <button class="btn btn-gold" id="btn-pdf-today" style="flex:1">🖨️ Imprimer / PDF</button>
+      <button class="btn btn-ghost" id="btn-wa-today" style="flex:1">📲 WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- VIEW: HISTORIQUE -->
+  <div class="view" id="view-history">
+    <div class="sec-hdr">📖 Historique des journées</div>
+    <input type="text" class="search-bar" id="hist-search" placeholder="🔍 Date, activité…">
+    <div id="hist-list">
+      <div class="empty"><div class="empty-i">📅</div><div>Aucune journée enregistrée</div></div>
+    </div>
+  </div>
+
+  <!-- VIEW: RAPPORT -->
+  <div class="view" id="view-rapport">
+    <div class="sec-hdr">📊 Tableau de bord général</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-lbl">Journées</div><div class="stat-val" id="s-jours">0</div></div>
+      <div class="stat-card"><div class="stat-lbl">Solde général</div><div class="stat-val" id="s-solde">0</div></div>
+      <div class="stat-card"><div class="stat-lbl">Total recettes</div><div class="stat-val pos" id="s-rec">0</div></div>
+      <div class="stat-card"><div class="stat-lbl">Total dépenses</div><div class="stat-val neg" id="s-dep">0</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-gold" id="btn-pdf-all" style="flex:1">🖨️ Rapport PDF complet</button>
+      <button class="btn btn-sky" id="btn-wa-all" style="flex:1">📲 WhatsApp</button>
+    </div>
+    <div class="ct" style="padding:10px 0 10px">📋 Historique complet</div>
+    <div id="rpt-hist"></div>
+  </div>
+
+  <!-- VIEW: PARAMÈTRES -->
+  <div class="view" id="view-settings">
+    <div class="sec-hdr">⚙️ Paramètres</div>
+
+    <!-- BRANCHE — ADMIN EDIT -->
+    <div class="sg featured admin-only">
+      <div class="sg-title gold">🏛️ Paramètres de la Branche</div>
+      <div class="sf"><label>Nom de l'église *</label>
+        <input type="text" class="fi-full" id="b-eglise" placeholder="Ex : Assemblée de Dieu du Bénin"></div>
+      <div class="sf"><label>Nom de la branche / assemblée *</label>
+        <input type="text" class="fi-full" id="b-branche" placeholder="Ex : Branche Centrale de Cotonou"></div>
+      <div class="sf"><label>Code / Identifiant unique de la branche *</label>
+        <input type="text" class="fi-full" id="b-code" placeholder="Ex : ADB-COT-001" style="text-transform:uppercase"></div>
+      <div class="sf-sep"></div>
+      <div class="sf"><label>Ville</label>
+        <input type="text" class="fi-full" id="b-ville" placeholder="Ex : Cotonou"></div>
+      <div class="sf"><label>Pays</label>
+        <input type="text" class="fi-full" id="b-pays" placeholder="Ex : Bénin"></div>
+      <div class="sf-sep"></div>
+      <div class="sf"><label>Nom du premier responsable</label>
+        <input type="text" class="fi-full" id="b-resp-nom" placeholder="Ex : Pasteur Jean KOUTON"></div>
+      <div class="sf"><label>Fonction du premier responsable</label>
+        <input type="text" class="fi-full" id="b-resp-fn" placeholder="Ex : Pasteur Principal"></div>
+      <div class="sf-sep"></div>
+      <div class="sf"><label>Nom du commissaire aux comptes</label>
+        <input type="text" class="fi-full" id="b-comm-nom" placeholder="Ex : Frère Mathieu ADJA"></div>
+      <div class="sf"><label>Téléphone du commissaire aux comptes</label>
+        <input type="tel" class="fi-full" id="b-comm-tel" placeholder="Ex : +22997123456"></div>
+      <div class="sf-sep"></div>
+      <div class="sf"><label>Logo de l'église (optionnel)</label>
+        <div class="img-upload-area"><input type="file" id="logo-file" accept="image/*">
+          <div class="img-upload-icon">🖼️</div>
+          <div class="img-upload-label">Appuyer pour choisir le logo</div>
+          <img class="img-preview" id="logo-preview" alt="Logo"></div>
+        <button class="img-clear" id="logo-clear">✕ Supprimer</button></div>
+      <div class="sf"><label>Cachet / Sceau officiel (optionnel)</label>
+        <div class="img-upload-area"><input type="file" id="cachet-file" accept="image/*">
+          <div class="img-upload-icon">🔏</div>
+          <div class="img-upload-label">Appuyer pour choisir le cachet</div>
+          <img class="img-preview" id="cachet-preview" alt="Cachet"></div>
+        <button class="img-clear" id="cachet-clear">✕ Supprimer</button></div>
+      <button class="btn btn-gold" id="btn-save-branche" style="margin-top:4px">💾 Enregistrer la branche</button>
+    </div>
+
+    <!-- BRANCHE — NON-ADMIN VIEW (readonly) -->
+    <div class="sg" id="branch-info-readonly" style="display:none">
+      <div class="sg-title">🏛️ Informations de la Branche</div>
+      <div id="branch-readonly-content"></div>
+    </div>
+
+    <!-- FIREBASE CONFIG — ADMIN ONLY -->
+    <div class="sg admin-only">
+      <div class="sg-title firebase">🔥 Firebase — Administration</div>
+      <div class="fb-status-bar">
+        <div class="fb-dot off" id="fb-dot"></div>
+        <div class="fb-status-text" id="fb-status-txt">Non connecté</div>
+        <button class="fb-section-toggle" id="fb-toggle-cfg">⚙️ Configurer</button>
+      </div>
+      <div class="fb-config-fields" id="fb-cfg-fields">
+        <div class="sf"><label>Votre e-mail administrateur *</label>
+          <input type="email" class="fi-full" id="fb-admin-email" placeholder="votre@email.com"></div>
+        <div class="sf-sep"></div>
+        <div class="sf"><label>API Key</label>
+          <input type="text" class="fi-full" id="fb-apikey" placeholder="AIzaSy…"></div>
+        <div class="sf"><label>Auth Domain</label>
+          <input type="text" class="fi-full" id="fb-authdomain" placeholder="projet.firebaseapp.com"></div>
+        <div class="sf"><label>Project ID</label>
+          <input type="text" class="fi-full" id="fb-projectid" placeholder="mon-projet-firebase"></div>
+        <div class="sf"><label>Storage Bucket</label>
+          <input type="text" class="fi-full" id="fb-bucket" placeholder="projet.appspot.com"></div>
+        <div class="sf"><label>Messaging Sender ID</label>
+          <input type="text" class="fi-full" id="fb-senderid" placeholder="123456789012"></div>
+        <div class="sf"><label>App ID</label>
+          <input type="text" class="fi-full" id="fb-appid" placeholder="1:123…:web:abc…"></div>
+        <div class="btn-row" style="margin-top:4px">
+          <button class="btn btn-sky btn-sm" id="btn-fb-connect" style="flex:1">🔥 Connecter</button>
+          <button class="btn btn-ghost btn-sm" id="btn-fb-clear" style="flex:1">🗑️ Effacer</button>
+        </div>
+        <p style="font-size:11px;color:var(--dim);margin-top:8px;line-height:1.5">
+          Créez votre projet sur <strong style="color:var(--text)">console.firebase.google.com</strong>, activez Firestore et l'Authentification (email/mot de passe), puis collez votre configuration.
+        </p>
+      </div>
+    </div>
+
+    <!-- CONTRÔLEURS (tous les utilisateurs) -->
+    <div class="sg">
+      <div class="sg-title">👥 Contrôleurs WhatsApp</div>
+      <div class="sf"><label>Contrôleur 1 — Nom</label>
+        <input type="text" class="fi-full" id="c1n" placeholder="Nom du contrôleur 1"></div>
+      <div class="sf"><label>Contrôleur 1 — Numéro (avec indicatif)</label>
+        <input type="tel" class="fi-full" id="c1t" placeholder="22996123456"></div>
+      <div class="sf-sep"></div>
+      <div class="sf"><label>Contrôleur 2 — Nom</label>
+        <input type="text" class="fi-full" id="c2n" placeholder="Nom du contrôleur 2"></div>
+      <div class="sf"><label>Contrôleur 2 — Numéro</label>
+        <input type="tel" class="fi-full" id="c2t" placeholder="22997654321"></div>
+      <div class="sf-sep"></div>
+      <div class="sf"><label>Contrôleur 3 — Nom</label>
+        <input type="text" class="fi-full" id="c3n" placeholder="Nom du contrôleur 3"></div>
+      <div class="sf"><label>Contrôleur 3 — Numéro</label>
+        <input type="tel" class="fi-full" id="c3t" placeholder="22991122334"></div>
+      <button class="btn btn-sky" id="btn-save-set" style="margin-top:8px">💾 Enregistrer</button>
+    </div>
+
+    <!-- À PROPOS -->
+    <div class="sg">
+      <div class="sg-title">ℹ️ À propos</div>
+      <p style="font-size:13px;color:var(--dim);line-height:1.7">
+        <strong style="color:var(--text)">Apôtre Ausias Sainte Gestion</strong><br>
+        Cahier de caisse numérique — PWA Hors ligne<br>
+        Version 2.1.0 — Firebase Auth + IndexedDB + PDF<br><br>
+        Données financières stockées localement sur l'appareil. Paramètres de branche synchronisés avec Firebase.
+      </p>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-v="today"><span class="ni">📅</span><span>Aujourd'hui</span></button>
+    <button class="nav-btn" data-v="history"><span class="ni">📖</span><span>Historique</span></button>
+    <button class="nav-btn" data-v="rapport"><span class="ni">📊</span><span>Rapport</span></button>
+    <button class="nav-btn" data-v="settings"><span class="ni">⚙️</span><span>Paramètres</span></button>
+  </nav>
+</div>
+
+<!-- MODAL WhatsApp -->
+<div class="mo" id="mo-wa">
+  <div class="mo-box">
+    <div class="mo-title"><span>📲 Envoyer le rapport</span><button class="mo-close" id="mo-wa-close">✕</button></div>
+    <div class="mo-sub" id="mo-wa-sub">Choisissez un destinataire</div>
+    <button class="mo-btn" id="wa-c1"><span>💬</span><span id="wa-c1-lbl">Contrôleur 1</span></button>
+    <button class="mo-btn" id="wa-c2"><span>💬</span><span id="wa-c2-lbl">Contrôleur 2</span></button>
+    <button class="mo-btn" id="wa-c3"><span>💬</span><span id="wa-c3-lbl">Contrôleur 3</span></button>
+    <button class="mo-btn mo-all" id="wa-all"><span>🌟</span><span>Envoyer à tous</span></button>
+  </div>
+</div>
+
+<!-- MODAL Dépenses -->
+<div class="mo" id="mo-dep">
+  <div class="mo-box">
+    <div class="mo-title"><span>＋ Ajouter une dépense</span><button class="mo-close" id="mo-dep-close">✕</button></div>
+    <div class="mo-sub">Sélectionner ou saisir librement</div>
+    <div class="cat-grid" id="cat-grid"></div>
+    <div class="sf" style="margin-bottom:10px"><label>Autre libellé</label>
+      <input type="text" class="fi-full" id="dep-custom" placeholder="Saisir un libellé…"></div>
+    <button class="btn btn-sky" id="btn-confirm-dep">Ajouter</button>
+  </div>
+</div>
 
 <div id="toast"></div>
 
-<!-- ══════════════════════════════
-     PAGE SAISIE
-══════════════════════════════ -->
-<div class="pg on" id="pg-saisie">
-
-  <div class="dban">
-    <div>
-      <div class="dt" id="dt-display">—</div>
-      <div id="act-badge"></div>
-    </div>
-    <div class="nav-btns">
-      <button onclick="shiftDay(-1)" title="Jour précédent">◀</button>
-      <button onclick="gotoToday()" title="Aujourd'hui" style="font-size:11px;padding:7px 9px">Auj.</button>
-      <button onclick="shiftDay(1)"  title="Jour suivant">▶</button>
-    </div>
-  </div>
-
-  <div class="ld" id="ld"><div class="sp"></div><div style="color:var(--muted);font-size:13px">Chargement…</div></div>
-
-  <div id="fc" style="display:none">
-
-    <!-- ACTIVITE -->
-    <div class="card">
-      <div class="ctitle">🕊️ Activité du Jour</div>
-      <div class="fblock">
-        <label>Type d'activité</label>
-        <select id="activite" onchange="onActivite()">
-          <option value="">— Sélectionner —</option>
-          <option>Culte</option><option>Veillée</option>
-          <option>Réunion</option><option>Évangélisation</option><option>Autre</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- RECETTES -->
-    <div class="card">
-      <div class="ctitle">💰 Recettes</div>
-      <div class="frow"><label>Offrandes</label>            <input type="number" id="r1" min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Dîmes</label>               <input type="number" id="r2" min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Action de grâce</label>     <input type="number" id="r3" min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Dons</label>                <input type="number" id="r4" min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Matériels spirituels</label><input type="number" id="r5" min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Autres recettes</label>     <input type="number" id="r6" min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="tot tot-r"><span class="lbl">TOTAL RECETTES</span><span class="val" id="tR">0 FCFA</span></div>
-    </div>
-
-    <!-- DEPENSES -->
-    <div class="card">
-      <div class="ctitle">📤 Dépenses</div>
-      <div class="frow"><label>Électricité</label>         <input type="number" id="d1"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Location de chaises</label> <input type="number" id="d2"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Sonorisation</label>        <input type="number" id="d3"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Rafraîchissement</label>    <input type="number" id="d4"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Action sociale</label>      <input type="number" id="d5"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Cartouches d'encre</label>  <input type="number" id="d6"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Transport</label>           <input type="number" id="d7"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Carburant</label>           <input type="number" id="d8"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Hébergement</label>         <input type="number" id="d9"  min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Communication</label>       <input type="number" id="d10" min="0" placeholder="0" oninput="calc()"/></div>
-      <div class="frow"><label>Autres dépenses</label>     <input type="number" id="d11" min="0" placeholder="0" oninput="calc()"/></div>
-
-      <div id="exd"></div>
-      <button class="btn btn-b btn-sm" style="margin-top:7px" onclick="addEx()">➕ Ajouter une dépense</button>
-
-      <div class="tot tot-d" style="margin-top:13px"><span class="lbl">TOTAL DÉPENSES</span><span class="val" id="tD">0 FCFA</span></div>
-    </div>
-
-    <!-- RESTE -->
-    <div class="card">
-      <div class="ctitle">⚖️ Résultat du Jour</div>
-      <div class="tot tot-s"><span class="lbl">RESTE DU JOUR</span><span class="val" id="tS">0 FCFA</span></div>
-    </div>
-
-    <!-- SOLDE GLOBAL -->
-    <div class="card">
-      <div class="ctitle">🏦 Solde Global</div>
-      <div class="sgrid">
-        <div class="sbox"><div class="sl">Solde Précédent</div><div class="sv" id="sp">0</div></div>
-        <div class="sbox"><div class="sl">Du Jour</div>        <div class="sv" id="sj">0</div></div>
-        <div class="sbox accent"><div class="sl">Solde Cumulé</div><div class="sv" id="sc">0</div></div>
-      </div>
-      <div style="text-align:center;font-size:10.5px;color:var(--muted)">en FCFA</div>
-    </div>
-
-    <button class="btn btn-g btn-blk" onclick="saveDay()">💾 Enregistrer la Journée</button>
-
-  </div><!-- /fc -->
-</div>
-
-<!-- ══════════════════════════════
-     PAGE RAPPORT
-══════════════════════════════ -->
-<div class="pg" id="pg-rapport">
-  <div class="card">
-    <div class="ctitle">📊 Générer le Rapport</div>
-    <div class="fblock" style="margin-bottom:13px">
-      <label>Période du rapport</label>
-      <select id="rper" onchange="toggleCustom()">
-        <option value="jour">Journée en cours</option>
-        <option value="semaine">Cette semaine</option>
-        <option value="mois">Ce mois</option>
-        <option value="custom">Période personnalisée</option>
-      </select>
-    </div>
-    <div id="rcustom" style="display:none">
-      <div class="frow" style="margin-bottom:9px">
-        <label>Du</label>
-        <input type="date" id="rdf" style="flex:1.5;background:rgba(255,255,255,.08);border:1px solid rgba(79,195,247,.28);border-radius:9px;padding:9px 12px;color:var(--white);font-size:14px;outline:none"/>
-      </div>
-      <div class="frow" style="margin-bottom:9px">
-        <label>Au</label>
-        <input type="date" id="rdt" style="flex:1.5;background:rgba(255,255,255,.08);border:1px solid rgba(79,195,247,.28);border-radius:9px;padding:9px 12px;color:var(--white);font-size:14px;outline:none"/>
-      </div>
-    </div>
-    <button class="btn btn-g btn-blk" style="margin-top:12px" onclick="genReport()">📋 GÉNÉRER LE RAPPORT</button>
-    <button class="btn btn-wa btn-blk" onclick="openWA()">📲 ENVOYER PAR WHATSAPP</button>
-    <button class="btn btn-b btn-blk"  onclick="printR()">🖨️ IMPRIMER / TÉLÉCHARGER PDF</button>
-  </div>
-  <div id="rpreview" class="rp"></div>
-</div>
-
-<!-- ══════════════════════════════
-     PAGE HISTORIQUE
-══════════════════════════════ -->
-<div class="pg" id="pg-histo">
-  <div class="card">
-    <div class="ctitle">📅 Historique des Journées</div>
-    <div id="histlist"><div class="ld"><div class="sp"></div></div></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════
-     PAGE PARAMS
-══════════════════════════════ -->
-<div class="pg" id="pg-params">
-  <div class="card">
-    <div class="ctitle">📱 Contacts WhatsApp</div>
-    <div class="fblock"><label>👤 Contrôleur 1 — Nom</label><input type="text" id="wn1" placeholder="Nom" oninput="svParams()"/></div>
-    <div class="fblock"><label>📞 Contrôleur 1 — Numéro (ex: +2250700000000)</label><input type="text" id="wp1" placeholder="+225XXXXXXXXXX" oninput="svParams()"/></div>
-    <div class="divider"></div>
-    <div class="fblock"><label>👤 Contrôleur 2 — Nom</label><input type="text" id="wn2" placeholder="Nom" oninput="svParams()"/></div>
-    <div class="fblock"><label>📞 Contrôleur 2 — Numéro</label><input type="text" id="wp2" placeholder="+225XXXXXXXXXX" oninput="svParams()"/></div>
-    <div class="divider"></div>
-    <div class="fblock"><label>👤 Contrôleur 3 — Nom</label><input type="text" id="wn3" placeholder="Nom" oninput="svParams()"/></div>
-    <div class="fblock"><label>📞 Contrôleur 3 — Numéro</label><input type="text" id="wp3" placeholder="+225XXXXXXXXXX" oninput="svParams()"/></div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">🏛️ Informations de l'Église</div>
-    <div class="fblock"><label>Nom de l'Église / Ministère</label><input type="text" id="cn" placeholder="Apôtre Ausias Sainte" oninput="svParams()"/></div>
-    <div class="fblock"><label>Ville / Localité</label><input type="text" id="cv" placeholder="Abidjan" oninput="svParams()"/></div>
-    <div class="fblock"><label>Responsable financier</label><input type="text" id="cr" placeholder="Nom du responsable" oninput="svParams()"/></div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">ℹ️ À propos</div>
-    <p style="font-size:13px;color:var(--muted);line-height:1.8">
-      ✅ Synchronisation temps réel — Firebase Firestore<br>
-      ✅ Compatible Android · iPhone · Ordinateur<br>
-      ✅ Fonctionne hors ligne (PWA)<br>
-      ✅ Monnaie : Franc CFA (FCFA)<br>
-      ✅ Rapport exportable PDF / WhatsApp<br>
-      ✅ Installable sur l'écran d'accueil
-    </p>
-    <div style="text-align:center;margin-top:13px;font-size:11px;color:rgba(255,215,0,.5)">
-      Version 2.0 — Apôtre Ausias Sainte Gestion ✝
-    </div>
-  </div>
-</div>
-
-<!-- WHATSAPP MODAL -->
-<div class="ov" id="waov">
-  <div class="mb">
-    <h3>📲 Envoyer le Rapport</h3>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:13px">Choisissez le(s) destinataire(s) :</p>
-    <div id="walist"></div>
-    <div style="display:flex;gap:10px;margin-top:15px">
-      <button class="btn btn-wa" style="flex:1" onclick="sendAll()">📤 Envoyer à tous</button>
-      <button class="btn btn-ko btn-sm" onclick="closeWA()">✕</button>
-    </div>
-  </div>
-</div>
-
-<!-- INSTALL BANNER -->
-<div id="ib">
-  <p>📲 Installer l'application sur votre écran d'accueil ?</p>
-  <div class="ibr">
-    <button class="btn btn-g btn-sm" onclick="doInstall()">Installer</button>
-    <button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff" onclick="noInstall()">Plus tard</button>
-  </div>
-</div>
-
-<!-- STATUS -->
-<div class="sbar"><span class="dot ok" id="sdot"></span><span id="stxt">Connexion…</span></div>
-
-<!-- ══════════════════════════════════════════════
-     FIREBASE + LOGIQUE PRINCIPALE
-══════════════════════════════════════════════ -->
-<script type="module">
-import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore,doc,setDoc,getDoc,getDocs,collection,orderBy,query,limit }
-                                   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-/* ── Firebase ─────────────────────────── */
-const app = initializeApp({
-  apiKey:"AIzaSyAtO9talNqCpXuweAdxywAqHKYbVkRjJOI",
-  authDomain:"apotreausias-3c502.firebaseapp.com",
-  projectId:"apotreausias-3c502",
-  storageBucket:"apotreausias-3c502.firebasestorage.app",
-  messagingSenderId:"993989420754",
-  appId:"1:993989420754:web:ad009319d8efad1d1caf0b"
-});
-const db = getFirestore(app);
-
-/* ── State ──────────────────────────────── */
-let curKey  = todayKey();
-let exList  = [];    // [{id,label,montant}]
-let params  = {};
-let prevSolde = 0;   // solde cumulé avant la journée courante
-let saveTimer = null;
-let deferredPrompt = null;
-let _reportText = '';
-
-/* ── Date helpers ────────────────────────── */
-function todayKey(){
-  const d=new Date();
-  return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+<script>
+/* ================================================
+   PWA SETUP
+================================================ */
+function makeIcon(sz){
+  const c=document.createElement('canvas');c.width=c.height=sz;
+  const ctx=c.getContext('2d'),r=sz*.18;
+  ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(sz-r,0);
+  ctx.quadraticCurveTo(sz,0,sz,r);ctx.lineTo(sz,sz-r);
+  ctx.quadraticCurveTo(sz,sz,sz-r,sz);ctx.lineTo(r,sz);
+  ctx.quadraticCurveTo(0,sz,0,sz-r);ctx.lineTo(0,r);
+  ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();
+  const g=ctx.createLinearGradient(0,0,sz,sz);
+  g.addColorStop(0,'#091A30');g.addColorStop(1,'#122B54');ctx.fillStyle=g;ctx.fill();
+  ctx.strokeStyle='#F5C518';ctx.lineWidth=sz*.055;
+  ctx.beginPath();ctx.arc(sz/2,sz/2,sz*.36,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#38BDF8';
+  const s=sz*.32,ox=sz/2-s*.28,oy=sz/2-s*.5;
+  ctx.beginPath();ctx.moveTo(ox+s*.55,oy);ctx.lineTo(ox,oy+s*.48);
+  ctx.lineTo(ox+s*.42,oy+s*.44);ctx.lineTo(ox-s*.02,oy+s);
+  ctx.lineTo(ox+s*.7,oy+s*.52);ctx.lineTo(ox+s*.22,oy+s*.52);
+  ctx.closePath();ctx.fill();
+  return c.toDataURL('image/png');
 }
-function p2(n){return String(n).padStart(2,'0')}
-function frDate(k){
-  const [y,m,d]=k.split('-');
-  const DAYS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-  const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  const dt=new Date(+y,+m-1,+d);
-  return `${DAYS[dt.getDay()]} ${+d} ${MONTHS[+m-1]} ${y}`;
-}
-function frDateShort(k){
-  const [y,m,d]=k.split('-');
-  const MONTHS=['jan','fév','mars','avr','mai','juin','juil','août','sep','oct','nov','déc'];
-  return `${+d} ${MONTHS[+m-1]} ${y}`;
+const ico192=makeIcon(192),ico512=makeIcon(512);
+// Draw login icon too
+const lc=document.getElementById('login-canvas');
+const lctx=lc.getContext('2d');
+const tmpC=document.createElement('canvas');tmpC.width=72;tmpC.height=72;
+const tmpCtx=tmpC.getContext('2d');
+// Copy makeIcon logic inline for small canvas
+(function(){
+  const sz=72,r=sz*.18;
+  lctx.beginPath();lctx.moveTo(r,0);lctx.lineTo(sz-r,0);
+  lctx.quadraticCurveTo(sz,0,sz,r);lctx.lineTo(sz,sz-r);
+  lctx.quadraticCurveTo(sz,sz,sz-r,sz);lctx.lineTo(r,sz);
+  lctx.quadraticCurveTo(0,sz,0,sz-r);lctx.lineTo(0,r);
+  lctx.quadraticCurveTo(0,0,r,0);lctx.closePath();
+  const g=lctx.createLinearGradient(0,0,sz,sz);
+  g.addColorStop(0,'#091A30');g.addColorStop(1,'#122B54');lctx.fillStyle=g;lctx.fill();
+  lctx.strokeStyle='#F5C518';lctx.lineWidth=sz*.055;
+  lctx.beginPath();lctx.arc(sz/2,sz/2,sz*.36,0,Math.PI*2);lctx.stroke();
+  lctx.fillStyle='#38BDF8';
+  const s=sz*.32,ox=sz/2-s*.28,oy=sz/2-s*.5;
+  lctx.beginPath();lctx.moveTo(ox+s*.55,oy);lctx.lineTo(ox,oy+s*.48);
+  lctx.lineTo(ox+s*.42,oy+s*.44);lctx.lineTo(ox-s*.02,oy+s);
+  lctx.lineTo(ox+s*.7,oy+s*.52);lctx.lineTo(ox+s*.22,oy+s*.52);
+  lctx.closePath();lctx.fill();
+})();
+
+const mf={name:'Apôtre Ausias Sainte Gestion',short_name:'AASG',
+  description:'Cahier de caisse numérique',start_url:'./',display:'standalone',
+  background_color:'#091A30',theme_color:'#091A30',orientation:'portrait-primary',
+  icons:[{src:ico192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
+         {src:ico512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+document.getElementById('manifest-link').href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/json'}));
+['apple-touch-icon','icon'].forEach(rel=>{const l=document.createElement('link');l.rel=rel;l.href=ico192;document.head.appendChild(l);});
+
+const SW=`const CACHE='aasg-v3';
+self.addEventListener('install',e=>{self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled([
+    c.add(self.location.origin+self.location.pathname.replace(/\\/[^\\/]*$/,'/')||'/'),
+    c.add('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js'),
+    c.add('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js'),
+    c.add('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js')
+  ])));});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))));self.clients.claim();});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{
+    if(resp&&resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl));}return resp;
+  }).catch(()=>caches.match('/'))));});`;
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});}catch(e){}}
+
+/* INSTALL PROMPT */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').style.display='block';});
+window.addEventListener('appinstalled',()=>{document.getElementById('install-banner').style.display='none';});
+document.getElementById('ib-install').addEventListener('click',async()=>{if(!deferredPrompt)return;await deferredPrompt.prompt();deferredPrompt=null;document.getElementById('install-banner').style.display='none';});
+document.getElementById('ib-close').addEventListener('click',()=>{document.getElementById('install-banner').style.display='none';});
+
+/* ================================================
+   INDEXEDDB
+================================================ */
+let DB;
+function openDB(){return new Promise((res,rej)=>{
+  const req=indexedDB.open('AASGDb',4);
+  req.onupgradeneeded=e=>{const d=e.target.result;
+    if(!d.objectStoreNames.contains('journees'))d.createObjectStore('journees',{keyPath:'date'});
+    if(!d.objectStoreNames.contains('settings'))d.createObjectStore('settings',{keyPath:'key'});
+  };
+  req.onsuccess=e=>{DB=e.target.result;res(DB);};req.onerror=()=>rej(req.error);
+});}
+function dbGet(st,key){return new Promise((res,rej)=>{const r=DB.transaction(st,'readonly').objectStore(st).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+function dbPut(st,val){return new Promise((res,rej)=>{const r=DB.transaction(st,'readwrite').objectStore(st).put(val);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function dbGetAll(st){return new Promise((res,rej)=>{const r=DB.transaction(st,'readonly').objectStore(st).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+
+/* ================================================
+   FIREBASE + AUTH
+================================================ */
+let fbDb=null,fbAuth=null,fbConnected=false;
+let currentUser=null,isAdmin=false;
+
+function getFbConfig(){try{return JSON.parse(localStorage.getItem('aasg_fb_config')||'null');}catch(e){return null;}}
+function saveFbConfig(cfg){localStorage.setItem('aasg_fb_config',JSON.stringify(cfg));}
+
+function setFbBadge(state){
+  const b=document.getElementById('fb-badge');
+  const dot=document.getElementById('fb-dot');
+  const txt=document.getElementById('fb-status-txt');
+  if(state==='online'){b.className='fb-badge online';b.textContent='🟢 Firebase';dot&&(dot.className='fb-dot on');txt&&(txt.textContent='Firebase connecté — synchronisation active');}
+  else if(state==='connecting'){b.className='fb-badge connecting';b.textContent='🟡…';dot&&(dot.className='fb-dot wait');txt&&(txt.textContent='Connexion en cours…');}
+  else{b.className='fb-badge offline';b.textContent='🔴';dot&&(dot.className='fb-dot off');txt&&(txt.textContent='Non connecté — données locales');}
 }
 
-/* ── Navigation ─────────────────────────── */
-window.goPg = (id,idx)=>{
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  document.querySelectorAll('.tab')[idx].classList.add('on');
-  if(id==='pg-histo') loadHisto();
-};
-window.shiftDay = delta=>{
-  const [y,m,d]=curKey.split('-').map(Number);
-  const dt=new Date(y,m-1,d);
-  dt.setDate(dt.getDate()+delta);
-  curKey=`${dt.getFullYear()}-${p2(dt.getMonth()+1)}-${p2(dt.getDate())}`;
-  loadDay(curKey);
-};
-window.gotoToday = ()=>{ curKey=todayKey(); loadDay(curKey); };
+function loadScript(src){return new Promise((res,rej)=>{
+  if(document.querySelector(`script[src="${src}"]`)){res();return;}
+  const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
+});}
 
-/* ── Load Day ────────────────────────────── */
-async function loadDay(key){
-  setStatus('sync');
-  document.getElementById('ld').style.display='flex';
-  document.getElementById('fc').style.display='none';
-  document.getElementById('dt-display').textContent=frDate(key);
-  document.getElementById('act-badge').innerHTML='';
-
-  // compute previous cumulative solde
-  prevSolde = await calcPrevSolde(key);
-
-  let data=null;
+async function initFirebase(cfg,autoLogin){
+  if(!cfg||!cfg.projectId){setFbBadge('offline');return false;}
+  setFbBadge('connecting');
   try{
-    const snap=await getDoc(doc(db,'journees',key));
-    if(snap.exists()) data=snap.data();
-    setStatus('ok');
-  }catch(e){
-    setStatus('ko');
-    toast('⚠️ Hors ligne — données locales');
-    const ls=localStorage.getItem('aas_'+key);
-    if(ls) try{data=JSON.parse(ls)}catch(_){}
-  }
-
-  fillForm(data);
-  calc();
-  document.getElementById('ld').style.display='none';
-  document.getElementById('fc').style.display='block';
-}
-
-/* ── Prev Solde ──────────────────────────── */
-async function calcPrevSolde(currentKey){
-  try{
-    const q=query(collection(db,'journees'),orderBy('date','asc'));
-    const snaps=await getDocs(q);
-    let cumul=0;
-    snaps.forEach(s=>{
-      if(s.id<currentKey){
-        const d=s.data();
-        cumul+=(d.total_recettes||0)-(d.total_depenses||0);
+    await Promise.all([
+      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js'),
+      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js'),
+      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js')
+    ]);
+    if(firebase.apps.length)await firebase.app().delete().catch(()=>{});
+    firebase.initializeApp(cfg);
+    fbDb=firebase.firestore();
+    fbAuth=firebase.auth();
+    fbConnected=true;
+    setFbBadge('online');
+    // Set up auth state listener
+    fbAuth.onAuthStateChanged(async user=>{
+      if(user){
+        currentUser=user;
+        isAdmin=cfg.adminEmail&&user.email.toLowerCase()===cfg.adminEmail.toLowerCase();
+        applyAdminRole();
+        showApp();
+        await loadAppData();
+      } else {
+        currentUser=null;isAdmin=false;
+        applyAdminRole();
+        showLoginScreen();
       }
     });
-    return cumul;
-  }catch(e){ return 0; }
+    return true;
+  }catch(e){fbConnected=false;fbDb=null;fbAuth=null;setFbBadge('offline');console.warn('Firebase:',e.message);return false;}
 }
 
-/* ── Fill Form ───────────────────────────── */
-function fillForm(d){
-  const ids=['r1','r2','r3','r4','r5','r6','d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11'];
-  ids.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('activite').value='';
-  document.getElementById('exd').innerHTML='';
-  exList=[];
-
-  if(!d) return;
-  const sv=(id,v)=>{ const el=document.getElementById(id); if(el&&v) el.value=v; };
-  document.getElementById('activite').value=d.activite||'';
-  if(d.activite) document.getElementById('act-badge').innerHTML=`<div class="act-tag">🕊️ ${d.activite}</div>`;
-
-  sv('r1',d.r1); sv('r2',d.r2); sv('r3',d.r3);
-  sv('r4',d.r4); sv('r5',d.r5); sv('r6',d.r6);
-  sv('d1',d.d1); sv('d2',d.d2); sv('d3',d.d3);
-  sv('d4',d.d4); sv('d5',d.d5); sv('d6',d.d6);
-  sv('d7',d.d7); sv('d8',d.d8); sv('d9',d.d9);
-  sv('d10',d.d10); sv('d11',d.d11);
-
-  if(Array.isArray(d.extras)) d.extras.forEach(e=>addEx(e.lbl,e.val));
+/* Firebase Firestore helpers */
+async function fbSaveBranche(data){
+  if(!fbDb||!data.codeBranche)return false;
+  try{const d={...data};delete d.logo;delete d.cachet;
+    await fbDb.collection('aasg_branches').doc(data.codeBranche).set(d,{merge:true});return true;}
+  catch(e){return false;}
+}
+async function fbLoadBranche(code){
+  if(!fbDb||!code)return null;
+  try{const doc=await fbDb.collection('aasg_branches').doc(code).get();return doc.exists?doc.data():null;}
+  catch(e){return null;}
 }
 
-/* ── Calculs ─────────────────────────────── */
-window.calc = ()=>{
-  const g=id=>Math.max(0,parseFloat(document.getElementById(id)?.value)||0);
-  const totalR = g('r1')+g('r2')+g('r3')+g('r4')+g('r5')+g('r6');
-  const fixedD  = g('d1')+g('d2')+g('d3')+g('d4')+g('d5')+g('d6')+g('d7')+g('d8')+g('d9')+g('d10')+g('d11');
-  const extraD  = exList.reduce((s,e)=>s+(parseFloat(document.getElementById('ev'+e.id)?.value)||0),0);
-  const totalD  = fixedD+extraD;
-  const reste   = totalR-totalD;
-  const cumul   = prevSolde+reste;
-
-  document.getElementById('tR').textContent = fcfa(totalR);
-  document.getElementById('tD').textContent = fcfa(totalD);
-  const sel=document.getElementById('tS');
-  sel.textContent=fcfa(reste);
-  sel.style.color=reste>=0?'var(--gold)':'var(--ko)';
-  document.getElementById('sj').textContent=fmt(reste);
-  document.getElementById('sp').textContent=fmt(prevSolde);
-  document.getElementById('sc').textContent=fmt(cumul);
-
-  scheduleSave();
+/* Firebase Auth helpers */
+const FB_ERRORS={
+  'auth/user-not-found':'Aucun compte avec cet e-mail.',
+  'auth/wrong-password':'Mot de passe incorrect.',
+  'auth/invalid-credential':'E-mail ou mot de passe incorrect.',
+  'auth/email-already-in-use':'Cet e-mail est déjà utilisé.',
+  'auth/invalid-email':'Adresse e-mail invalide.',
+  'auth/weak-password':'Mot de passe trop faible (6 caractères minimum).',
+  'auth/too-many-requests':'Trop de tentatives. Réessayez plus tard.',
+  'auth/network-request-failed':'Vérifiez votre connexion internet.'
 };
+function fbErrMsg(e){return FB_ERRORS[e.code]||e.message;}
 
-window.onActivite = ()=>{
-  const v=document.getElementById('activite').value;
-  document.getElementById('act-badge').innerHTML=v?`<div class="act-tag">🕊️ ${v}</div>`:'';
-  scheduleSave();
-};
-
-function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>saveDay(true),3500); }
-
-/* ── Save ────────────────────────────────── */
-window.saveDay = async(silent=false)=>{
-  const g=id=>Math.max(0,parseFloat(document.getElementById(id)?.value)||0);
-  const extras=exList.map(e=>({
-    lbl:document.getElementById('el'+e.id)?.value||'',
-    val:parseFloat(document.getElementById('ev'+e.id)?.value)||0
-  }));
-  const totalR=g('r1')+g('r2')+g('r3')+g('r4')+g('r5')+g('r6');
-  const fixedD=g('d1')+g('d2')+g('d3')+g('d4')+g('d5')+g('d6')+g('d7')+g('d8')+g('d9')+g('d10')+g('d11');
-  const extraD=extras.reduce((s,e)=>s+e.val,0);
-  const totalD=fixedD+extraD;
-
-  const payload={
-    date:curKey, activite:document.getElementById('activite').value,
-    r1:g('r1'),r2:g('r2'),r3:g('r3'),r4:g('r4'),r5:g('r5'),r6:g('r6'),
-    d1:g('d1'),d2:g('d2'),d3:g('d3'),d4:g('d4'),d5:g('d5'),d6:g('d6'),
-    d7:g('d7'),d8:g('d8'),d9:g('d9'),d10:g('d10'),d11:g('d11'),
-    extras, total_recettes:totalR, total_depenses:totalD,
-    reste:totalR-totalD, updated_at:new Date().toISOString()
-  };
-
-  localStorage.setItem('aas_'+curKey, JSON.stringify(payload));
-
+async function loginUser(email,pwd){
+  try{await fbAuth.signInWithEmailAndPassword(email,pwd);return{ok:true};}
+  catch(e){return{ok:false,msg:fbErrMsg(e)};}
+}
+async function registerUser(name,email,phone,pwd){
   try{
-    setStatus('sync');
-    await setDoc(doc(db,'journees',curKey),payload,{merge:true});
-    setStatus('ok');
-    if(!silent) toast('✅ Journée enregistrée !');
-  }catch(e){
-    setStatus('ko');
-    if(!silent) toast('⚠️ Sauvegardé hors ligne');
+    const cred=await fbAuth.createUserWithEmailAndPassword(email,pwd);
+    await cred.user.updateProfile({displayName:name});
+    if(fbDb)await fbDb.collection('aasg_users').doc(cred.user.uid).set({name,email,phone:phone||'',createdAt:Date.now()});
+    return{ok:true};
+  }catch(e){return{ok:false,msg:fbErrMsg(e)};}
+}
+async function logoutUser(){
+  if(fbAuth)await fbAuth.signOut().catch(()=>{});
+  else showLoginScreen();
+}
+async function resetPassword(email){
+  if(!fbAuth){toast('⚠️ Firebase non configuré');return;}
+  try{await fbAuth.sendPasswordResetEmail(email);toast('📧 E-mail de réinitialisation envoyé !');}
+  catch(e){toast('❌ '+fbErrMsg(e));}
+}
+
+/* ================================================
+   ROLE SYSTEM
+================================================ */
+function applyAdminRole(){
+  if(isAdmin){document.body.classList.add('is-admin');}
+  else{document.body.classList.remove('is-admin');}
+  // Branch readonly view for non-admins
+  const roView=document.getElementById('branch-info-readonly');
+  if(roView)roView.style.display=isAdmin?'none':'block';
+  renderBranchReadonly();
+  // User badge
+  const ub=document.getElementById('user-badge');
+  if(ub)ub.style.display=currentUser?'flex':'none';
+  if(currentUser){
+    document.getElementById('user-name').textContent=
+      currentUser.displayName||currentUser.email||'Utilisateur';
+    document.getElementById('admin-crown').style.display=isAdmin?'inline':'none';
   }
-};
+}
 
-/* ── Extra Dépenses ──────────────────────── */
-window.addEx = (lbl='',val='')=>{
-  const id=Date.now()+'_'+Math.random().toString(36).slice(2,6);
-  exList.push({id});
-  const div=document.createElement('div');
-  div.className='exrow'; div.id='ex'+id;
-  div.innerHTML=`<input type="text"   id="el${id}" placeholder="Libellé dépense" value="${lbl}" oninput="calc()"/>
-                 <input type="number" id="ev${id}" placeholder="0" value="${val}" min="0" oninput="calc()"/>
-                 <button class="xdel" onclick="delEx('${id}')">✕</button>`;
-  document.getElementById('exd').appendChild(div);
-  calc();
-};
-window.delEx = id=>{
-  exList=exList.filter(e=>e.id!==id);
-  const el=document.getElementById('ex'+id); if(el) el.remove();
-  calc();
-};
+function renderBranchReadonly(){
+  const el=document.getElementById('branch-readonly-content');
+  if(!el)return;
+  if(!branche.nomEglise&&!branche.nomBranche){el.innerHTML='<div style="color:var(--dim);font-size:13px">Paramètres non configurés par l\'administrateur.</div>';return;}
+  const rows=[
+    ['Église',branche.nomEglise],['Branche',branche.nomBranche],
+    ['Code',branche.codeBranche],['Ville',branche.ville],['Pays',branche.pays],
+    ['Premier Responsable',branche.nomResponsable+(branche.fonctionResponsable?' ('+branche.fonctionResponsable+')':'')],
+    ['Commissaire aux Comptes',branche.nomCommissaire+(branche.telCommissaire?' – '+branche.telCommissaire:'')]
+  ];
+  el.innerHTML=rows.filter(r=>r[1]).map(r=>`
+    <div class="biv-row"><span class="biv-key">${r[0]}</span><span class="biv-val">${r[1]}</span></div>`).join('');
+}
 
-/* ── Historique ──────────────────────────── */
-async function loadHisto(){
-  const box=document.getElementById('histlist');
-  box.innerHTML='<div class="ld"><div class="sp"></div></div>';
+/* ================================================
+   LOGIN SCREEN LOGIC
+================================================ */
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+}
+function showLoginScreen(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+function switchTab(tab){
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-register').classList.toggle('active',tab==='register');
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
+  document.getElementById('login-err').textContent='';
+  document.getElementById('register-err').textContent='';
+}
+
+document.getElementById('btn-login').addEventListener('click',async()=>{
+  const email=document.getElementById('l-email').value.trim();
+  const pwd=document.getElementById('l-pwd').value;
+  if(!email||!pwd){document.getElementById('login-err').textContent='Veuillez remplir tous les champs.';return;}
+  document.getElementById('btn-login').textContent='Connexion…';
+  const r=await loginUser(email,pwd);
+  document.getElementById('btn-login').textContent='🔐 Se connecter';
+  if(!r.ok)document.getElementById('login-err').textContent=r.msg;
+});
+
+document.getElementById('btn-register').addEventListener('click',async()=>{
+  const name=document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  const pwd=document.getElementById('r-pwd').value;
+  if(!name||!email||!pwd){document.getElementById('register-err').textContent='Veuillez remplir les champs obligatoires.';return;}
+  document.getElementById('btn-register').textContent='Création…';
+  const r=await registerUser(name,email,phone,pwd);
+  document.getElementById('btn-register').textContent='✅ Créer mon compte';
+  if(!r.ok)document.getElementById('register-err').textContent=r.msg;
+});
+
+document.getElementById('btn-reset-pwd').addEventListener('click',()=>{
+  const email=document.getElementById('l-email').value.trim();
+  if(!email){document.getElementById('login-err').textContent='Entrez votre e-mail d\'abord.';return;}
+  resetPassword(email);
+});
+
+document.getElementById('btn-logout').addEventListener('click',async()=>{await logoutUser();});
+
+/* ================================================
+   DATE UTILS
+================================================ */
+const JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MOIS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+function todayStr(){return new Date().toISOString().split('T')[0];}
+function dateObj(s){return new Date(s+'T00:00:00');}
+function fmtFR(s){const d=dateObj(s);return `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;}
+function fmtShort(s){const d=dateObj(s);return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;}
+function fmtMoney(n){return Math.round(n||0).toLocaleString('fr-FR');}
+function fmtMoneyFCFA(n){return fmtMoney(n)+' FCFA';}
+function nowDateTime(){const d=new Date();return `${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;}
+
+/* ================================================
+   APP STATE
+================================================ */
+const TODAY=todayStr();
+let currentDate=TODAY;
+let settings={c1:{nom:'',tel:''},c2:{nom:'',tel:''},c3:{nom:'',tel:''}};
+let branche={nomEglise:'',nomBranche:'',codeBranche:'',ville:'',pays:'',
+  nomResponsable:'',fonctionResponsable:'',nomCommissaire:'',telCommissaire:'',logo:'',cachet:''};
+let deps=[],depId=0;
+const DEF_CATS=['Électricité','Location de chaises','Sonorisation',
+  "Rafraîchissement des orateurs",'Action sociale',
+  "Achat de cartouches d'encre",'Transport','Carburant',
+  'Hébergement','Communication','Autres dépenses'];
+
+/* ================================================
+   IMAGE UTILS
+================================================ */
+function resizeImage(file,mW,mH,q){return new Promise(res=>{
+  const rd=new FileReader();rd.onload=e=>{
+    const img=new Image();img.onload=()=>{
+      const c=document.createElement('canvas');let w=img.width,h=img.height;
+      if(w>mW){h=h*mW/w;w=mW;}if(h>mH){w=w*mH/h;h=mH;}
+      c.width=Math.round(w);c.height=Math.round(h);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      res(c.toDataURL('image/jpeg',q));
+    };img.src=e.target.result;
+  };rd.readAsDataURL(file);
+});}
+
+/* ================================================
+   TOAST
+================================================ */
+function toast(msg,ms=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms);}
+
+/* ================================================
+   NAVIGATION
+================================================ */
+function goTo(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelector(`.nav-btn[data-v="${name}"]`).classList.add('active');
+  if(name==='history')renderHistory();
+  if(name==='rapport')renderRapport();
+}
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.v)));
+
+/* ================================================
+   BRANCH BAR
+================================================ */
+function updateBranchBar(){
+  const bar=document.getElementById('branch-bar');
+  if(!branche.nomEglise&&!branche.nomBranche){bar.style.display='none';return;}
+  bar.style.display='flex';
+  document.getElementById('bb-church').textContent=branche.nomEglise||'';
+  document.getElementById('bb-branch').textContent=branche.nomBranche||'';
+  document.getElementById('bb-code').textContent=branche.codeBranche||'';
+  document.getElementById('bb-city').textContent=[branche.ville,branche.pays].filter(Boolean).join(', ');
+}
+
+/* ================================================
+   TODAY VIEW
+================================================ */
+function updateDateDisplay(){
+  const d=dateObj(currentDate);
+  document.getElementById('hdr-date').textContent=fmtFR(currentDate);
+  document.getElementById('t-weekday').textContent=JOURS[d.getDay()].toUpperCase();
+  document.getElementById('t-full').textContent=`${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
+  const isToday=currentDate===TODAY;
+  document.getElementById('hdr-viewing').style.display=isToday?'none':'block';
+  document.getElementById('btn-back-today').style.display=isToday?'none':'flex';
+  document.getElementById('save-ind').style.display='none';
+}
+function getRecTotal(){return[...document.querySelectorAll('.rec')].reduce((s,i)=>s+(parseFloat(i.value)||0),0);}
+function getDepTotal(){return deps.reduce((s,d)=>s+(d.amount||0),0);}
+function updateTotals(){
+  const tr=getRecTotal(),td=getDepTotal(),rj=tr-td;
+  document.getElementById('tot-rec').textContent=fmtMoneyFCFA(tr);
+  document.getElementById('tot-dep').textContent=fmtMoneyFCFA(td);
+  const bj=document.getElementById('bal-jour');bj.textContent=fmtMoneyFCFA(rj);bj.className='bal-val '+(rj>=0?'pos':'neg');
+  updateCumule(rj);
+}
+async function updateCumule(sdj){
   try{
-    const q=query(collection(db,'journees'),orderBy('date','desc'),limit(90));
-    const snaps=await getDocs(q);
-    if(snaps.empty){ box.innerHTML='<p style="text-align:center;color:var(--muted);padding:24px">Aucune journée enregistrée</p>'; return; }
-    box.innerHTML='';
-    snaps.forEach(s=>{
-      const d=s.data();
-      const div=document.createElement('div');
-      div.className='hi';
-      div.innerHTML=`<div class="hd">${frDate(s.id)}</div>
-        ${d.activite?`<div class="ha">🕊️ ${d.activite}</div>`:''}
-        <div class="hn">
-          <span class="hr">+${fmt(d.total_recettes||0)} FCFA</span>
-          <span class="hx">-${fmt(d.total_depenses||0)} FCFA</span>
-          <span class="hs">= ${fmt(d.reste||0)} FCFA</span>
-        </div>`;
-      div.onclick=()=>{ curKey=s.id; goPg('pg-saisie',0); loadDay(s.id); };
-      box.appendChild(div);
-    });
-  }catch(e){ box.innerHTML='<p style="text-align:center;color:var(--ko);padding:24px">Erreur de chargement</p>'; }
+    const all=await dbGetAll('journees');
+    const prec=all.filter(j=>j.date<currentDate).reduce((s,j)=>s+(j.soldeDuJour||0),0);
+    const cum=prec+sdj;
+    const bp=document.getElementById('bal-prec');bp.textContent=fmtMoneyFCFA(prec);bp.className='bal-val '+(prec>=0?'pos':'neg');
+    const bc=document.getElementById('bal-cum');bc.innerHTML=fmtMoney(cum)+'<span class="cumule-unit"> FCFA</span>';bc.style.color=cum>=0?'#F5C518':'#F87171';
+  }catch(e){}
 }
-
-/* ── Params ──────────────────────────────── */
-function loadParams(){
-  try{ params=JSON.parse(localStorage.getItem('aas_params')||'{}'); }catch(_){ params={}; }
-  const sv=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v||''; };
-  sv('wn1',params.wn1); sv('wp1',params.wp1);
-  sv('wn2',params.wn2); sv('wp2',params.wp2);
-  sv('wn3',params.wn3); sv('wp3',params.wp3);
-  sv('cn',params.cn||'Apôtre Ausias Sainte');
-  sv('cv',params.cv); sv('cr',params.cr);
-}
-window.svParams = ()=>{
-  params={
-    wn1:document.getElementById('wn1').value, wp1:document.getElementById('wp1').value,
-    wn2:document.getElementById('wn2').value, wp2:document.getElementById('wp2').value,
-    wn3:document.getElementById('wn3').value, wp3:document.getElementById('wp3').value,
-    cn:document.getElementById('cn').value,   cv:document.getElementById('cv').value,
-    cr:document.getElementById('cr').value,
-  };
-  localStorage.setItem('aas_params',JSON.stringify(params));
-};
-
-/* ── Rapport ─────────────────────────────── */
-window.toggleCustom = ()=>{
-  document.getElementById('rcustom').style.display=
-    document.getElementById('rper').value==='custom'?'block':'none';
-};
-
-async function fetchReportData(){
-  const per=document.getElementById('rper').value;
-  const today=new Date(); let sk,ek;
-  if(per==='jour'){ sk=ek=curKey; }
-  else if(per==='semaine'){
-    const d=new Date(today); d.setDate(d.getDate()-((d.getDay()+6)%7));
-    sk=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`; ek=todayKey();
-  }else if(per==='mois'){
-    sk=`${today.getFullYear()}-${p2(today.getMonth()+1)}-01`; ek=todayKey();
-  }else{
-    sk=document.getElementById('rdf').value; ek=document.getElementById('rdt').value;
-    if(!sk||!ek){ toast('⚠️ Sélectionnez les deux dates'); return null; }
+async function loadDay(dateStr){
+  currentDate=dateStr;updateDateDisplay();
+  ['r-off','r-dim','r-gra','r-don','r-mat','r-aut'].forEach(id=>(document.getElementById(id).value=''));
+  ['eff-h','eff-f','eff-e'].forEach(id=>(document.getElementById(id).value=''));
+  document.getElementById('eff-total').textContent='0';
+  document.getElementById('act-sel').value='';document.getElementById('act-other').style.display='none';
+  deps=[];depId=0;
+  const rec=await dbGet('journees',dateStr);
+  if(rec){
+    const r=rec.recettes||{};
+    document.getElementById('r-off').value=r.offrandes||'';document.getElementById('r-dim').value=r.dimes||'';
+    document.getElementById('r-gra').value=r.actionGrace||'';document.getElementById('r-don').value=r.dons||'';
+    document.getElementById('r-mat').value=r.materielsSpirituels||'';document.getElementById('r-aut').value=r.autresRecettes||'';
+    const ef=rec.effectif||{};
+    document.getElementById('eff-h').value=ef.hommes||'';document.getElementById('eff-f').value=ef.femmes||'';
+    document.getElementById('eff-e').value=ef.enfants||'';updateEffectif();
+    const act=rec.activity||'',sel=document.getElementById('act-sel');
+    if([...sel.options].some(o=>o.value===act))sel.value=act;
+    else if(act){sel.value='Autre';document.getElementById('act-other').value=act;document.getElementById('act-other').style.display='block';}
+    deps=(rec.depenses||[]).map(d=>({...d}));depId=deps.length;
+    document.getElementById('save-ind').style.display='flex';
   }
-  const snaps=await getDocs(query(collection(db,'journees'),orderBy('date','asc')));
-  const days=[]; snaps.forEach(s=>{ if(s.id>=sk&&s.id<=ek) days.push({id:s.id,...s.data()}); });
-  return{days,sk,ek};
+  renderDeps();updateTotals();
 }
+document.getElementById('act-sel').addEventListener('change',e=>{document.getElementById('act-other').style.display=e.target.value==='Autre'?'block':'none';});
+document.querySelectorAll('.rec').forEach(i=>i.addEventListener('input',updateTotals));
+document.getElementById('btn-back-today').addEventListener('click',()=>loadDay(TODAY));
+function updateEffectif(){
+  const h=+document.getElementById('eff-h').value||0,f=+document.getElementById('eff-f').value||0,e=+document.getElementById('eff-e').value||0;
+  document.getElementById('eff-total').textContent=(h+f+e).toLocaleString('fr-FR');
+}
+document.querySelectorAll('.eff').forEach(i=>i.addEventListener('input',updateEffectif));
 
-window.genReport = async()=>{
-  toast('⏳ Génération du rapport…');
-  try{
-    const res=await fetchReportData(); if(!res) return;
-    const{days,sk,ek}=res;
-    const ch=params.cn||'Apôtre Ausias Sainte';
-    const city=params.cv||'';
-    const resp=params.cr||'';
+/* DÉPENSES */
+function renderDeps(){
+  const el=document.getElementById('dep-list');el.innerHTML='';
+  deps.forEach((d,idx)=>{
+    const row=document.createElement('div');row.className='exp-row';
+    row.innerHTML=`<div class="fl">${d.label}</div>
+      <input type="number" class="fi dep-inp" value="${d.amount||''}" placeholder="0" min="0" data-i="${idx}" style="width:118px">
+      <button class="btn-rm" data-i="${idx}">✕</button>`;
+    el.appendChild(row);
+  });
+  el.querySelectorAll('.dep-inp').forEach(inp=>inp.addEventListener('input',e=>{deps[+e.target.dataset.i].amount=parseFloat(e.target.value)||0;updateTotals();}));
+  el.querySelectorAll('.btn-rm').forEach(btn=>btn.addEventListener('click',e=>{deps.splice(+e.target.dataset.i,1);renderDeps();updateTotals();}));
+}
+function openDepModal(){
+  const grid=document.getElementById('cat-grid');grid.innerHTML='';
+  DEF_CATS.forEach(cat=>{const b=document.createElement('button');b.className='cat-btn';b.textContent=cat;b.addEventListener('click',()=>{addDep(cat);closeDepModal();});grid.appendChild(b);});
+  document.getElementById('dep-custom').value='';document.getElementById('mo-dep').classList.add('open');
+}
+function closeDepModal(){document.getElementById('mo-dep').classList.remove('open');}
+function addDep(label){deps.push({id:++depId,label,amount:0});renderDeps();updateTotals();}
+document.getElementById('btn-add-dep').addEventListener('click',openDepModal);
+document.getElementById('mo-dep-close').addEventListener('click',closeDepModal);
+document.getElementById('mo-dep').addEventListener('click',e=>{if(e.target===document.getElementById('mo-dep'))closeDepModal();});
+document.getElementById('btn-confirm-dep').addEventListener('click',()=>{
+  const lbl=document.getElementById('dep-custom').value.trim();if(!lbl){toast('⚠️ Veuillez saisir un libellé');return;}addDep(lbl);closeDepModal();
+});
 
-    const RK=['r1','r2','r3','r4','r5','r6'];
-    const RL=['Offrandes','Dîmes','Action de grâce','Dons','Matériels spirituels','Autres recettes'];
-    const DK=['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11'];
-    const DL=['Électricité','Location de chaises','Sonorisation','Rafraîchissement','Action sociale','Cartouches d\'encre','Transport','Carburant','Hébergement','Communication','Autres dépenses'];
+/* SAVE */
+document.getElementById('btn-save').addEventListener('click',async()=>{
+  const act=document.getElementById('act-sel').value;
+  const activity=act==='Autre'?(document.getElementById('act-other').value.trim()||'Autre'):act;
+  const effectif={hommes:+document.getElementById('eff-h').value||0,femmes:+document.getElementById('eff-f').value||0,enfants:+document.getElementById('eff-e').value||0};
+  effectif.total=effectif.hommes+effectif.femmes+effectif.enfants;
+  const recettes={offrandes:+document.getElementById('r-off').value||0,dimes:+document.getElementById('r-dim').value||0,actionGrace:+document.getElementById('r-gra').value||0,dons:+document.getElementById('r-don').value||0,materielsSpirituels:+document.getElementById('r-mat').value||0,autresRecettes:+document.getElementById('r-aut').value||0};
+  const totalRecettes=Object.values(recettes).reduce((s,v)=>s+v,0);
+  const totalDepenses=getDepTotal();
+  await dbPut('journees',{date:currentDate,activity,effectif,recettes,depenses:deps.map(d=>({...d})),totalRecettes,totalDepenses,soldeDuJour:totalRecettes-totalDepenses,savedAt:Date.now()});
+  document.getElementById('save-ind').style.display='flex';toast('✅ Journée enregistrée !');updateCumule(totalRecettes-totalDepenses);
+});
 
-    const sumR={};RK.forEach(k=>sumR[k]=0);
-    const sumD={};DK.forEach(k=>sumD[k]=0);
-    const exMap={};
-    let totR=0,totD=0;
+/* ================================================
+   PDF GENERATION — DOCUMENT PROFESSIONNEL
+================================================ */
+async function openPDF(dateFilter){
+  const all=await dbGetAll('journees');
+  const list=(dateFilter?all.filter(j=>j.date===dateFilter):all).sort((a,b)=>a.date.localeCompare(b.date));
+  const b=branche;
+  let tR=0,tD=0,tS=0;
 
-    days.forEach(d=>{
-      RK.forEach(k=>{ sumR[k]+=(d[k]||0); });
-      DK.forEach(k=>{ sumD[k]+=(d[k]||0); });
-      totR+=(d.total_recettes||0); totD+=(d.total_depenses||0);
-      if(Array.isArray(d.extras)) d.extras.forEach(e=>{ if(e.lbl) exMap[e.lbl]=(exMap[e.lbl]||0)+(e.val||0); });
-    });
+  /* Build day blocks */
+  let dayBlocks='';
+  list.forEach((j,idx)=>{
+    tR+=j.totalRecettes;tD+=j.totalDepenses;tS+=j.soldeDuJour;
+    const r=j.recettes||{};const ef=j.effectif||{};
+    const recRows=[
+      ['Offrandes',r.offrandes||0],['Dîmes',r.dimes||0],
+      ['Action de grâce',r.actionGrace||0],['Dons',r.dons||0],
+      ['Matériels spirituels',r.materielsSpirituels||0],['Autres recettes',r.autresRecettes||0]
+    ].filter(x=>x[1]>0);
+    const depRows=(j.depenses||[]).filter(d=>d.amount>0);
+    const sign=j.soldeDuJour>=0?'+':'';
 
-    const reste=totR-totD;
-    const dr=sk===ek?frDate(sk):`Du ${frDate(sk)} au ${frDate(ek)}`;
-    const gd=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+    dayBlocks+=`
+    <div class="day-block${idx>0?' page-break-auto':''}">
+      <div class="day-title">
+        <span>${fmtFR(j.date)}</span>
+        <span style="font-weight:normal;font-size:10pt">Activité : ${j.activity||'—'}</span>
+      </div>`;
 
-    let h=`<h2>✝ ${ch}</h2>
-      <div class="rs">${city?city+' — ':''}Rapport Comptable Officiel</div>
-      <div class="rs" style="margin-bottom:18px;font-weight:600;color:#0a2342">${dr}</div>
-      <table><tr><th colspan="2">📥 RECETTES</th></tr>`;
-    RK.forEach((k,i)=>{ if(sumR[k]>0) h+=`<tr><td>${RL[i]}</td><td style="text-align:right;font-weight:600">${fmt(sumR[k])} FCFA</td></tr>`; });
-    h+=`<tr class="rt"><td><b>TOTAL RECETTES</b></td><td style="text-align:right"><b>${fmt(totR)} FCFA</b></td></tr>
-        <tr><td colspan="2" style="padding:6px"></td></tr>
-        <tr><th colspan="2">📤 DÉPENSES</th></tr>`;
-    DK.forEach((k,i)=>{ if(sumD[k]>0) h+=`<tr><td>${DL[i]}</td><td style="text-align:right;font-weight:600">${fmt(sumD[k])} FCFA</td></tr>`; });
-    Object.entries(exMap).forEach(([l,v])=>{ if(v>0) h+=`<tr><td>${l}</td><td style="text-align:right;font-weight:600">${fmt(v)} FCFA</td></tr>`; });
-    h+=`<tr class="rt"><td><b>TOTAL DÉPENSES</b></td><td style="text-align:right"><b>${fmt(totD)} FCFA</b></td></tr>
-        <tr><td colspan="2" style="padding:6px"></td></tr>
-        <tr class="rn"><td><b>💰 SOLDE NET</b></td><td style="text-align:right"><b>${fmt(reste)} FCFA</b></td></tr>
-        </table>`;
+    /* Effectif */
+    if(ef.total||ef.hommes||ef.femmes||ef.enfants){dayBlocks+=`
+      <div class="section-title">Présences</div>
+      <table class="balance-table">
+        <tr><th class="td-c">Hommes</th><th class="td-c">Femmes</th><th class="td-c">Enfants</th><th class="td-c" style="background:#dce8f5">TOTAL</th></tr>
+        <tr><td class="td-c">${ef.hommes||0}</td><td class="td-c">${ef.femmes||0}</td><td class="td-c">${ef.enfants||0}</td><td class="td-c total-cell">${ef.total||0}</td></tr>
+      </table>`;}
 
-    if(days.length>1){
-      h+=`<table><tr><th>Date</th><th>Activité</th><th style="text-align:right">Recettes</th><th style="text-align:right">Dépenses</th><th style="text-align:right">Reste</th></tr>`;
-      days.forEach(d=>{
-        h+=`<tr><td>${frDateShort(d.id)}</td><td>${d.activite||'—'}</td>
-          <td style="text-align:right;color:#2e7d32">${fmt(d.total_recettes||0)}</td>
-          <td style="text-align:right;color:#c62828">${fmt(d.total_depenses||0)}</td>
-          <td style="text-align:right;font-weight:700">${fmt(d.reste||0)}</td></tr>`;
-      });
-      h+=`</table>`;
-    }
+    /* Recettes */
+    dayBlocks+=`
+      <div class="section-title">Recettes</div>
+      <table>
+        <tr><th>Désignation</th><th class="td-r">Montant (FCFA)</th></tr>`;
+    if(recRows.length){recRows.forEach(([lbl,amt])=>{dayBlocks+=`<tr><td>${lbl}</td><td class="td-r">${fmtMoney(amt)}</td></tr>`;});}
+    else{dayBlocks+=`<tr><td colspan="2" style="text-align:center;color:#999;font-style:italic">Aucune recette saisie</td></tr>`;}
+    dayBlocks+=`<tr class="total-row"><td><strong>TOTAL RECETTES</strong></td><td class="td-r"><strong>${fmtMoney(j.totalRecettes)}</strong></td></tr></table>`;
 
-    h+=`<div style="margin-top:18px;font-size:11px;color:#777;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
-      <span>Généré le ${gd}</span>${resp?`<span>Responsable : ${resp}</span>`:''}
+    /* Dépenses */
+    if(depRows.length){dayBlocks+=`
+      <div class="section-title">Dépenses</div>
+      <table>
+        <tr><th>Désignation</th><th class="td-r">Montant (FCFA)</th></tr>`;
+      depRows.forEach(d=>{dayBlocks+=`<tr><td>${d.label}</td><td class="td-r">${fmtMoney(d.amount)}</td></tr>`;});
+      dayBlocks+=`<tr class="total-row"><td><strong>TOTAL DÉPENSES</strong></td><td class="td-r"><strong>${fmtMoney(j.totalDepenses)}</strong></td></tr></table>`;}
+
+    /* Solde du jour */
+    dayBlocks+=`
+      <table style="margin-top:6px">
+        <tr style="background:#f0f8e8">
+          <td style="font-weight:bold;border:2px solid #555;font-size:11pt">Reste du jour</td>
+          <td class="td-r" style="font-weight:bold;border:2px solid #555;font-size:12pt;color:${j.soldeDuJour>=0?'#1a6b2f':'#b91c1c'}">${sign}${fmtMoney(j.soldeDuJour)}</td>
+        </tr>
+      </table>
     </div>`;
+  });
 
-    const rp=document.getElementById('rpreview');
-    rp.innerHTML=h; rp.classList.add('on');
-    toast('✅ Rapport prêt !');
-    _reportText=buildWaMsg(days,totR,totD,reste,dr,ch);
-  }catch(e){ console.error(e); toast('⚠️ Erreur lors de la génération'); }
-};
-
-function buildWaMsg(days,totR,totD,reste,dr,ch){
-  let msg=`✝ *${ch}*\n📋 *RAPPORT FINANCIER*\n📅 ${dr}\n\n`;
-  msg+=`💰 *Recettes :* ${fmt(totR)} FCFA\n`;
-  msg+=`📤 *Dépenses :* ${fmt(totD)} FCFA\n`;
-  msg+=`✅ *Solde net :* ${fmt(reste)} FCFA\n`;
-  if(days.length>1){
-    msg+=`\n📊 *Détail par journée :*\n`;
-    days.forEach(d=>{ msg+=`• ${frDateShort(d.id)} → ${fmt(d.reste||0)} FCFA\n`; });
+  /* Totaux généraux */
+  let totalsBlock='';
+  if(list.length>1){
+    const allFromDB=await dbGetAll('journees');
+    const sorted=allFromDB.sort((a,b)=>a.date.localeCompare(b.date));
+    let cumul=0;
+    const rows=sorted.map(j=>{cumul+=j.soldeDuJour;return{date:fmtFR(j.date),act:j.activity||'—',rec:j.totalRecettes,dep:j.totalDepenses,sol:j.soldeDuJour};});
+    totalsBlock=`
+    <div style="page-break-before:always">
+      <div class="section-title" style="font-size:12pt">Récapitulatif général</div>
+      <table>
+        <tr><th>Date</th><th>Activité</th><th class="td-r">Recettes</th><th class="td-r">Dépenses</th><th class="td-r">Solde</th></tr>
+        ${rows.map(r=>`<tr><td style="font-size:9.5pt">${r.date}</td><td style="font-size:9.5pt">${r.act}</td><td class="td-r">${fmtMoney(r.rec)}</td><td class="td-r">${fmtMoney(r.dep)}</td><td class="td-r" style="color:${r.sol>=0?'#1a6b2f':'#b91c1c'};font-weight:bold">${fmtMoney(r.sol)}</td></tr>`).join('')}
+        <tr style="background:#e8f0fe;border-top:3px solid #333">
+          <td colspan="2" style="font-weight:bold;font-size:11pt">TOTAUX GÉNÉRAUX</td>
+          <td class="td-r" style="font-weight:bold;color:#1a6b2f">${fmtMoney(tR)}</td>
+          <td class="td-r" style="font-weight:bold;color:#b91c1c">${fmtMoney(tD)}</td>
+          <td class="td-r" style="font-weight:bold;font-size:12pt;color:${tS>=0?'#1a6b2f':'#b91c1c'}">${fmtMoney(tS)}</td>
+        </tr>
+      </table>
+    </div>`;
   }
-  msg+=`\n_Rapport généré par Apôtre Ausias Sainte Gestion_`;
-  return msg;
+
+  /* Letterhead */
+  const logoHTML=b.logo?`<img src="${b.logo}" style="max-width:80px;max-height:70px;object-fit:contain">`:'<div style="width:80px;height:70px"></div>';
+  const cachetHTML=b.cachet?`<img src="${b.cachet}" style="max-width:80px;max-height:70px;object-fit:contain">`:'<div style="width:80px;height:70px"></div>';
+  const period=list.length===1?`du ${fmtFR(list[0].date)}`:(list.length>1?`du ${fmtShort(list[0].date)} au ${fmtShort(list[list.length-1].date)}`:'');
+
+  const html=`<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Rapport de Caisse — ${b.nomEglise||'AASG'}</title>
+<style>
+  @page{size:A4;margin:2cm 2.5cm}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#111;line-height:1.55}
+  h1{font-size:14pt;text-align:center;text-transform:uppercase;letter-spacing:1px}
+  table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:10.5pt}
+  th{background:#e8e8e8;font-weight:bold;padding:7px 10px;border:1px solid #888;text-align:left}
+  td{padding:6px 10px;border:1px solid #bbb}
+  .td-r{text-align:right;font-family:'Courier New',monospace}
+  .td-c{text-align:center}
+  .total-row{background:#f2f2f2}
+  .total-row td{border-top:2px solid #555;font-weight:bold}
+  .total-cell{font-weight:bold;background:#dce8f5;font-size:12pt}
+  .balance-table th{text-align:center}
+  .day-block{margin-bottom:22px;page-break-inside:avoid}
+  .day-title{display:flex;justify-content:space-between;align-items:center;
+    background:#2c3e6b;color:#fff;padding:8px 12px;font-weight:bold;font-size:11pt;margin-bottom:8px;border-radius:2px}
+  .section-title{font-size:10pt;font-weight:bold;text-transform:uppercase;
+    border-bottom:2px solid #2c3e6b;color:#2c3e6b;padding-bottom:3px;margin:12px 0 6px}
+  .page-break-auto{page-break-before:auto}
+  .lh-table{border:none;margin-bottom:0}
+  .lh-table td{border:none;vertical-align:middle;padding:4px}
+  .sig-block{width:46%;display:inline-block;vertical-align:top;text-align:center}
+  .sig-block .name{font-weight:bold;font-size:11pt;margin-bottom:3px}
+  .sig-block .role{font-size:9.5pt;color:#555;margin-bottom:35px}
+  .sig-block .line{border-top:1px solid #333;width:85%;margin:0 auto 4px}
+  .sig-block .label{font-size:9pt;color:#777;font-style:italic}
+  .doc-footer{margin-top:16px;padding-top:8px;border-top:1px solid #ccc;
+    font-size:9pt;color:#888;display:flex;justify-content:space-between}
+  .box-title{text-align:center;font-size:13pt;font-weight:bold;text-transform:uppercase;
+    border:2px solid #2c3e6b;color:#2c3e6b;padding:8px;margin:12px 0 4px;letter-spacing:1px}
+  .doc-meta{font-size:9.5pt;color:#444;border:1px solid #ddd;padding:8px 12px;
+    background:#fafafa;margin-bottom:14px;line-height:1.7}
+  hr.thick{border:none;border-top:3px double #2c3e6b;margin:10px 0}
+  @media print{.no-print{display:none!important}}
+</style>
+</head>
+<body>
+<!-- LETTERHEAD -->
+<table class="lh-table">
+  <tr>
+    <td style="width:90px;text-align:center">${logoHTML}</td>
+    <td style="text-align:center;padding:0 10px">
+      <div style="font-size:15pt;font-weight:bold;text-transform:uppercase;color:#2c3e6b;letter-spacing:1px">${b.nomEglise||'APÔTRE AUSIAS SAINTE GESTION'}</div>
+      ${b.nomBranche?`<div style="font-size:11pt;margin-top:4px">${b.nomBranche}</div>`:''}
+      <div style="font-size:9pt;color:#555;margin-top:3px">${[b.codeBranche?'Code : '+b.codeBranche:'',b.ville,b.pays].filter(Boolean).join(' — ')}</div>
+    </td>
+    <td style="width:90px;text-align:center">${cachetHTML}</td>
+  </tr>
+</table>
+<hr class="thick">
+
+<div class="box-title">RAPPORT DE CAISSE ${period}</div>
+
+<div class="doc-meta">
+  <strong>Édité le :</strong> ${nowDateTime()}<br>
+  ${b.nomResponsable?`<strong>Premier Responsable :</strong> ${b.nomResponsable}${b.fonctionResponsable?' — '+b.fonctionResponsable:''}<br>`:''}
+  ${b.nomCommissaire?`<strong>Commissaire aux Comptes :</strong> ${b.nomCommissaire}${b.telCommissaire?' | Tél : '+b.telCommissaire:''}<br>`:''}
+  ${currentUser?`<strong>Établi par :</strong> ${currentUser.displayName||currentUser.email}<br>`:''}
+</div>
+
+${list.length===0?'<p style="text-align:center;color:#999;font-style:italic;margin:40px 0">Aucune journée enregistrée.</p>':''}
+
+${dayBlocks}
+${totalsBlock}
+
+<!-- SIGNATURES -->
+<div style="margin-top:30px;page-break-inside:avoid">
+  <div class="section-title" style="font-size:11pt">Signatures et approbation</div>
+  <div style="margin-top:20px;display:flex;justify-content:space-between">
+    <div class="sig-block">
+      <div class="name">${b.nomResponsable||'Le Premier Responsable'}</div>
+      <div class="role">${b.fonctionResponsable||''}</div>
+      <div class="line"></div>
+      <div class="label">Signature et cachet</div>
+    </div>
+    <div class="sig-block">
+      <div class="name">${b.nomCommissaire||'Le Commissaire aux Comptes'}</div>
+      <div class="role">${b.telCommissaire?'Tél : '+b.telCommissaire:''}</div>
+      <div class="line"></div>
+      <div class="label">Signature et cachet</div>
+    </div>
+  </div>
+</div>
+
+<div class="doc-footer">
+  <span>Apôtre Ausias Sainte Gestion${b.codeBranche?' — Branche '+b.codeBranche:''}</span>
+  <span>Document généré le ${nowDateTime()}</span>
+</div>
+
+<div class="no-print" style="text-align:center;margin-top:20px;padding:16px">
+  <button onclick="window.print()" style="padding:12px 30px;background:#2c3e6b;color:#fff;border:none;border-radius:6px;font-size:13pt;cursor:pointer;font-family:Arial">🖨️ Imprimer / Enregistrer en PDF</button>
+</div>
+</body></html>`;
+
+  const win=window.open('','_blank');
+  if(!win){toast('⚠️ Autorisez les popups pour générer le PDF');return;}
+  win.document.write(html);win.document.close();win.focus();
+  setTimeout(()=>win.print(),600);
 }
 
-window.printR = ()=>{
-  const c=document.getElementById('rpreview').innerHTML;
-  if(!c||!document.getElementById('rpreview').classList.contains('on')){ toast('⚠️ Générez d\'abord le rapport'); return; }
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <title>Rapport — Apôtre Ausias Sainte</title>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap');
-      body{font-family:'Inter',Arial,sans-serif;max-width:740px;margin:28px auto;padding:0 20px;color:#1a1a2e}
-      h2{text-align:center;font-family:'Cinzel',serif;font-size:18px;color:#0a2342;margin-bottom:3px}
-      .rs{text-align:center;color:#555;font-size:12px;margin-bottom:6px}
-      table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}
-      th{background:#0a2342;color:#FFD700;padding:9px 11px;text-align:left}
-      td{padding:8px 11px;border-bottom:1px solid #dde}
-      tr:nth-child(even) td{background:#f6f8ff}
-      .rt td{background:#0d3b6e;color:#fff;font-weight:700}
-      .rn td{background:#FFD700;color:#0a2342;font-weight:800;font-size:15px}
-      @media print{@page{margin:15mm}}
-    </style>
-  </head><body>${c}</body></html>`);
-  w.document.close(); w.print();
-};
+document.getElementById('btn-pdf-today').addEventListener('click',()=>openPDF(currentDate));
+document.getElementById('btn-pdf-all').addEventListener('click',()=>openPDF(null));
 
-/* ── WhatsApp ─────────────────────────────── */
-window.openWA = async()=>{
-  if(!_reportText){ await genReport(); if(!_reportText) return; }
-  const contacts=[
-    {n:params.wn1||'Contrôleur 1',p:params.wp1},
-    {n:params.wn2||'Contrôleur 2',p:params.wp2},
-    {n:params.wn3||'Contrôleur 3',p:params.wp3},
-  ].filter(c=>c.p);
-  const box=document.getElementById('walist');
-  box.innerHTML=contacts.length
-    ? contacts.map(c=>`<div class="wac"><div><div class="wn">${c.n}</div><div class="wp">${c.p}</div></div><button class="btn btn-wa btn-sm" onclick="sendWA('${c.p}')">Envoyer</button></div>`).join('')
-    : '<p style="color:var(--muted);font-size:13px">⚠️ Aucun numéro configuré — allez dans Paramètres</p>';
-  document.getElementById('waov').classList.add('on');
-};
-window.closeWA = ()=>document.getElementById('waov').classList.remove('on');
-window.sendWA  = p=>{ window.open(`https://wa.me/${p.replace(/[\s+\-()]/g,'')}?text=${encodeURIComponent(_reportText)}`,'_blank'); };
-window.sendAll = ()=>{
-  const ps=[params.wp1,params.wp2,params.wp3].filter(Boolean);
-  if(!ps.length){ toast('⚠️ Aucun numéro configuré'); return; }
-  ps.forEach((p,i)=>setTimeout(()=>sendWA(p),i*1100));
-  closeWA(); toast(`📲 Envoi vers ${ps.length} contact(s)…`);
-};
-
-/* ── Status ──────────────────────────────── */
-function setStatus(s){
-  const dot=document.getElementById('sdot'), txt=document.getElementById('stxt');
-  if(s==='ok'){  dot.className='dot ok';   txt.textContent='Synchronisé ✓'; }
-  if(s==='ko'){  dot.className='dot ko';   txt.textContent='Hors ligne'; }
-  if(s==='sync'){dot.className='dot sync'; txt.textContent='Synchronisation…'; }
+/* ================================================
+   WHATSAPP (texte court pour mobile)
+================================================ */
+let _waModeDate=null;
+async function buildWAMsg(dateFilter){
+  const all=await dbGetAll('journees');
+  const list=(dateFilter?all.filter(j=>j.date===dateFilter):all).sort((a,b)=>a.date.localeCompare(b.date));
+  const b=branche;
+  let txt=`*${b.nomEglise||'Apôtre Ausias Sainte Gestion'}*\n`;
+  if(b.nomBranche)txt+=`${b.nomBranche}\n`;
+  txt+=`*RAPPORT DE CAISSE*\n`;
+  txt+=`_${nowDateTime()}_\n`;
+  txt+=`${'─'.repeat(32)}\n`;
+  list.forEach(j=>{
+    txt+=`\n📅 *${fmtFR(j.date)}*\n`;
+    txt+=`🎯 ${j.activity||'—'}\n`;
+    if(j.effectif&&j.effectif.total)txt+=`👥 Présents : ${j.effectif.total} (H:${j.effectif.hommes||0} F:${j.effectif.femmes||0} E:${j.effectif.enfants||0})\n`;
+    txt+=`💰 Recettes : *${fmtMoneyFCFA(j.totalRecettes)}*\n`;
+    txt+=`📤 Dépenses : *${fmtMoneyFCFA(j.totalDepenses)}*\n`;
+    txt+=`💎 Reste : *${fmtMoneyFCFA(j.soldeDuJour)}*\n`;
+  });
+  const tR=list.reduce((s,j)=>s+j.totalRecettes,0);
+  const tD=list.reduce((s,j)=>s+j.totalDepenses,0);
+  if(list.length>1){txt+=`\n${'═'.repeat(32)}\n*TOTAUX*\n💰 ${fmtMoneyFCFA(tR)}\n📤 ${fmtMoneyFCFA(tD)}\n💎 *${fmtMoneyFCFA(tR-tD)}*\n`;}
+  if(b.nomResponsable)txt+=`\n_Signé : ${b.nomResponsable}_`;
+  return txt;
 }
-window.addEventListener('online', ()=>setStatus('ok'));
-window.addEventListener('offline',()=>setStatus('ko'));
-
-/* ── Toast ───────────────────────────────── */
-window.toast = msg=>{
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('on');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3200);
-};
-
-/* ── Format helpers ──────────────────────── */
-function fmt(n){ return new Intl.NumberFormat('fr-FR').format(Math.round(n)); }
-function fcfa(n){ return fmt(n)+' FCFA'; }
-
-/* ── PWA Install ─────────────────────────── */
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault(); deferredPrompt=e;
-  document.getElementById('ib').style.display='flex';
-});
-window.doInstall = ()=>{
-  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; noInstall(); }); }
-};
-window.noInstall = ()=>{ document.getElementById('ib').style.display='none'; };
-
-/* ── INIT ────────────────────────────────── */
-loadParams();
-loadDay(curKey);
-setStatus(navigator.onLine?'ok':'ko');
-
-</script>
-
-<!-- ════════════════════════════
-     SERVICE WORKER
-════════════════════════════ -->
-<script>
-if('serviceWorker' in navigator){
-  const sw=`
-const CACHE='aas-v2';
-self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','./index.html']).catch(()=>{})));
-  self.skipWaiting();
-});
-self.addEventListener('activate',e=>{
-  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-  self.clients.claim();
-});
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET')return;
-  if(/firestore|firebase|googleapis/.test(e.request.url))return;
-  e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
-});`;
-  const u=URL.createObjectURL(new Blob([sw],{type:'application/javascript'}));
-  navigator.serviceWorker.register(u).catch(()=>{});
+async function openWAModal(df){
+  _waModeDate=df||null;
+  document.getElementById('mo-wa-sub').textContent=df?`Rapport du ${fmtShort(df)}`:'Rapport général';
+  ['c1','c2','c3'].forEach(k=>{const s=settings[k];document.getElementById(`wa-${k}-lbl`).textContent=`Contrôleur ${k[1]}${s.nom?' — '+s.nom:''}`;});
+  document.getElementById('mo-wa').classList.add('open');
 }
+function closeWAModal(){document.getElementById('mo-wa').classList.remove('open');}
+async function sendWA(key){
+  const s=settings[key];if(!s||!s.tel){toast(`⚠️ Numéro Contrôleur ${key[1]} non configuré`);return;}
+  const msg=await buildWAMsg(_waModeDate);window.open(`https://wa.me/${s.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+document.getElementById('wa-c1').addEventListener('click',async()=>{closeWAModal();await sendWA('c1');});
+document.getElementById('wa-c2').addEventListener('click',async()=>{closeWAModal();await sendWA('c2');});
+document.getElementById('wa-c3').addEventListener('click',async()=>{closeWAModal();await sendWA('c3');});
+document.getElementById('wa-all').addEventListener('click',async()=>{closeWAModal();for(let i=1;i<=3;i++){await new Promise(r=>setTimeout(r,i===1?0:900));await sendWA(`c${i}`);}toast('📲 Envoi lancé');});
+document.getElementById('mo-wa-close').addEventListener('click',closeWAModal);
+document.getElementById('mo-wa').addEventListener('click',e=>{if(e.target===document.getElementById('mo-wa'))closeWAModal();});
+document.getElementById('btn-wa-today').addEventListener('click',()=>openWAModal(currentDate));
+document.getElementById('btn-wa-all').addEventListener('click',()=>openWAModal(null));
+
+/* ================================================
+   HISTORY
+================================================ */
+async function renderHistory(){
+  const all=await dbGetAll('journees');all.sort((a,b)=>b.date.localeCompare(a.date));
+  const q=document.getElementById('hist-search').value.toLowerCase().trim();
+  const list=q?all.filter(j=>fmtFR(j.date).toLowerCase().includes(q)||j.date.includes(q)||(j.activity||'').toLowerCase().includes(q)):all;
+  const el=document.getElementById('hist-list');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-i">📅</div><div>${q?'Aucun résultat':'Aucune journée'}</div></div>`;return;}
+  el.innerHTML='';
+  list.forEach(j=>{
+    const cls=j.soldeDuJour>=0?'pos':'neg';const it=document.createElement('div');it.className='h-item';
+    it.innerHTML=`<div class="h-hdr">
+      <div><div class="h-date">${fmtFR(j.date)}</div><div class="h-act">${j.activity||'—'}</div></div>
+      <div class="h-solde ${cls}">${fmtMoneyFCFA(j.soldeDuJour)}</div></div>
+      <div class="h-nums">
+        <span>👥 <b>${(j.effectif&&j.effectif.total)||0}</b></span>
+        <span>💰 <b class="pos">${fmtMoney(j.totalRecettes)}</b> FCFA</span>
+        <span>📤 <b class="neg">${fmtMoney(j.totalDepenses)}</b> FCFA</span>
+      </div>`;
+    it.addEventListener('click',()=>{goTo('today');loadDay(j.date);});el.appendChild(it);
+  });
+}
+document.getElementById('hist-search').addEventListener('input',renderHistory);
+
+/* ================================================
+   RAPPORT VIEW
+================================================ */
+async function renderRapport(){
+  const all=await dbGetAll('journees');
+  const tR=all.reduce((s,j)=>s+(j.totalRecettes||0),0);
+  const tD=all.reduce((s,j)=>s+(j.totalDepenses||0),0);const tS=tR-tD;
+  document.getElementById('s-jours').textContent=all.length;
+  document.getElementById('s-rec').textContent=fmtMoneyFCFA(tR);
+  document.getElementById('s-dep').textContent=fmtMoneyFCFA(tD);
+  const sEl=document.getElementById('s-solde');sEl.textContent=fmtMoneyFCFA(tS);sEl.className='stat-val '+(tS>=0?'pos':'neg');
+  const el=document.getElementById('rpt-hist');all.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!all.length){el.innerHTML=`<div class="empty"><div class="empty-i">📊</div><div>Aucune donnée</div></div>`;return;}
+  el.innerHTML='';
+  all.forEach(j=>{
+    const cls=j.soldeDuJour>=0?'pos':'neg';const it=document.createElement('div');it.className='h-item';it.style.cursor='default';
+    it.innerHTML=`<div class="h-hdr">
+      <div><div class="h-date" style="font-size:13px">${fmtFR(j.date)}</div><div class="h-act">${j.activity||'—'}</div></div>
+      <div class="h-solde ${cls}" style="font-size:14px">${fmtMoneyFCFA(j.soldeDuJour)}</div></div>`;
+    el.appendChild(it);
+  });
+}
+
+/* ================================================
+   SETTINGS — BRANCH
+================================================ */
+function loadBrancheIntoForm(){
+  ['b-eglise','b-branche','b-code','b-ville','b-pays','b-resp-nom','b-resp-fn','b-comm-nom','b-comm-tel'].forEach(id=>{
+    const map={
+      'b-eglise':'nomEglise','b-branche':'nomBranche','b-code':'codeBranche',
+      'b-ville':'ville','b-pays':'pays','b-resp-nom':'nomResponsable',
+      'b-resp-fn':'fonctionResponsable','b-comm-nom':'nomCommissaire','b-comm-tel':'telCommissaire'
+    };
+    const el=document.getElementById(id);if(el)el.value=branche[map[id]]||'';
+  });
+  if(branche.logo){document.getElementById('logo-preview').src=branche.logo;document.getElementById('logo-preview').style.display='block';document.getElementById('logo-clear').style.display='inline-block';}
+  if(branche.cachet){document.getElementById('cachet-preview').src=branche.cachet;document.getElementById('cachet-preview').style.display='block';document.getElementById('cachet-clear').style.display='inline-block';}
+}
+function readBrancheFromForm(){
+  return{
+    nomEglise:document.getElementById('b-eglise').value.trim(),
+    nomBranche:document.getElementById('b-branche').value.trim(),
+    codeBranche:document.getElementById('b-code').value.trim().toUpperCase(),
+    ville:document.getElementById('b-ville').value.trim(),
+    pays:document.getElementById('b-pays').value.trim(),
+    nomResponsable:document.getElementById('b-resp-nom').value.trim(),
+    fonctionResponsable:document.getElementById('b-resp-fn').value.trim(),
+    nomCommissaire:document.getElementById('b-comm-nom').value.trim(),
+    telCommissaire:document.getElementById('b-comm-tel').value.trim(),
+    logo:branche.logo||'',cachet:branche.cachet||''
+  };
+}
+document.getElementById('btn-save-branche').addEventListener('click',async()=>{
+  branche=readBrancheFromForm();
+  await dbPut('settings',{key:'branche',value:branche});
+  let fbSaved=false;if(fbConnected&&branche.codeBranche)fbSaved=await fbSaveBranche(branche);
+  updateBranchBar();renderBranchReadonly();
+  toast(`✅ Branche enregistrée${fbSaved?' + Firebase ☁️':' (local)'}`);
+});
+document.getElementById('logo-file').addEventListener('change',async e=>{
+  const file=e.target.files[0];if(!file)return;branche.logo=await resizeImage(file,300,150,0.82);
+  document.getElementById('logo-preview').src=branche.logo;document.getElementById('logo-preview').style.display='block';document.getElementById('logo-clear').style.display='inline-block';
+});
+document.getElementById('logo-clear').addEventListener('click',()=>{branche.logo='';document.getElementById('logo-preview').style.display='none';document.getElementById('logo-clear').style.display='none';document.getElementById('logo-file').value='';});
+document.getElementById('cachet-file').addEventListener('change',async e=>{
+  const file=e.target.files[0];if(!file)return;branche.cachet=await resizeImage(file,200,200,0.82);
+  document.getElementById('cachet-preview').src=branche.cachet;document.getElementById('cachet-preview').style.display='block';document.getElementById('cachet-clear').style.display='inline-block';
+});
+document.getElementById('cachet-clear').addEventListener('click',()=>{branche.cachet='';document.getElementById('cachet-preview').style.display='none';document.getElementById('cachet-clear').style.display='none';document.getElementById('cachet-file').value='';});
+
+/* ================================================
+   SETTINGS — FIREBASE
+================================================ */
+document.getElementById('fb-toggle-cfg').addEventListener('click',()=>{
+  const f=document.getElementById('fb-cfg-fields');f.classList.toggle('open');
+  document.getElementById('fb-toggle-cfg').textContent=f.classList.contains('open')?'▲ Réduire':'⚙️ Configurer';
+});
+function loadFbConfigIntoForm(){
+  const cfg=getFbConfig();if(!cfg)return;
+  document.getElementById('fb-admin-email').value=cfg.adminEmail||'';
+  document.getElementById('fb-apikey').value=cfg.apiKey||'';
+  document.getElementById('fb-authdomain').value=cfg.authDomain||'';
+  document.getElementById('fb-projectid').value=cfg.projectId||'';
+  document.getElementById('fb-bucket').value=cfg.storageBucket||'';
+  document.getElementById('fb-senderid').value=cfg.messagingSenderId||'';
+  document.getElementById('fb-appid').value=cfg.appId||'';
+}
+document.getElementById('btn-fb-connect').addEventListener('click',async()=>{
+  const cfg={
+    adminEmail:document.getElementById('fb-admin-email').value.trim(),
+    apiKey:document.getElementById('fb-apikey').value.trim(),
+    authDomain:document.getElementById('fb-authdomain').value.trim(),
+    projectId:document.getElementById('fb-projectid').value.trim(),
+    storageBucket:document.getElementById('fb-bucket').value.trim(),
+    messagingSenderId:document.getElementById('fb-senderid').value.trim(),
+    appId:document.getElementById('fb-appid').value.trim()
+  };
+  if(!cfg.projectId){toast('⚠️ Project ID obligatoire');return;}
+  if(!cfg.adminEmail){toast('⚠️ E-mail administrateur obligatoire');return;}
+  saveFbConfig(cfg);toast('🔥 Connexion à Firebase…');
+  const ok=await initFirebase(cfg,true);
+  if(ok)toast('✅ Firebase connecté ! Les autres utilisateurs verront l\'écran de connexion.');
+  else toast('❌ Connexion Firebase échouée. Vérifiez la configuration.',4000);
+});
+document.getElementById('btn-fb-clear').addEventListener('click',()=>{
+  localStorage.removeItem('aasg_fb_config');
+  ['fb-admin-email','fb-apikey','fb-authdomain','fb-projectid','fb-bucket','fb-senderid','fb-appid'].forEach(id=>{document.getElementById(id).value='';});
+  fbDb=null;fbConnected=false;setFbBadge('offline');toast('🗑️ Configuration Firebase effacée');
+});
+
+/* ================================================
+   SETTINGS — CONTROLLERS
+================================================ */
+async function loadSettings(){
+  const s=await dbGet('settings','controleurs');
+  if(s){settings=s.value;
+    document.getElementById('c1n').value=settings.c1.nom||'';document.getElementById('c1t').value=settings.c1.tel||'';
+    document.getElementById('c2n').value=settings.c2.nom||'';document.getElementById('c2t').value=settings.c2.tel||'';
+    document.getElementById('c3n').value=settings.c3.nom||'';document.getElementById('c3t').value=settings.c3.tel||'';}
+}
+document.getElementById('btn-save-set').addEventListener('click',async()=>{
+  settings={c1:{nom:document.getElementById('c1n').value.trim(),tel:document.getElementById('c1t').value.trim()},
+    c2:{nom:document.getElementById('c2n').value.trim(),tel:document.getElementById('c2t').value.trim()},
+    c3:{nom:document.getElementById('c3n').value.trim(),tel:document.getElementById('c3t').value.trim()}};
+  await dbPut('settings',{key:'controleurs',value:settings});toast('✅ Contrôleurs enregistrés !');
+});
+
+/* ================================================
+   LOAD ALL APP DATA
+================================================ */
+async function loadAppData(){
+  await loadSettings();
+  const bRec=await dbGet('settings','branche');
+  if(bRec&&bRec.value)branche={...branche,...bRec.value};
+  // Try to pull from Firebase
+  if(fbDb&&branche.codeBranche){
+    const fbData=await fbLoadBranche(branche.codeBranche);
+    if(fbData){branche={...branche,...fbData};await dbPut('settings',{key:'branche',value:branche});}
+  }
+  loadBrancheIntoForm();loadFbConfigIntoForm();
+  updateBranchBar();renderBranchReadonly();applyAdminRole();
+  await loadDay(TODAY);
+}
+
+/* ================================================
+   INIT
+================================================ */
+async function init(){
+  await openDB();
+  const cfg=getFbConfig();
+  if(cfg&&cfg.projectId){
+    // Firebase configured → require login
+    const ok=await initFirebase(cfg);
+    if(!ok){
+      // Firebase failed → offline mode, no auth
+      showApp();await loadAppData();
+    }
+    // auth state listener will handle showApp/showLoginScreen
+  } else {
+    // No Firebase → no login required, full admin mode
+    isAdmin=true;applyAdminRole();
+    showApp();await loadAppData();
+  }
+}
+
+init();
 </script>
 </body>
 </html>
