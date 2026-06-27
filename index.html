@@ -12,214 +12,127 @@
   <meta name="apple-mobile-web-app-title" content="AASG">
   <link id="manifest-link" rel="manifest" href="">
   <style>
-    :root{
-      --bg:#091A30;--card:#0D2344;--card2:#122B54;
-      --sky:#38BDF8;--sky-d:#0284C7;
-      --lime:#A3E635;--lime-d:#65A30D;
-      --gold:#F5C518;--gold-d:#D97706;
-      --red:#F87171;--text:#E2F0FB;--dim:#6EA8D0;
-      --border:rgba(56,189,248,0.15);--r:16px;--rs:10px;
-    }
+    :root{--bg:#091A30;--card:#0D2344;--card2:#122B54;--sky:#38BDF8;--sky-d:#0284C7;--lime:#A3E635;--lime-d:#65A30D;--gold:#F5C518;--gold-d:#D97706;--red:#F87171;--text:#E2F0FB;--dim:#6EA8D0;--border:rgba(56,189,248,0.15);--r:16px;--rs:10px}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html{height:100%}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
-      background:var(--bg);color:var(--text);min-height:100%;max-width:640px;
-      margin:0 auto;position:relative;overscroll-behavior:none}
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100%;max-width:640px;margin:0 auto;overscroll-behavior:none}
+    input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     input[type=number]{-moz-appearance:textfield}
     button{font-family:inherit}
-
-    /* ===== ADMIN ROLE SYSTEM ===== */
+    /* ROLES */
     .admin-only{display:none!important}
-    body.is-admin .admin-only{display:block!important}
-    body.is-admin .admin-flex{display:flex!important}
+    body.role-admin .admin-only{display:block!important}
     .admin-flex{display:none!important}
-
-    /* ===== LOGIN SCREEN ===== */
-    #login-screen{
-      position:fixed;inset:0;z-index:2000;
-      background:linear-gradient(160deg,#091A30 0%,#0D2344 50%,#091A30 100%);
-      display:flex;align-items:center;justify-content:center;padding:20px;
-    }
-    .login-box{
-      width:100%;max-width:400px;
-      background:var(--card);border:1px solid var(--border);
-      border-radius:24px;padding:28px 24px;
-    }
+    body.role-admin .admin-flex{display:flex!important}
+    /* SYNC */
+    .sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .sync-dot.synced{background:var(--lime);box-shadow:0 0 5px var(--lime)}
+    .sync-dot.syncing{background:var(--gold);animation:blink .8s infinite}
+    .sync-dot.offline{background:var(--dim)}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+    /* LOGIN */
+    #login-screen{position:fixed;inset:0;z-index:2000;background:linear-gradient(160deg,#091A30 0%,#0D2344 60%,#091A30 100%);display:flex;align-items:center;justify-content:center;padding:16px}
+    .login-box{width:100%;max-width:400px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:26px 22px}
     .login-logo{text-align:center;margin-bottom:10px}
-    .login-logo canvas{border-radius:18px;box-shadow:0 0 30px rgba(245,197,24,0.2)}
-    .login-title{text-align:center;font-size:16px;font-weight:900;
-      color:var(--text);margin-bottom:3px;letter-spacing:0.03em}
-    .login-sub{text-align:center;font-size:12px;color:var(--dim);margin-bottom:20px}
-    .login-tabs{display:flex;gap:4px;background:var(--bg);
-      border-radius:var(--rs);padding:4px;margin-bottom:18px}
-    .login-tab{flex:1;padding:8px;border:none;background:none;
-      color:var(--dim);font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;
-      transition:all 0.2s}
+    .login-logo canvas{border-radius:18px;box-shadow:0 0 30px rgba(245,197,24,.2)}
+    .login-title{text-align:center;font-size:15px;font-weight:900;margin-bottom:2px}
+    .login-sub{text-align:center;font-size:11px;color:var(--dim);margin-bottom:16px}
+    .login-tabs{display:flex;gap:4px;background:var(--bg);border-radius:var(--rs);padding:4px;margin-bottom:16px}
+    .login-tab{flex:1;padding:8px;border:none;background:none;color:var(--dim);font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;transition:all .2s}
     .login-tab.active{background:var(--sky);color:#fff}
-    .lf{margin-bottom:12px}
-    .lf label{display:block;font-size:11px;color:var(--dim);
-      font-weight:600;letter-spacing:0.06em;margin-bottom:5px}
-    .lf input{width:100%;padding:11px 14px;background:var(--bg);
-      border:1px solid var(--border);border-radius:var(--rs);
-      color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s}
+    .lf{margin-bottom:11px}
+    .lf label{display:block;font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.06em;margin-bottom:4px}
+    .lf input{width:100%;padding:11px 13px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
     .lf input:focus{border-color:var(--sky)}
     .lf input::placeholder{color:var(--dim)}
-    .login-err{font-size:12px;color:var(--red);text-align:center;
-      min-height:18px;margin-bottom:8px;font-weight:600}
-    .login-divider{text-align:center;font-size:11px;color:var(--dim);
-      margin:10px 0;position:relative}
-    .login-divider::before,.login-divider::after{
-      content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
-    .login-divider::before{left:0}.login-divider::after{right:0}
-
-    /* ===== INSTALL BANNER ===== */
-    #install-banner{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);
-      width:100%;max-width:640px;background:linear-gradient(135deg,#122B54,#091A30);
-      border-bottom:2px solid var(--gold);padding:10px 14px;z-index:900}
+    .login-err{font-size:12px;color:var(--red);text-align:center;min-height:16px;margin-bottom:8px;font-weight:600}
+    /* INSTALL BANNER */
+    #install-banner{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:640px;background:linear-gradient(135deg,#122B54,#091A30);border-bottom:2px solid var(--gold);padding:10px 14px;z-index:900}
     .ib-inner{display:flex;align-items:center;gap:10px}
-    .ib-icon{font-size:28px;flex-shrink:0}
     .ib-text{flex:1;min-width:0}
     .ib-title{font-size:13px;font-weight:700}
     .ib-sub{font-size:11px;color:var(--dim)}
-    .ib-btn{padding:7px 12px;background:var(--gold);color:#091A30;border:none;
-      border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
-    .ib-close{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;flex-shrink:0;padding:4px}
-
-    /* ===== APP SHELL ===== */
+    .ib-btn{padding:7px 12px;background:var(--gold);color:#091A30;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}
+    .ib-close{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:4px}
+    /* APP */
     #app{display:none;flex-direction:column;min-height:100vh}
-
-    /* ===== HEADER ===== */
-    .app-header{position:sticky;top:0;z-index:100;
-      background:linear-gradient(135deg,#091A30 0%,#122B54 100%);
-      border-bottom:1px solid var(--border);padding:10px 14px 8px}
-    .hdr-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
-    .hdr-brand{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;
-      letter-spacing:0.1em;color:var(--sky);text-transform:uppercase;flex:1;min-width:0}
-    .hdr-brand-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0}
-    .hdr-right{display:flex;align-items:center;gap:8px}
-    .fb-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:16px;border:1px solid;white-space:nowrap}
-    .fb-badge.online{color:var(--lime);border-color:rgba(163,230,53,0.4);background:rgba(163,230,53,0.07)}
-    .fb-badge.offline{color:var(--dim);border-color:var(--border);background:transparent}
-    .fb-badge.connecting{color:var(--gold);border-color:rgba(245,197,24,0.4);background:rgba(245,197,24,0.06)}
-    .user-badge{display:flex;align-items:center;gap:5px;
-      padding:3px 8px;border-radius:16px;border:1px solid var(--border);
-      background:rgba(255,255,255,0.04)}
-    .user-name{font-size:10px;font-weight:700;color:var(--text);max-width:90px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .admin-crown{font-size:10px}
-    .btn-logout{background:none;border:none;color:var(--dim);
-      font-size:10px;cursor:pointer;padding:2px 4px;font-weight:600}
-    .btn-logout:hover{color:var(--red)}
+    /* HEADER */
+    .app-header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#091A30 0%,#122B54 100%);border-bottom:1px solid var(--border);padding:10px 14px 8px}
+    .hdr-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+    .hdr-brand{font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--sky);text-transform:uppercase;flex:1}
+    .hdr-right{display:flex;align-items:center;gap:7px}
+    .sync-badge{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--dim);font-weight:700;padding:2px 7px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.2)}
+    .user-pill{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
+    .user-pill-name{font-size:10px;font-weight:700;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .role-badge{font-size:9px;padding:1px 5px;border-radius:8px;font-weight:800}
+    .role-badge.admin{background:rgba(245,197,24,.15);color:var(--gold);border:1px solid rgba(245,197,24,.3)}
+    .role-badge.responsable{background:rgba(56,189,248,.12);color:var(--sky);border:1px solid rgba(56,189,248,.3)}
+    .role-badge.utilisateur{background:rgba(110,168,208,.1);color:var(--dim);border:1px solid var(--border)}
+    .btn-logout{background:none;border:none;color:var(--dim);font-size:11px;cursor:pointer;font-weight:700}
     .hdr-date{font-size:14px;font-weight:700;color:var(--text)}
     .hdr-viewing{display:none;font-size:11px;color:var(--gold);font-weight:700;margin-top:1px}
-    .branch-bar{margin-top:6px;padding:6px 10px;
-      background:linear-gradient(135deg,rgba(245,197,24,0.07),rgba(56,189,248,0.04));
-      border:1px solid rgba(245,197,24,0.18);border-radius:var(--rs);
-      display:none;flex-direction:column;gap:1px}
-    .bb-church{font-size:11px;font-weight:800;color:var(--text)}
+    .branch-bar{margin-top:6px;padding:6px 10px;background:linear-gradient(135deg,rgba(245,197,24,.07),rgba(56,189,248,.04));border:1px solid rgba(245,197,24,.18);border-radius:var(--rs);display:none;flex-direction:column;gap:1px}
+    .bb-church{font-size:11px;font-weight:800}
     .bb-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
     .bb-branch{font-size:10px;color:var(--sky);font-weight:700}
     .bb-sep{color:var(--border);font-size:10px}
-    .bb-code{font-size:9px;color:var(--gold);font-weight:800;letter-spacing:0.1em;
-      background:rgba(245,197,24,0.09);padding:1px 6px;border-radius:10px;
-      border:1px solid rgba(245,197,24,0.22)}
+    .bb-code{font-size:9px;color:var(--gold);font-weight:800;background:rgba(245,197,24,.09);padding:1px 6px;border-radius:10px;border:1px solid rgba(245,197,24,.22)}
     .bb-city{font-size:10px;color:var(--dim)}
-
-    /* ===== VIEWS ===== */
+    /* VIEWS */
     .view{display:none;padding:14px 14px 90px}
     .view.active{display:block}
-
-    /* ===== BOTTOM NAV ===== */
-    .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-      width:100%;max-width:640px;background:rgba(9,26,48,0.97);
-      border-top:1px solid var(--border);display:flex;z-index:200;backdrop-filter:blur(20px)}
-    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-      padding:8px 4px 10px;border:none;background:none;cursor:pointer;
-      color:var(--dim);font-size:9px;font-weight:700;letter-spacing:0.06em;
-      text-transform:uppercase;transition:color 0.2s}
-    .nav-btn .ni{font-size:22px;line-height:1}
+    /* NAV */
+    .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:640px;background:rgba(9,26,48,.97);border-top:1px solid var(--border);display:flex;z-index:200;backdrop-filter:blur(20px)}
+    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 10px;border:none;background:none;cursor:pointer;color:var(--dim);font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:color .2s}
+    .nav-btn .ni{font-size:21px;line-height:1}
     .nav-btn.active{color:var(--sky)}
-    .nav-btn.active .ni{filter:drop-shadow(0 0 6px var(--sky))}
-
-    /* ===== CARDS ===== */
+    .nav-btn.active .ni{filter:drop-shadow(0 0 5px var(--sky))}
+    /* CARDS */
     .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:12px}
-    .ct{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;
-      color:var(--sky);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .ct{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--sky);margin-bottom:14px;display:flex;align-items:center;gap:8px}
     .ct::after{content:'';flex:1;height:1px;background:var(--border)}
-
-    /* ===== FORM ===== */
+    /* FORMS */
     .fr{display:flex;align-items:center;gap:10px;margin-bottom:9px}
     .fl{flex:1;font-size:13px;color:var(--dim);min-width:0}
-    .fi{width:128px;padding:8px 11px;background:var(--bg);border:1px solid var(--border);
-      border-radius:var(--rs);color:var(--text);font-size:14px;font-weight:600;
-      text-align:right;outline:none;transition:border-color 0.2s;flex-shrink:0}
+    .fi{width:128px;padding:8px 11px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:14px;font-weight:600;text-align:right;outline:none;transition:border-color .2s;flex-shrink:0}
     .fi:focus{border-color:var(--sky)}
     select.fi{text-align:left;width:100%;cursor:pointer}
-    .fi-full{width:100%;padding:10px 13px;background:var(--bg);border:1px solid var(--border);
-      border-radius:var(--rs);color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s}
+    .fi-full{width:100%;padding:10px 13px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
     .fi-full:focus{border-color:var(--sky)}
     .fi-full::placeholder{color:var(--dim)}
-    .fi-full[readonly]{opacity:0.6;cursor:default}
-
-    /* ===== ACTIVITY ===== */
-    .act-wrap{display:flex;flex-direction:column;gap:8px}
-    .act-lbl{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:0.06em}
-
-    /* ===== EFFECTIF ===== */
+    /* EFFECTIF */
     .eff-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
     .eff-col{display:flex;flex-direction:column;align-items:center;gap:5px}
-    .eff-lbl{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
-    .eff-inp{width:100%;padding:10px 6px;background:var(--bg);border:1px solid var(--border);
-      border-radius:var(--rs);color:var(--text);font-size:18px;font-weight:800;
-      text-align:center;outline:none;transition:border-color 0.2s}
+    .eff-lbl{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .eff-inp{width:100%;padding:10px 6px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:18px;font-weight:800;text-align:center;outline:none;transition:border-color .2s}
     .eff-inp:focus{border-color:var(--sky)}
-    .eff-total{display:flex;justify-content:space-between;align-items:center;
-      padding:10px 14px;border-radius:var(--rs);margin-top:2px;
-      background:linear-gradient(135deg,rgba(56,189,248,0.1),rgba(56,189,248,0.04));
-      border:1px solid rgba(56,189,248,0.2)}
-    .eff-total-lbl{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--sky)}
+    .eff-total{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:var(--rs);background:linear-gradient(135deg,rgba(56,189,248,.1),rgba(56,189,248,.04));border:1px solid rgba(56,189,248,.2)}
+    .eff-total-lbl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sky)}
     .eff-total-val{font-size:22px;font-weight:900;color:var(--sky);font-variant-numeric:tabular-nums}
-
-    /* ===== TOTALS ===== */
-    .tot-row{display:flex;justify-content:space-between;align-items:center;
-      padding:10px 13px;border-radius:var(--rs);margin-top:10px}
-    .tot-lbl{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase}
+    /* TOTALS */
+    .tot-row{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;border-radius:var(--rs);margin-top:10px}
+    .tot-lbl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
     .tot-val{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
-    .tot-r{background:rgba(163,230,53,0.08)}.tot-r .tot-val{color:var(--lime)}
-    .tot-d{background:rgba(248,113,113,0.08)}.tot-d .tot-val{color:var(--red)}
-
-    /* ===== BALANCES ===== */
+    .tot-r{background:rgba(163,230,53,.08)}.tot-r .tot-val{color:var(--lime)}
+    .tot-d{background:rgba(248,113,113,.08)}.tot-d .tot-val{color:var(--red)}
+    /* BALANCES */
     .bal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
     .bal-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center}
-    .bal-lbl{font-size:9px;color:var(--dim);font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px}
+    .bal-lbl{font-size:9px;color:var(--dim);font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
     .bal-val{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}
-    .cumule-box{background:linear-gradient(135deg,rgba(245,197,24,0.12),rgba(56,189,248,0.08));
-      border:1px solid rgba(245,197,24,0.35);border-radius:var(--r);
-      padding:18px;text-align:center;animation:gpulse 3s ease-in-out infinite}
-    @keyframes gpulse{0%,100%{box-shadow:0 0 0 rgba(245,197,24,0)}50%{box-shadow:0 0 28px rgba(245,197,24,0.18)}}
-    .cumule-lbl{font-size:10px;font-weight:800;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
-    .cumule-val{font-size:30px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;
-      text-shadow:0 0 30px rgba(245,197,24,0.45)}
-    .cumule-unit{font-size:14px;font-weight:600;color:rgba(245,197,24,0.55);margin-left:4px}
-
-    /* ===== EXPENSES ===== */
+    .cumule-box{background:linear-gradient(135deg,rgba(245,197,24,.12),rgba(56,189,248,.08));border:1px solid rgba(245,197,24,.35);border-radius:var(--r);padding:18px;text-align:center;animation:gpulse 3s ease-in-out infinite}
+    @keyframes gpulse{0%,100%{box-shadow:0 0 0 rgba(245,197,24,0)}50%{box-shadow:0 0 28px rgba(245,197,24,.18)}}
+    .cumule-lbl{font-size:10px;font-weight:800;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+    .cumule-val{font-size:30px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;text-shadow:0 0 30px rgba(245,197,24,.45)}
+    .cumule-unit{font-size:14px;font-weight:600;color:rgba(245,197,24,.55);margin-left:4px}
+    /* EXPENSES */
     .exp-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
     .exp-row .fl{flex:1;font-size:13px}
-    .btn-rm{width:28px;height:28px;border:1px solid rgba(248,113,113,0.35);
-      background:rgba(248,113,113,0.08);border-radius:50%;color:var(--red);
-      font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .btn-add-exp{width:100%;padding:10px;margin-top:8px;
-      border:1px dashed rgba(56,189,248,0.35);background:rgba(56,189,248,0.04);
-      border-radius:var(--rs);color:var(--sky);font-size:13px;font-weight:600;cursor:pointer}
-
-    /* ===== BUTTONS ===== */
-    .btn{display:flex;align-items:center;justify-content:center;gap:8px;
-      width:100%;padding:14px 20px;border-radius:var(--r);font-size:12px;font-weight:800;
-      letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:none;
-      transition:opacity 0.2s,transform 0.1s;margin-bottom:10px}
-    .btn:active{transform:scale(0.97);opacity:0.9}
+    .btn-rm{width:28px;height:28px;border:1px solid rgba(248,113,113,.35);background:rgba(248,113,113,.08);border-radius:50%;color:var(--red);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .btn-add-exp{width:100%;padding:10px;margin-top:8px;border:1px dashed rgba(56,189,248,.35);background:rgba(56,189,248,.04);border-radius:var(--rs);color:var(--sky);font-size:13px;font-weight:600;cursor:pointer}
+    /* BUTTONS */
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;border-radius:var(--r);font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none;transition:opacity .2s,transform .1s;margin-bottom:10px}
+    .btn:active{transform:scale(.97);opacity:.9}
     .btn-sky{background:linear-gradient(135deg,var(--sky),var(--sky-d));color:#fff}
     .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#091A30}
     .btn-lime{background:linear-gradient(135deg,var(--lime),var(--lime-d));color:#091A30}
@@ -227,206 +140,132 @@
     .btn-sm{padding:9px 14px;font-size:11px;margin-bottom:0;width:auto}
     .btn-row{display:flex;gap:10px;margin-bottom:10px}
     .btn-row .btn{margin-bottom:0}
-
-    /* ===== INDICATORS ===== */
-    .save-ind{display:none;align-items:center;gap:5px;font-size:11px;
-      color:var(--lime);font-weight:600;margin:-4px 0 10px}
-    .back-today-btn{display:none;align-items:center;justify-content:center;gap:6px;
-      width:100%;padding:10px;margin-bottom:12px;
-      border:1px solid var(--gold);background:rgba(245,197,24,0.07);
-      border-radius:var(--rs);color:var(--gold);font-size:12px;font-weight:700;cursor:pointer}
+    /* INDICATORS */
+    .save-ind{display:none;align-items:center;gap:5px;font-size:11px;color:var(--lime);font-weight:600;margin:-4px 0 10px}
+    .back-today-btn{display:none;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;margin-bottom:12px;border:1px solid var(--gold);background:rgba(245,197,24,.07);border-radius:var(--rs);color:var(--gold);font-size:12px;font-weight:700;cursor:pointer}
     .day-hdr{text-align:center;padding:10px 0 14px}
-    .day-wd{font-size:12px;color:var(--sky);font-weight:800;letter-spacing:0.15em;text-transform:uppercase}
+    .day-wd{font-size:12px;color:var(--sky);font-weight:800;letter-spacing:.15em;text-transform:uppercase}
     .day-full{font-size:20px;font-weight:900;margin-top:3px}
-
-    /* ===== HISTORY ===== */
-    .h-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-      padding:13px 15px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s,background 0.2s}
+    /* HISTORY */
+    .h-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:10px;cursor:pointer;transition:border-color .2s,background .2s}
     .h-item:hover,.h-item:active{border-color:var(--sky);background:var(--card2)}
     .h-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
-    .h-date{font-size:14px;font-weight:700}.h-act{font-size:11px;color:var(--sky);font-weight:600;margin-top:2px}
+    .h-date{font-size:14px;font-weight:700}
+    .h-act{font-size:11px;color:var(--sky);font-weight:600;margin-top:2px}
     .h-solde{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
     .h-nums{display:flex;gap:12px;font-size:12px;color:var(--dim)}
     .h-nums b{font-weight:700}
-
-    /* ===== STATS ===== */
+    /* STATS */
     .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
     .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
-    .stat-lbl{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+    .stat-lbl{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
     .stat-val{font-size:16px;font-weight:900;font-variant-numeric:tabular-nums}
-
-    /* ===== SETTINGS ===== */
+    /* SETTINGS */
     .sg{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:12px}
-    .sg.featured{border-color:rgba(245,197,24,0.35);background:linear-gradient(135deg,rgba(245,197,24,0.04),var(--card))}
-    .sg-title{font-size:10px;font-weight:800;letter-spacing:0.15em;color:var(--sky);text-transform:uppercase;margin-bottom:14px}
-    .sg-title.gold{color:var(--gold)}.sg-title.firebase{color:#FFA500}
+    .sg.featured{border-color:rgba(245,197,24,.35);background:linear-gradient(135deg,rgba(245,197,24,.04),var(--card))}
+    .sg-title{font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--sky);text-transform:uppercase;margin-bottom:14px}
+    .sg-title.gold{color:var(--gold)}
     .sf{margin-bottom:11px}
-    .sf label{display:block;font-size:11px;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:0.05em}
+    .sf label{display:block;font-size:11px;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:.05em}
     .sf-sep{height:1px;background:var(--border);margin:14px 0}
-
-    /* ===== BRANCH INFO (readonly for non-admin) ===== */
-    .branch-info-view{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+    /* IMAGES */
+    .img-upload-area{position:relative;border:2px dashed var(--border);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;margin-bottom:4px}
+    .img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .img-upload-icon{font-size:26px;margin-bottom:6px}
+    .img-upload-label{font-size:12px;color:var(--dim)}
+    .img-preview{width:100%;max-height:70px;object-fit:contain;border-radius:var(--rs);margin-top:8px;display:none}
+    .img-clear{font-size:11px;color:var(--red);cursor:pointer;background:none;border:none;margin-top:4px;display:none}
+    /* USERS */
+    .user-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px}
+    .user-item-info{flex:1;min-width:0}
+    .user-item-name{font-size:13px;font-weight:700}
+    .user-item-email{font-size:11px;color:var(--dim)}
+    .role-select{padding:6px 8px;background:var(--card2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:11px;font-weight:600;cursor:pointer;outline:none}
+    .btn-role-save{padding:6px 10px;background:var(--sky);color:#fff;border:none;border-radius:var(--rs);font-size:11px;font-weight:700;cursor:pointer}
+    /* READONLY BRANCH */
     .biv-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
     .biv-row:last-child{border-bottom:none}
     .biv-key{color:var(--dim);font-size:12px}
-    .biv-val{font-weight:600;text-align:right}
-
-    /* ===== IMAGE UPLOAD ===== */
-    .img-upload-area{position:relative;border:2px dashed var(--border);
-      border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;margin-bottom:4px}
-    .img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-    .img-upload-icon{font-size:28px;margin-bottom:6px}
-    .img-upload-label{font-size:12px;color:var(--dim)}
-    .img-preview{width:100%;max-height:80px;object-fit:contain;border-radius:var(--rs);margin-top:8px;display:none}
-    .img-clear{font-size:11px;color:var(--red);cursor:pointer;background:none;border:none;margin-top:4px;display:none}
-
-    /* ===== FIREBASE STATUS ===== */
-    .fb-status-bar{display:flex;align-items:center;gap:10px;padding:10px 12px;
-      border-radius:var(--rs);border:1px solid var(--border);margin-bottom:12px;background:var(--bg)}
-    .fb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-    .fb-dot.on{background:var(--lime);box-shadow:0 0 6px var(--lime)}
-    .fb-dot.off{background:var(--dim)}
-    .fb-dot.wait{background:var(--gold);animation:blink 1s infinite}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-    .fb-status-text{flex:1;font-size:12px;font-weight:600}
-    .fb-section-toggle{font-size:11px;color:var(--sky);cursor:pointer;background:none;border:none;font-weight:700}
-    .fb-config-fields{display:none}
-    .fb-config-fields.open{display:block}
-
-    /* ===== MODALS ===== */
-    .mo{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);
-      z-index:500;display:none;align-items:flex-end;justify-content:center}
+    .biv-val{font-weight:600;text-align:right;font-size:12px}
+    /* MODALS */
+    .mo{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:500;display:none;align-items:flex-end;justify-content:center}
     .mo.open{display:flex}
-    .mo-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;
-      width:100%;max-width:640px;padding:18px;max-height:80vh;overflow-y:auto}
-    .mo-title{font-size:14px;font-weight:800;margin-bottom:14px;
-      display:flex;justify-content:space-between;align-items:center}
+    .mo-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:640px;padding:18px;max-height:82vh;overflow-y:auto}
+    .mo-title{font-size:14px;font-weight:800;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
     .mo-close{background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer}
-    .mo-btn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;
-      background:var(--bg);border:1px solid var(--border);border-radius:var(--r);
-      color:var(--text);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:9px;text-align:left}
+    .mo-btn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:9px;text-align:left;transition:background .2s}
     .mo-btn:hover{background:var(--card2)}
-    .mo-all{border-color:rgba(245,197,24,0.5);color:var(--gold);background:rgba(245,197,24,0.05)}
+    .mo-all{border-color:rgba(245,197,24,.5);color:var(--gold);background:rgba(245,197,24,.05)}
     .mo-sub{font-size:11px;color:var(--dim);margin-bottom:10px}
     .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-    .cat-btn{padding:9px 10px;background:var(--bg);border:1px solid var(--border);
-      border-radius:var(--rs);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;text-align:left}
+    .cat-btn{padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;text-align:left}
     .cat-btn:hover{border-color:var(--sky);background:var(--card2)}
-
-    /* ===== REPORT PREVIEW ===== */
-    .rpt-pre{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);
-      padding:13px;font-family:'Courier New',monospace;font-size:11px;color:var(--dim);
-      white-space:pre;overflow-x:auto;max-height:180px;overflow-y:auto;margin-bottom:10px;line-height:1.5}
-
-    /* ===== SEARCH ===== */
-    .search-bar{width:100%;padding:11px 14px;background:var(--card);
-      border:1px solid var(--border);border-radius:var(--r);color:var(--text);
-      font-size:14px;outline:none;margin-bottom:14px}
+    /* MISC */
+    .search-bar{width:100%;padding:11px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:14px;outline:none;margin-bottom:14px}
     .search-bar:focus{border-color:var(--sky)}
     .search-bar::placeholder{color:var(--dim)}
-
-    /* ===== EMPTY ===== */
     .empty{text-align:center;padding:40px 20px;color:var(--dim)}
     .empty-i{font-size:38px;margin-bottom:10px}
-
-    /* ===== TOAST ===== */
-    #toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);
-      background:rgba(9,26,48,0.97);border:1px solid var(--sky);color:var(--text);
-      padding:9px 18px;border-radius:30px;font-size:13px;font-weight:600;
-      z-index:800;opacity:0;transition:opacity 0.3s;white-space:nowrap;pointer-events:none}
+    .sec-hdr{font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--sky);text-transform:uppercase;padding:4px 0 12px}
+    .info-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px;margin-bottom:12px;font-size:12px;color:var(--dim);line-height:1.6}
+    #toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:rgba(9,26,48,.97);border:1px solid var(--sky);color:var(--text);padding:9px 18px;border-radius:30px;font-size:13px;font-weight:600;z-index:800;opacity:0;transition:opacity .3s;white-space:nowrap;pointer-events:none}
     #toast.show{opacity:1}
-
-    .pos{color:var(--lime)}.neg{color:var(--red)}.gold{color:var(--gold)}
-    .sec-hdr{font-size:10px;font-weight:800;letter-spacing:0.15em;color:var(--sky);
-      text-transform:uppercase;padding:4px 0 12px}
+    .pos{color:var(--lime)}.neg{color:var(--red)}
     ::-webkit-scrollbar{width:3px;height:3px}
     ::-webkit-scrollbar-track{background:transparent}
-    ::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.2);border-radius:2px}
+    ::-webkit-scrollbar-thumb{background:rgba(56,189,248,.2);border-radius:2px}
   </style>
 </head>
 <body>
 
-<!-- ===== LOGIN SCREEN ===== -->
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">
-      <canvas id="login-canvas" width="72" height="72"></canvas>
-    </div>
+    <div class="login-logo"><canvas id="login-canvas" width="68" height="68"></canvas></div>
     <div class="login-title">Apôtre Ausias Sainte Gestion</div>
-    <div class="login-sub" id="login-sub">Connectez-vous à votre espace</div>
-
+    <div class="login-sub" id="login-sub">Connectez-vous pour accéder à l'application</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tab-login" onclick="switchTab('login')">🔐 Connexion</button>
       <button class="login-tab" id="tab-register" onclick="switchTab('register')">✏️ Inscription</button>
     </div>
-
-    <!-- CONNEXION -->
     <div id="form-login">
-      <div class="lf">
-        <label>Adresse e-mail</label>
-        <input type="email" id="l-email" placeholder="votre@email.com" autocomplete="email">
-      </div>
-      <div class="lf">
-        <label>Mot de passe</label>
-        <input type="password" id="l-pwd" placeholder="••••••••" autocomplete="current-password">
-      </div>
+      <div class="lf"><label>Adresse e-mail</label><input type="email" id="l-email" placeholder="votre@email.com" autocomplete="email"></div>
+      <div class="lf"><label>Mot de passe</label><input type="password" id="l-pwd" placeholder="••••••••" autocomplete="current-password"></div>
       <div class="login-err" id="login-err"></div>
       <button class="btn btn-sky" id="btn-login">🔐 Se connecter</button>
-      <button class="btn btn-ghost" id="btn-reset-pwd" style="font-size:11px;padding:10px">
-        Mot de passe oublié ?
-      </button>
+      <button class="btn btn-ghost" id="btn-reset-pwd" style="font-size:11px;padding:10px">Mot de passe oublié ?</button>
     </div>
-
-    <!-- INSCRIPTION -->
     <div id="form-register" style="display:none">
-      <div class="lf">
-        <label>Prénom et Nom complet</label>
-        <input type="text" id="r-name" placeholder="Ex : Frère Jean KOUTON">
-      </div>
-      <div class="lf">
-        <label>Adresse e-mail</label>
-        <input type="email" id="r-email" placeholder="votre@email.com" autocomplete="email">
-      </div>
-      <div class="lf">
-        <label>Numéro de téléphone (optionnel)</label>
-        <input type="tel" id="r-phone" placeholder="+229 97 00 00 00">
-      </div>
-      <div class="lf">
-        <label>Mot de passe (minimum 6 caractères)</label>
-        <input type="password" id="r-pwd" placeholder="••••••••" autocomplete="new-password">
-      </div>
+      <div class="lf"><label>Prénom et Nom *</label><input type="text" id="r-name" placeholder="Ex : Frère Jean KOUTON"></div>
+      <div class="lf"><label>Adresse e-mail *</label><input type="email" id="r-email" placeholder="votre@email.com" autocomplete="email"></div>
+      <div class="lf"><label>Téléphone (optionnel)</label><input type="tel" id="r-phone" placeholder="+229 97 00 00 00"></div>
+      <div class="lf"><label>Mot de passe (min. 6 caractères) *</label><input type="password" id="r-pwd" placeholder="••••••••" autocomplete="new-password"></div>
       <div class="login-err" id="register-err"></div>
       <button class="btn btn-lime" id="btn-register">✅ Créer mon compte</button>
     </div>
   </div>
 </div>
 
-<!-- ===== MAIN APP ===== -->
+<!-- APP -->
 <div id="app">
-
-  <!-- INSTALL BANNER -->
   <div id="install-banner">
     <div class="ib-inner">
-      <div class="ib-icon">✝️</div>
-      <div class="ib-text">
-        <div class="ib-title">Apôtre Ausias Sainte Gestion</div>
-        <div class="ib-sub">Installer l'application</div>
-      </div>
+      <div style="font-size:24px;flex-shrink:0">✝</div>
+      <div class="ib-text"><div class="ib-title">Apôtre Ausias Sainte Gestion</div><div class="ib-sub">Installer sur cet appareil</div></div>
       <button class="ib-btn" id="ib-install">INSTALLER</button>
       <button class="ib-close" id="ib-close">✕</button>
     </div>
   </div>
 
-  <!-- HEADER -->
   <div class="app-header" id="app-header">
     <div class="hdr-row1">
-      <div class="hdr-brand"><div class="hdr-brand-dot"></div>Apôtre Ausias Sainte Gestion</div>
+      <div class="hdr-brand">✝ Apôtre Ausias Sainte Gestion</div>
       <div class="hdr-right">
-        <span class="fb-badge offline" id="fb-badge">🔴</span>
-        <div class="user-badge" id="user-badge" style="display:none">
-          <span class="admin-crown" id="admin-crown" style="display:none">👑</span>
-          <span class="user-name" id="user-name">—</span>
-          <button class="btn-logout" id="btn-logout" title="Déconnexion">⏏</button>
+        <div class="sync-badge" id="sync-badge"><div class="sync-dot syncing" id="sync-dot"></div><span id="sync-txt">Sync…</span></div>
+        <div class="user-pill">
+          <span class="user-pill-name" id="user-name">—</span>
+          <span class="role-badge utilisateur" id="role-badge">👤</span>
+          <button class="btn-logout" onclick="doLogout()">⏏</button>
         </div>
       </div>
     </div>
@@ -434,120 +273,76 @@
     <div class="hdr-viewing" id="hdr-viewing">📌 Consultation d'une journée passée</div>
     <div class="branch-bar" id="branch-bar">
       <div class="bb-church" id="bb-church"></div>
-      <div class="bb-row">
-        <span class="bb-branch" id="bb-branch"></span>
-        <span class="bb-sep">|</span>
-        <span class="bb-code" id="bb-code"></span>
-        <span class="bb-sep">·</span>
-        <span class="bb-city" id="bb-city"></span>
-      </div>
+      <div class="bb-row"><span class="bb-branch" id="bb-branch"></span><span class="bb-sep">|</span><span class="bb-code" id="bb-code"></span><span class="bb-sep">·</span><span class="bb-city" id="bb-city"></span></div>
     </div>
   </div>
 
-  <!-- VIEW: AUJOURD'HUI -->
+  <!-- VUE AUJOURD'HUI -->
   <div class="view active" id="view-today">
-    <div class="day-hdr">
-      <div class="day-wd" id="t-weekday"></div>
-      <div class="day-full" id="t-full"></div>
-    </div>
+    <div class="day-hdr"><div class="day-wd" id="t-weekday"></div><div class="day-full" id="t-full"></div></div>
     <button class="back-today-btn" id="btn-back-today">⬅ Retour à aujourd'hui</button>
-
     <div class="card">
       <div class="ct">📋 Activité du jour</div>
-      <div class="act-wrap">
-        <div class="act-lbl">Type d'activité</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.06em">Type d'activité</div>
         <select class="fi" id="act-sel" style="width:100%">
           <option value="">— Sélectionner —</option>
           <option>Culte</option><option>Veillée</option><option>Réunion</option>
-          <option>Évangélisation</option><option>Formation</option>
-          <option>Action sociale</option><option>Baptême</option>
-          <option>Mariage</option><option>Conférence</option><option>Autre</option>
+          <option>Évangélisation</option><option>Formation</option><option>Action sociale</option>
+          <option>Baptême</option><option>Mariage</option><option>Conférence</option><option>Autre</option>
         </select>
         <input type="text" class="fi-full" id="act-other" placeholder="Préciser l'activité…" style="display:none">
       </div>
       <div style="margin-top:14px">
         <div class="ct" style="margin-bottom:10px">👥 Effectif du culte</div>
         <div class="eff-grid">
-          <div class="eff-col">
-            <div class="eff-lbl">Hommes</div>
-            <input type="number" class="eff-inp eff" id="eff-h" placeholder="0" min="0">
-          </div>
-          <div class="eff-col">
-            <div class="eff-lbl">Femmes</div>
-            <input type="number" class="eff-inp eff" id="eff-f" placeholder="0" min="0">
-          </div>
-          <div class="eff-col">
-            <div class="eff-lbl">Enfants</div>
-            <input type="number" class="eff-inp eff" id="eff-e" placeholder="0" min="0">
-          </div>
+          <div class="eff-col"><div class="eff-lbl">Hommes</div><input type="number" class="eff-inp eff" id="eff-h" placeholder="0" min="0"></div>
+          <div class="eff-col"><div class="eff-lbl">Femmes</div><input type="number" class="eff-inp eff" id="eff-f" placeholder="0" min="0"></div>
+          <div class="eff-col"><div class="eff-lbl">Enfants</div><input type="number" class="eff-inp eff" id="eff-e" placeholder="0" min="0"></div>
         </div>
-        <div class="eff-total">
-          <div class="eff-total-lbl">Total Présents</div>
-          <div class="eff-total-val" id="eff-total">0</div>
-        </div>
+        <div class="eff-total"><div class="eff-total-lbl">Total Présents</div><div class="eff-total-val" id="eff-total">0</div></div>
       </div>
     </div>
-
     <div class="card">
       <div class="ct">💰 Recettes</div>
-      <div class="fr"><div class="fl">Offrandes</div>        <input type="number" class="fi rec" id="r-off" placeholder="0" min="0"></div>
-      <div class="fr"><div class="fl">Dîmes</div>            <input type="number" class="fi rec" id="r-dim" placeholder="0" min="0"></div>
-      <div class="fr"><div class="fl">Action de grâce</div>  <input type="number" class="fi rec" id="r-gra" placeholder="0" min="0"></div>
-      <div class="fr"><div class="fl">Dons</div>             <input type="number" class="fi rec" id="r-don" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Offrandes</div><input type="number" class="fi rec" id="r-off" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Dîmes</div><input type="number" class="fi rec" id="r-dim" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Action de grâce</div><input type="number" class="fi rec" id="r-gra" placeholder="0" min="0"></div>
+      <div class="fr"><div class="fl">Dons</div><input type="number" class="fi rec" id="r-don" placeholder="0" min="0"></div>
       <div class="fr"><div class="fl">Matériels spirituels</div><input type="number" class="fi rec" id="r-mat" placeholder="0" min="0"></div>
-      <div class="fr"><div class="fl">Autres recettes</div>  <input type="number" class="fi rec" id="r-aut" placeholder="0" min="0"></div>
-      <div class="tot-row tot-r">
-        <div class="tot-lbl">Total Recettes</div>
-        <div class="tot-val" id="tot-rec">0 FCFA</div>
-      </div>
+      <div class="fr"><div class="fl">Autres recettes</div><input type="number" class="fi rec" id="r-aut" placeholder="0" min="0"></div>
+      <div class="tot-row tot-r"><div class="tot-lbl">Total Recettes</div><div class="tot-val" id="tot-rec">0 FCFA</div></div>
     </div>
-
     <div class="card">
       <div class="ct">📤 Dépenses</div>
       <div id="dep-list"></div>
       <button class="btn-add-exp" id="btn-add-dep">＋ Ajouter une dépense</button>
-      <div class="tot-row tot-d" style="margin-top:14px">
-        <div class="tot-lbl">Total Dépenses</div>
-        <div class="tot-val" id="tot-dep">0 FCFA</div>
-      </div>
+      <div class="tot-row tot-d" style="margin-top:14px"><div class="tot-lbl">Total Dépenses</div><div class="tot-val" id="tot-dep">0 FCFA</div></div>
     </div>
-
     <div class="card">
       <div class="ct">📊 Soldes</div>
       <div class="bal-grid">
-        <div class="bal-card">
-          <div class="bal-lbl">Solde Précédent</div>
-          <div class="bal-val" id="bal-prec">0 FCFA</div>
-        </div>
-        <div class="bal-card">
-          <div class="bal-lbl">Reste du Jour</div>
-          <div class="bal-val" id="bal-jour">0 FCFA</div>
-        </div>
+        <div class="bal-card"><div class="bal-lbl">Solde Précédent</div><div class="bal-val" id="bal-prec">0 FCFA</div></div>
+        <div class="bal-card"><div class="bal-lbl">Reste du Jour</div><div class="bal-val" id="bal-jour">0 FCFA</div></div>
       </div>
-      <div class="cumule-box">
-        <div class="cumule-lbl">✨ Solde Cumulé Général</div>
-        <div class="cumule-val" id="bal-cum">0<span class="cumule-unit">FCFA</span></div>
-      </div>
+      <div class="cumule-box"><div class="cumule-lbl">✨ Solde Cumulé Général</div><div class="cumule-val" id="bal-cum">0<span class="cumule-unit">FCFA</span></div></div>
     </div>
-
     <button class="btn btn-lime" id="btn-save">💾 Enregistrer la journée</button>
-    <div class="save-ind" id="save-ind">✅ Journée enregistrée</div>
+    <div class="save-ind" id="save-ind">✅ Enregistré et synchronisé avec Firebase</div>
     <div class="btn-row">
       <button class="btn btn-gold" id="btn-pdf-today" style="flex:1">🖨️ Imprimer / PDF</button>
       <button class="btn btn-ghost" id="btn-wa-today" style="flex:1">📲 WhatsApp</button>
     </div>
   </div>
 
-  <!-- VIEW: HISTORIQUE -->
+  <!-- VUE HISTORIQUE -->
   <div class="view" id="view-history">
     <div class="sec-hdr">📖 Historique des journées</div>
     <input type="text" class="search-bar" id="hist-search" placeholder="🔍 Date, activité…">
-    <div id="hist-list">
-      <div class="empty"><div class="empty-i">📅</div><div>Aucune journée enregistrée</div></div>
-    </div>
+    <div id="hist-list"><div class="empty"><div class="empty-i">📅</div><div>Aucune journée enregistrée</div></div></div>
   </div>
 
-  <!-- VIEW: RAPPORT -->
+  <!-- VUE RAPPORT -->
   <div class="view" id="view-rapport">
     <div class="sec-hdr">📊 Tableau de bord général</div>
     <div class="stat-grid">
@@ -560,127 +355,80 @@
       <button class="btn btn-gold" id="btn-pdf-all" style="flex:1">🖨️ Rapport PDF complet</button>
       <button class="btn btn-sky" id="btn-wa-all" style="flex:1">📲 WhatsApp</button>
     </div>
-    <div class="ct" style="padding:10px 0 10px">📋 Historique complet</div>
+    <div class="ct" style="padding:8px 0 10px">📋 Journées enregistrées</div>
     <div id="rpt-hist"></div>
   </div>
 
-  <!-- VIEW: PARAMÈTRES -->
+  <!-- VUE PARAMÈTRES -->
   <div class="view" id="view-settings">
     <div class="sec-hdr">⚙️ Paramètres</div>
-
-    <!-- BRANCHE — ADMIN EDIT -->
+    <div class="sg">
+      <div class="sg-title">👤 Mon compte</div>
+      <div id="my-account-info" class="info-box">Chargement…</div>
+      <button class="btn btn-ghost" onclick="doLogout()" style="margin-top:0">⏏ Se déconnecter</button>
+    </div>
+    <!-- GESTION UTILISATEURS (admin) -->
+    <div class="sg admin-only">
+      <div class="sg-title gold">👥 Gestion des utilisateurs</div>
+      <div class="info-box">Le premier utilisateur inscrit devient automatiquement administrateur. Vous pouvez modifier les rôles ci-dessous.</div>
+      <div id="users-list"><div class="empty"><div class="empty-i">👥</div><div>Chargement…</div></div></div>
+      <button class="btn btn-ghost btn-sm" id="btn-refresh-users" style="margin-top:6px">🔄 Actualiser la liste</button>
+    </div>
+    <!-- PARAMÈTRES BRANCHE (admin) -->
     <div class="sg featured admin-only">
       <div class="sg-title gold">🏛️ Paramètres de la Branche</div>
-      <div class="sf"><label>Nom de l'église *</label>
-        <input type="text" class="fi-full" id="b-eglise" placeholder="Ex : Assemblée de Dieu du Bénin"></div>
-      <div class="sf"><label>Nom de la branche / assemblée *</label>
-        <input type="text" class="fi-full" id="b-branche" placeholder="Ex : Branche Centrale de Cotonou"></div>
-      <div class="sf"><label>Code / Identifiant unique de la branche *</label>
-        <input type="text" class="fi-full" id="b-code" placeholder="Ex : ADB-COT-001" style="text-transform:uppercase"></div>
+      <div class="sf"><label>Nom de l'église *</label><input type="text" class="fi-full" id="b-eglise" placeholder="Ex : Assemblée de Dieu du Bénin"></div>
+      <div class="sf"><label>Nom de la branche *</label><input type="text" class="fi-full" id="b-branche" placeholder="Ex : Branche Centrale de Cotonou"></div>
+      <div class="sf"><label>Code / Identifiant unique *</label><input type="text" class="fi-full" id="b-code" placeholder="Ex : ADB-COT-001" style="text-transform:uppercase"></div>
       <div class="sf-sep"></div>
-      <div class="sf"><label>Ville</label>
-        <input type="text" class="fi-full" id="b-ville" placeholder="Ex : Cotonou"></div>
-      <div class="sf"><label>Pays</label>
-        <input type="text" class="fi-full" id="b-pays" placeholder="Ex : Bénin"></div>
+      <div class="sf"><label>Ville</label><input type="text" class="fi-full" id="b-ville" placeholder="Cotonou"></div>
+      <div class="sf"><label>Pays</label><input type="text" class="fi-full" id="b-pays" placeholder="Bénin"></div>
       <div class="sf-sep"></div>
-      <div class="sf"><label>Nom du premier responsable</label>
-        <input type="text" class="fi-full" id="b-resp-nom" placeholder="Ex : Pasteur Jean KOUTON"></div>
-      <div class="sf"><label>Fonction du premier responsable</label>
-        <input type="text" class="fi-full" id="b-resp-fn" placeholder="Ex : Pasteur Principal"></div>
+      <div class="sf"><label>Nom du premier responsable</label><input type="text" class="fi-full" id="b-resp-nom" placeholder="Pasteur Jean KOUTON"></div>
+      <div class="sf"><label>Fonction du premier responsable</label><input type="text" class="fi-full" id="b-resp-fn" placeholder="Pasteur Principal"></div>
       <div class="sf-sep"></div>
-      <div class="sf"><label>Nom du commissaire aux comptes</label>
-        <input type="text" class="fi-full" id="b-comm-nom" placeholder="Ex : Frère Mathieu ADJA"></div>
-      <div class="sf"><label>Téléphone du commissaire aux comptes</label>
-        <input type="tel" class="fi-full" id="b-comm-tel" placeholder="Ex : +22997123456"></div>
+      <div class="sf"><label>Commissaire aux comptes</label><input type="text" class="fi-full" id="b-comm-nom" placeholder="Frère Mathieu ADJA"></div>
+      <div class="sf"><label>Téléphone commissaire</label><input type="tel" class="fi-full" id="b-comm-tel" placeholder="+22997123456"></div>
       <div class="sf-sep"></div>
-      <div class="sf"><label>Logo de l'église (optionnel)</label>
-        <div class="img-upload-area"><input type="file" id="logo-file" accept="image/*">
-          <div class="img-upload-icon">🖼️</div>
-          <div class="img-upload-label">Appuyer pour choisir le logo</div>
-          <img class="img-preview" id="logo-preview" alt="Logo"></div>
+      <div class="sf"><label>Logo de l'église</label>
+        <div class="img-upload-area"><input type="file" id="logo-file" accept="image/*"><div class="img-upload-icon">🖼️</div><div class="img-upload-label">Appuyer pour choisir</div><img class="img-preview" id="logo-preview" alt="Logo"></div>
         <button class="img-clear" id="logo-clear">✕ Supprimer</button></div>
-      <div class="sf"><label>Cachet / Sceau officiel (optionnel)</label>
-        <div class="img-upload-area"><input type="file" id="cachet-file" accept="image/*">
-          <div class="img-upload-icon">🔏</div>
-          <div class="img-upload-label">Appuyer pour choisir le cachet</div>
-          <img class="img-preview" id="cachet-preview" alt="Cachet"></div>
+      <div class="sf"><label>Cachet / Sceau</label>
+        <div class="img-upload-area"><input type="file" id="cachet-file" accept="image/*"><div class="img-upload-icon">🔏</div><div class="img-upload-label">Appuyer pour choisir</div><img class="img-preview" id="cachet-preview" alt="Cachet"></div>
         <button class="img-clear" id="cachet-clear">✕ Supprimer</button></div>
-      <button class="btn btn-gold" id="btn-save-branche" style="margin-top:4px">💾 Enregistrer la branche</button>
+      <button class="btn btn-gold" id="btn-save-branche" style="margin-top:6px">☁️ Enregistrer et synchroniser</button>
     </div>
-
-    <!-- BRANCHE — NON-ADMIN VIEW (readonly) -->
-    <div class="sg" id="branch-info-readonly" style="display:none">
+    <!-- BRANCHE (non-admin, lecture seule) -->
+    <div class="sg" id="branch-info-readonly">
       <div class="sg-title">🏛️ Informations de la Branche</div>
-      <div id="branch-readonly-content"></div>
+      <div id="branch-readonly-content"><div style="color:var(--dim);font-size:13px">Chargement…</div></div>
     </div>
-
-    <!-- FIREBASE CONFIG — ADMIN ONLY -->
-    <div class="sg admin-only">
-      <div class="sg-title firebase">🔥 Firebase — Administration</div>
-      <div class="fb-status-bar">
-        <div class="fb-dot off" id="fb-dot"></div>
-        <div class="fb-status-text" id="fb-status-txt">Non connecté</div>
-        <button class="fb-section-toggle" id="fb-toggle-cfg">⚙️ Configurer</button>
-      </div>
-      <div class="fb-config-fields" id="fb-cfg-fields">
-        <div class="sf"><label>Votre e-mail administrateur *</label>
-          <input type="email" class="fi-full" id="fb-admin-email" placeholder="votre@email.com"></div>
-        <div class="sf-sep"></div>
-        <div class="sf"><label>API Key</label>
-          <input type="text" class="fi-full" id="fb-apikey" placeholder="AIzaSy…"></div>
-        <div class="sf"><label>Auth Domain</label>
-          <input type="text" class="fi-full" id="fb-authdomain" placeholder="projet.firebaseapp.com"></div>
-        <div class="sf"><label>Project ID</label>
-          <input type="text" class="fi-full" id="fb-projectid" placeholder="mon-projet-firebase"></div>
-        <div class="sf"><label>Storage Bucket</label>
-          <input type="text" class="fi-full" id="fb-bucket" placeholder="projet.appspot.com"></div>
-        <div class="sf"><label>Messaging Sender ID</label>
-          <input type="text" class="fi-full" id="fb-senderid" placeholder="123456789012"></div>
-        <div class="sf"><label>App ID</label>
-          <input type="text" class="fi-full" id="fb-appid" placeholder="1:123…:web:abc…"></div>
-        <div class="btn-row" style="margin-top:4px">
-          <button class="btn btn-sky btn-sm" id="btn-fb-connect" style="flex:1">🔥 Connecter</button>
-          <button class="btn btn-ghost btn-sm" id="btn-fb-clear" style="flex:1">🗑️ Effacer</button>
-        </div>
-        <p style="font-size:11px;color:var(--dim);margin-top:8px;line-height:1.5">
-          Créez votre projet sur <strong style="color:var(--text)">console.firebase.google.com</strong>, activez Firestore et l'Authentification (email/mot de passe), puis collez votre configuration.
-        </p>
-      </div>
-    </div>
-
-    <!-- CONTRÔLEURS (tous les utilisateurs) -->
+    <!-- CONTRÔLEURS -->
     <div class="sg">
-      <div class="sg-title">👥 Contrôleurs WhatsApp</div>
-      <div class="sf"><label>Contrôleur 1 — Nom</label>
-        <input type="text" class="fi-full" id="c1n" placeholder="Nom du contrôleur 1"></div>
-      <div class="sf"><label>Contrôleur 1 — Numéro (avec indicatif)</label>
-        <input type="tel" class="fi-full" id="c1t" placeholder="22996123456"></div>
+      <div class="sg-title">📲 Contrôleurs WhatsApp</div>
+      <div class="sf"><label>Contrôleur 1 — Nom</label><input type="text" class="fi-full" id="c1n" placeholder="Nom"></div>
+      <div class="sf"><label>Contrôleur 1 — Numéro</label><input type="tel" class="fi-full" id="c1t" placeholder="22996000000"></div>
       <div class="sf-sep"></div>
-      <div class="sf"><label>Contrôleur 2 — Nom</label>
-        <input type="text" class="fi-full" id="c2n" placeholder="Nom du contrôleur 2"></div>
-      <div class="sf"><label>Contrôleur 2 — Numéro</label>
-        <input type="tel" class="fi-full" id="c2t" placeholder="22997654321"></div>
+      <div class="sf"><label>Contrôleur 2 — Nom</label><input type="text" class="fi-full" id="c2n" placeholder="Nom"></div>
+      <div class="sf"><label>Contrôleur 2 — Numéro</label><input type="tel" class="fi-full" id="c2t" placeholder="22997000000"></div>
       <div class="sf-sep"></div>
-      <div class="sf"><label>Contrôleur 3 — Nom</label>
-        <input type="text" class="fi-full" id="c3n" placeholder="Nom du contrôleur 3"></div>
-      <div class="sf"><label>Contrôleur 3 — Numéro</label>
-        <input type="tel" class="fi-full" id="c3t" placeholder="22991122334"></div>
+      <div class="sf"><label>Contrôleur 3 — Nom</label><input type="text" class="fi-full" id="c3n" placeholder="Nom"></div>
+      <div class="sf"><label>Contrôleur 3 — Numéro</label><input type="tel" class="fi-full" id="c3t" placeholder="22991000000"></div>
       <button class="btn btn-sky" id="btn-save-set" style="margin-top:8px">💾 Enregistrer</button>
     </div>
-
     <!-- À PROPOS -->
     <div class="sg">
       <div class="sg-title">ℹ️ À propos</div>
       <p style="font-size:13px;color:var(--dim);line-height:1.7">
         <strong style="color:var(--text)">Apôtre Ausias Sainte Gestion</strong><br>
-        Cahier de caisse numérique — PWA Hors ligne<br>
-        Version 2.1.0 — Firebase Auth + IndexedDB + PDF<br><br>
-        Données financières stockées localement sur l'appareil. Paramètres de branche synchronisés avec Firebase.
+        Cahier de caisse numérique — Version 3.0<br>
+        Firebase Auth + Firestore + Storage + Analytics<br>
+        PWA installable · Synchronisation temps réel<br><br>
+        Projet Firebase : <strong style="color:var(--sky)">apotreausiassaintegestionpro</strong>
       </p>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-v="today"><span class="ni">📅</span><span>Aujourd'hui</span></button>
     <button class="nav-btn" data-v="history"><span class="ni">📖</span><span>Historique</span></button>
@@ -689,7 +437,7 @@
   </nav>
 </div>
 
-<!-- MODAL WhatsApp -->
+<!-- MODAL WHATSAPP -->
 <div class="mo" id="mo-wa">
   <div class="mo-box">
     <div class="mo-title"><span>📲 Envoyer le rapport</span><button class="mo-close" id="mo-wa-close">✕</button></div>
@@ -701,368 +449,314 @@
   </div>
 </div>
 
-<!-- MODAL Dépenses -->
+<!-- MODAL DÉPENSES -->
 <div class="mo" id="mo-dep">
   <div class="mo-box">
     <div class="mo-title"><span>＋ Ajouter une dépense</span><button class="mo-close" id="mo-dep-close">✕</button></div>
-    <div class="mo-sub">Sélectionner ou saisir librement</div>
+    <div class="mo-sub">Sélectionner une catégorie ou saisir librement</div>
     <div class="cat-grid" id="cat-grid"></div>
-    <div class="sf" style="margin-bottom:10px"><label>Autre libellé</label>
-      <input type="text" class="fi-full" id="dep-custom" placeholder="Saisir un libellé…"></div>
+    <div class="sf" style="margin-bottom:10px"><label>Autre libellé</label><input type="text" class="fi-full" id="dep-custom" placeholder="Saisir un libellé…"></div>
     <button class="btn btn-sky" id="btn-confirm-dep">Ajouter</button>
   </div>
 </div>
-
 <div id="toast"></div>
 
 <script>
-/* ================================================
-   PWA SETUP
-================================================ */
-function makeIcon(sz){
-  const c=document.createElement('canvas');c.width=c.height=sz;
-  const ctx=c.getContext('2d'),r=sz*.18;
-  ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(sz-r,0);
-  ctx.quadraticCurveTo(sz,0,sz,r);ctx.lineTo(sz,sz-r);
-  ctx.quadraticCurveTo(sz,sz,sz-r,sz);ctx.lineTo(r,sz);
-  ctx.quadraticCurveTo(0,sz,0,sz-r);ctx.lineTo(0,r);
-  ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();
-  const g=ctx.createLinearGradient(0,0,sz,sz);
-  g.addColorStop(0,'#091A30');g.addColorStop(1,'#122B54');ctx.fillStyle=g;ctx.fill();
-  ctx.strokeStyle='#F5C518';ctx.lineWidth=sz*.055;
-  ctx.beginPath();ctx.arc(sz/2,sz/2,sz*.36,0,Math.PI*2);ctx.stroke();
-  ctx.fillStyle='#38BDF8';
-  const s=sz*.32,ox=sz/2-s*.28,oy=sz/2-s*.5;
-  ctx.beginPath();ctx.moveTo(ox+s*.55,oy);ctx.lineTo(ox,oy+s*.48);
-  ctx.lineTo(ox+s*.42,oy+s*.44);ctx.lineTo(ox-s*.02,oy+s);
-  ctx.lineTo(ox+s*.7,oy+s*.52);ctx.lineTo(ox+s*.22,oy+s*.52);
-  ctx.closePath();ctx.fill();
-  return c.toDataURL('image/png');
-}
-const ico192=makeIcon(192),ico512=makeIcon(512);
-// Draw login icon too
-const lc=document.getElementById('login-canvas');
-const lctx=lc.getContext('2d');
-const tmpC=document.createElement('canvas');tmpC.width=72;tmpC.height=72;
-const tmpCtx=tmpC.getContext('2d');
-// Copy makeIcon logic inline for small canvas
+/* =====================================================
+   🔥 CONFIGURATION FIREBASE — apotreausiassaintegestionpro
+===================================================== */
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyCZXI-K676fcZRlmWy75gUhJApxfAFI7Us",
+  authDomain:"apotreausiassaintegestionpro.firebaseapp.com",
+  projectId:"apotreausiassaintegestionpro",
+  storageBucket:"apotreausiassaintegestionpro.firebasestorage.app",
+  messagingSenderId:"624425572996",
+  appId:"1:624425572996:web:7aca97aa085982bed040d1",
+  measurementId:"G-TGP5P8LR86"
+};
+
+/* =====================================================
+   PWA — ICÔNES + MANIFEST + SERVICE WORKER
+===================================================== */
 (function(){
-  const sz=72,r=sz*.18;
-  lctx.beginPath();lctx.moveTo(r,0);lctx.lineTo(sz-r,0);
-  lctx.quadraticCurveTo(sz,0,sz,r);lctx.lineTo(sz,sz-r);
-  lctx.quadraticCurveTo(sz,sz,sz-r,sz);lctx.lineTo(r,sz);
-  lctx.quadraticCurveTo(0,sz,0,sz-r);lctx.lineTo(0,r);
-  lctx.quadraticCurveTo(0,0,r,0);lctx.closePath();
-  const g=lctx.createLinearGradient(0,0,sz,sz);
-  g.addColorStop(0,'#091A30');g.addColorStop(1,'#122B54');lctx.fillStyle=g;lctx.fill();
-  lctx.strokeStyle='#F5C518';lctx.lineWidth=sz*.055;
-  lctx.beginPath();lctx.arc(sz/2,sz/2,sz*.36,0,Math.PI*2);lctx.stroke();
-  lctx.fillStyle='#38BDF8';
-  const s=sz*.32,ox=sz/2-s*.28,oy=sz/2-s*.5;
-  lctx.beginPath();lctx.moveTo(ox+s*.55,oy);lctx.lineTo(ox,oy+s*.48);
-  lctx.lineTo(ox+s*.42,oy+s*.44);lctx.lineTo(ox-s*.02,oy+s);
-  lctx.lineTo(ox+s*.7,oy+s*.52);lctx.lineTo(ox+s*.22,oy+s*.52);
-  lctx.closePath();lctx.fill();
+  function makeIcon(sz){
+    const c=document.createElement('canvas');c.width=c.height=sz;
+    const ctx=c.getContext('2d'),r=sz*.18;
+    ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(sz-r,0);ctx.quadraticCurveTo(sz,0,sz,r);
+    ctx.lineTo(sz,sz-r);ctx.quadraticCurveTo(sz,sz,sz-r,sz);ctx.lineTo(r,sz);
+    ctx.quadraticCurveTo(0,sz,0,sz-r);ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();
+    const g=ctx.createLinearGradient(0,0,sz,sz);g.addColorStop(0,'#091A30');g.addColorStop(1,'#122B54');ctx.fillStyle=g;ctx.fill();
+    ctx.strokeStyle='#F5C518';ctx.lineWidth=sz*.055;ctx.beginPath();ctx.arc(sz/2,sz/2,sz*.36,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#38BDF8';const s=sz*.32,ox=sz/2-s*.28,oy=sz/2-s*.5;
+    ctx.beginPath();ctx.moveTo(ox+s*.55,oy);ctx.lineTo(ox,oy+s*.48);ctx.lineTo(ox+s*.42,oy+s*.44);
+    ctx.lineTo(ox-s*.02,oy+s);ctx.lineTo(ox+s*.7,oy+s*.52);ctx.lineTo(ox+s*.22,oy+s*.52);ctx.closePath();ctx.fill();
+    return c.toDataURL('image/png');
+  }
+  const lc=document.getElementById('login-canvas');
+  if(lc){const i=new Image(),d=makeIcon(68);i.onload=()=>lc.getContext('2d').drawImage(i,0,0);i.src=d;}
+  const i192=makeIcon(192),i512=makeIcon(512);
+  document.getElementById('manifest-link').href=URL.createObjectURL(new Blob([JSON.stringify({
+    name:'Apôtre Ausias Sainte Gestion',short_name:'AASG',description:'Cahier de caisse numérique',
+    start_url:'./',display:'standalone',background_color:'#091A30',theme_color:'#091A30',
+    orientation:'portrait-primary',
+    icons:[{src:i192,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:i512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]
+  })],{type:'application/json'}));
+  ['apple-touch-icon','icon'].forEach(r=>{const l=document.createElement('link');l.rel=r;l.href=i192;document.head.appendChild(l);});
+  const SW=`const C='aasg-v5';
+const URLS=['https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js','https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js','https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js','https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js','https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js'];
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>Promise.allSettled([c.add('/'),  ...URLS.map(u=>c.add(u))])));});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim();});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp&&resp.ok){const cl=resp.clone();caches.open(C).then(c=>c.put(e.request,cl));}return resp;}).catch(()=>caches.match('/'))));});`;
+  if('serviceWorker' in navigator)try{navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});}catch(e){}
+  let dp=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;document.getElementById('install-banner').style.display='block';});
+  window.addEventListener('appinstalled',()=>{document.getElementById('install-banner').style.display='none';});
+  document.getElementById('ib-install').addEventListener('click',async()=>{if(!dp)return;await dp.prompt();dp=null;document.getElementById('install-banner').style.display='none';});
+  document.getElementById('ib-close').addEventListener('click',()=>{document.getElementById('install-banner').style.display='none';});
 })();
 
-const mf={name:'Apôtre Ausias Sainte Gestion',short_name:'AASG',
-  description:'Cahier de caisse numérique',start_url:'./',display:'standalone',
-  background_color:'#091A30',theme_color:'#091A30',orientation:'portrait-primary',
-  icons:[{src:ico192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
-         {src:ico512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
-document.getElementById('manifest-link').href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/json'}));
-['apple-touch-icon','icon'].forEach(rel=>{const l=document.createElement('link');l.rel=rel;l.href=ico192;document.head.appendChild(l);});
-
-const SW=`const CACHE='aasg-v3';
-self.addEventListener('install',e=>{self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled([
-    c.add(self.location.origin+self.location.pathname.replace(/\\/[^\\/]*$/,'/')||'/'),
-    c.add('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js'),
-    c.add('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js'),
-    c.add('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js')
-  ])));});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))));self.clients.claim();});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{
-    if(resp&&resp.ok){const cl=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,cl));}return resp;
-  }).catch(()=>caches.match('/'))));});`;
-if('serviceWorker' in navigator){try{navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});}catch(e){}}
-
-/* INSTALL PROMPT */
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;
-  document.getElementById('install-banner').style.display='block';});
-window.addEventListener('appinstalled',()=>{document.getElementById('install-banner').style.display='none';});
-document.getElementById('ib-install').addEventListener('click',async()=>{if(!deferredPrompt)return;await deferredPrompt.prompt();deferredPrompt=null;document.getElementById('install-banner').style.display='none';});
-document.getElementById('ib-close').addEventListener('click',()=>{document.getElementById('install-banner').style.display='none';});
-
-/* ================================================
-   INDEXEDDB
-================================================ */
+/* =====================================================
+   INDEXEDDB — CACHE LOCAL
+===================================================== */
 let DB;
 function openDB(){return new Promise((res,rej)=>{
-  const req=indexedDB.open('AASGDb',4);
+  const req=indexedDB.open('AASGv5',6);
   req.onupgradeneeded=e=>{const d=e.target.result;
     if(!d.objectStoreNames.contains('journees'))d.createObjectStore('journees',{keyPath:'date'});
-    if(!d.objectStoreNames.contains('settings'))d.createObjectStore('settings',{keyPath:'key'});
-  };
+    if(!d.objectStoreNames.contains('settings'))d.createObjectStore('settings',{keyPath:'key'});};
   req.onsuccess=e=>{DB=e.target.result;res(DB);};req.onerror=()=>rej(req.error);
 });}
-function dbGet(st,key){return new Promise((res,rej)=>{const r=DB.transaction(st,'readonly').objectStore(st).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
-function dbPut(st,val){return new Promise((res,rej)=>{const r=DB.transaction(st,'readwrite').objectStore(st).put(val);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
-function dbGetAll(st){return new Promise((res,rej)=>{const r=DB.transaction(st,'readonly').objectStore(st).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+const dbGet=(st,k)=>new Promise((res,rej)=>{const r=DB.transaction(st,'readonly').objectStore(st).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
+const dbPut=(st,v)=>new Promise((res,rej)=>{const r=DB.transaction(st,'readwrite').objectStore(st).put(v);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});
+const dbGetAll=st=>new Promise((res,rej)=>{const r=DB.transaction(st,'readonly').objectStore(st).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
 
-/* ================================================
-   FIREBASE + AUTH
-================================================ */
-let fbDb=null,fbAuth=null,fbConnected=false;
-let currentUser=null,isAdmin=false;
+/* =====================================================
+   FIREBASE GLOBALS
+===================================================== */
+let fbAuth=null,fbDb=null,fbStorage=null,fbAnalytics=null;
+let fsUnsub=null;
+let currentUser=null,currentRole='utilisateur',currentName='';
+const ROLE_LABELS={admin:'👑 Admin',responsable:'🔑 Responsable',utilisateur:'👤 Utilisateur'};
+const FB_ERR={'auth/user-not-found':'Aucun compte avec cet e-mail.','auth/wrong-password':'Mot de passe incorrect.','auth/invalid-credential':'E-mail ou mot de passe incorrect.','auth/email-already-in-use':'Cet e-mail est déjà utilisé.','auth/invalid-email':'E-mail invalide.','auth/weak-password':'Mot de passe trop faible (6 car. min.).','auth/too-many-requests':'Trop de tentatives, réessayez plus tard.','auth/network-request-failed':'Vérifiez votre connexion Internet.'};
+const fbErr=e=>FB_ERR[e.code]||e.message;
 
-function getFbConfig(){try{return JSON.parse(localStorage.getItem('aasg_fb_config')||'null');}catch(e){return null;}}
-function saveFbConfig(cfg){localStorage.setItem('aasg_fb_config',JSON.stringify(cfg));}
+function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return;}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 
-function setFbBadge(state){
-  const b=document.getElementById('fb-badge');
-  const dot=document.getElementById('fb-dot');
-  const txt=document.getElementById('fb-status-txt');
-  if(state==='online'){b.className='fb-badge online';b.textContent='🟢 Firebase';dot&&(dot.className='fb-dot on');txt&&(txt.textContent='Firebase connecté — synchronisation active');}
-  else if(state==='connecting'){b.className='fb-badge connecting';b.textContent='🟡…';dot&&(dot.className='fb-dot wait');txt&&(txt.textContent='Connexion en cours…');}
-  else{b.className='fb-badge offline';b.textContent='🔴';dot&&(dot.className='fb-dot off');txt&&(txt.textContent='Non connecté — données locales');}
+/* =====================================================
+   SYNC BADGE
+===================================================== */
+function setSyncState(state,text){
+  const dot=document.getElementById('sync-dot'),txt=document.getElementById('sync-txt');
+  if(dot)dot.className='sync-dot '+state;if(txt)txt.textContent=text;
 }
 
-function loadScript(src){return new Promise((res,rej)=>{
-  if(document.querySelector(`script[src="${src}"]`)){res();return;}
-  const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
-});}
-
-async function initFirebase(cfg,autoLogin){
-  if(!cfg||!cfg.projectId){setFbBadge('offline');return false;}
-  setFbBadge('connecting');
+/* =====================================================
+   FIREBASE INIT
+===================================================== */
+async function initFirebase(){
+  setSyncState('syncing','Connexion…');
   try{
     await Promise.all([
       loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js'),
       loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js'),
-      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js')
+      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js'),
+      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js'),
+      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js'),
     ]);
-    if(firebase.apps.length)await firebase.app().delete().catch(()=>{});
-    firebase.initializeApp(cfg);
-    fbDb=firebase.firestore();
+    if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
     fbAuth=firebase.auth();
-    fbConnected=true;
-    setFbBadge('online');
-    // Set up auth state listener
-    fbAuth.onAuthStateChanged(async user=>{
-      if(user){
-        currentUser=user;
-        isAdmin=cfg.adminEmail&&user.email.toLowerCase()===cfg.adminEmail.toLowerCase();
-        applyAdminRole();
-        showApp();
-        await loadAppData();
-      } else {
-        currentUser=null;isAdmin=false;
-        applyAdminRole();
-        showLoginScreen();
-      }
-    });
+    fbDb=firebase.firestore();
+    fbStorage=firebase.storage();
+    try{fbAnalytics=firebase.analytics();}catch(e){}
+    try{await fbDb.enablePersistence({synchronizeTabs:true});}catch(e){}
+    setSyncState('synced','Firebase ✓');
+    try{fbAnalytics&&fbAnalytics.logEvent('app_open');}catch(e){}
     return true;
-  }catch(e){fbConnected=false;fbDb=null;fbAuth=null;setFbBadge('offline');console.warn('Firebase:',e.message);return false;}
+  }catch(e){setSyncState('offline','Hors ligne');console.error('Firebase:',e);return false;}
 }
 
-/* Firebase Firestore helpers */
-async function fbSaveBranche(data){
-  if(!fbDb||!data.codeBranche)return false;
-  try{const d={...data};delete d.logo;delete d.cachet;
-    await fbDb.collection('aasg_branches').doc(data.codeBranche).set(d,{merge:true});return true;}
-  catch(e){return false;}
-}
-async function fbLoadBranche(code){
-  if(!fbDb||!code)return null;
-  try{const doc=await fbDb.collection('aasg_branches').doc(code).get();return doc.exists?doc.data():null;}
-  catch(e){return null;}
+/* =====================================================
+   AUTH STATE
+===================================================== */
+function startAuthListener(){
+  fbAuth.onAuthStateChanged(async user=>{
+    if(user){
+      currentUser=user;setSyncState('syncing','Chargement…');
+      fbDb.collection('aasg_users').doc(user.uid).update({lastLogin:Date.now()}).catch(()=>{});
+      const doc=await fbDb.collection('aasg_users').doc(user.uid).get().catch(()=>null);
+      if(doc&&doc.exists){const d=doc.data();currentRole=d.role||'utilisateur';currentName=d.name||user.displayName||user.email;}
+      else{currentRole='utilisateur';currentName=user.displayName||user.email;}
+      applyRole();
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app').style.display='flex';
+      await loadAllData();
+      startRealtimeSync();
+      setSyncState('synced','Synchronisé ✓');
+      try{fbAnalytics&&fbAnalytics.logEvent('login',{method:'email'});}catch(e){}
+    }else{
+      currentUser=null;currentRole='utilisateur';
+      if(fsUnsub){fsUnsub();fsUnsub=null;}
+      document.getElementById('login-screen').style.display='flex';
+      document.getElementById('app').style.display='none';
+      setSyncState('offline','Non connecté');
+      document.getElementById('btn-login').textContent='🔐 Se connecter';document.getElementById('btn-login').disabled=false;
+      document.getElementById('btn-register').textContent='✅ Créer mon compte';document.getElementById('btn-register').disabled=false;
+    }
+  });
 }
 
-/* Firebase Auth helpers */
-const FB_ERRORS={
-  'auth/user-not-found':'Aucun compte avec cet e-mail.',
-  'auth/wrong-password':'Mot de passe incorrect.',
-  'auth/invalid-credential':'E-mail ou mot de passe incorrect.',
-  'auth/email-already-in-use':'Cet e-mail est déjà utilisé.',
-  'auth/invalid-email':'Adresse e-mail invalide.',
-  'auth/weak-password':'Mot de passe trop faible (6 caractères minimum).',
-  'auth/too-many-requests':'Trop de tentatives. Réessayez plus tard.',
-  'auth/network-request-failed':'Vérifiez votre connexion internet.'
-};
-function fbErrMsg(e){return FB_ERRORS[e.code]||e.message;}
+/* =====================================================
+   LOGIN / REGISTER / LOGOUT
+===================================================== */
+document.getElementById('btn-login').addEventListener('click',async()=>{
+  const email=document.getElementById('l-email').value.trim(),pwd=document.getElementById('l-pwd').value;
+  const err=document.getElementById('login-err');
+  if(!email||!pwd){err.textContent='Veuillez remplir tous les champs.';return;}
+  const btn=document.getElementById('btn-login');btn.textContent='Connexion…';btn.disabled=true;err.textContent='';
+  try{await fbAuth.signInWithEmailAndPassword(email,pwd);}
+  catch(e){err.textContent=fbErr(e);btn.textContent='🔐 Se connecter';btn.disabled=false;}
+});
 
-async function loginUser(email,pwd){
-  try{await fbAuth.signInWithEmailAndPassword(email,pwd);return{ok:true};}
-  catch(e){return{ok:false,msg:fbErrMsg(e)};}
-}
-async function registerUser(name,email,phone,pwd){
+document.getElementById('btn-register').addEventListener('click',async()=>{
+  const name=document.getElementById('r-name').value.trim(),email=document.getElementById('r-email').value.trim();
+  const phone=document.getElementById('r-phone').value.trim(),pwd=document.getElementById('r-pwd').value;
+  const err=document.getElementById('register-err');
+  if(!name||!email||!pwd){err.textContent='Remplissez les champs obligatoires (*).';return;}
+  const btn=document.getElementById('btn-register');btn.textContent='Création…';btn.disabled=true;err.textContent='';
   try{
+    const adminSnap=await fbDb.collection('aasg_config').doc('admin').get().catch(()=>null);
+    const isFirst=!adminSnap||!adminSnap.exists;
+    const role=isFirst?'admin':'utilisateur';
     const cred=await fbAuth.createUserWithEmailAndPassword(email,pwd);
     await cred.user.updateProfile({displayName:name});
-    if(fbDb)await fbDb.collection('aasg_users').doc(cred.user.uid).set({name,email,phone:phone||'',createdAt:Date.now()});
-    return{ok:true};
-  }catch(e){return{ok:false,msg:fbErrMsg(e)};}
-}
-async function logoutUser(){
-  if(fbAuth)await fbAuth.signOut().catch(()=>{});
-  else showLoginScreen();
-}
-async function resetPassword(email){
-  if(!fbAuth){toast('⚠️ Firebase non configuré');return;}
-  try{await fbAuth.sendPasswordResetEmail(email);toast('📧 E-mail de réinitialisation envoyé !');}
-  catch(e){toast('❌ '+fbErrMsg(e));}
-}
+    await fbDb.collection('aasg_users').doc(cred.user.uid).set({name,email,phone:phone||'',role,createdAt:Date.now(),lastLogin:Date.now()});
+    if(isFirst)await fbDb.collection('aasg_config').doc('admin').set({adminUid:cred.user.uid,adminEmail:email,setAt:Date.now()});
+    try{fbAnalytics&&fbAnalytics.logEvent('sign_up',{method:'email'});}catch(e){}
+  }catch(e){err.textContent=fbErr(e);btn.textContent='✅ Créer mon compte';btn.disabled=false;}
+});
 
-/* ================================================
-   ROLE SYSTEM
-================================================ */
-function applyAdminRole(){
-  if(isAdmin){document.body.classList.add('is-admin');}
-  else{document.body.classList.remove('is-admin');}
-  // Branch readonly view for non-admins
-  const roView=document.getElementById('branch-info-readonly');
-  if(roView)roView.style.display=isAdmin?'none':'block';
-  renderBranchReadonly();
-  // User badge
-  const ub=document.getElementById('user-badge');
-  if(ub)ub.style.display=currentUser?'flex':'none';
-  if(currentUser){
-    document.getElementById('user-name').textContent=
-      currentUser.displayName||currentUser.email||'Utilisateur';
-    document.getElementById('admin-crown').style.display=isAdmin?'inline':'none';
-  }
-}
+document.getElementById('btn-reset-pwd').addEventListener('click',async()=>{
+  const email=document.getElementById('l-email').value.trim();
+  if(!email){document.getElementById('login-err').textContent="Entrez votre e-mail d'abord.";return;}
+  try{await fbAuth.sendPasswordResetEmail(email);
+    const err=document.getElementById('login-err');err.style.color='var(--lime)';err.textContent='✅ E-mail de réinitialisation envoyé !';
+    setTimeout(()=>{err.style.color='';err.textContent='';},5000);}
+  catch(e){document.getElementById('login-err').textContent=fbErr(e);}
+});
 
-function renderBranchReadonly(){
-  const el=document.getElementById('branch-readonly-content');
-  if(!el)return;
-  if(!branche.nomEglise&&!branche.nomBranche){el.innerHTML='<div style="color:var(--dim);font-size:13px">Paramètres non configurés par l\'administrateur.</div>';return;}
-  const rows=[
-    ['Église',branche.nomEglise],['Branche',branche.nomBranche],
-    ['Code',branche.codeBranche],['Ville',branche.ville],['Pays',branche.pays],
-    ['Premier Responsable',branche.nomResponsable+(branche.fonctionResponsable?' ('+branche.fonctionResponsable+')':'')],
-    ['Commissaire aux Comptes',branche.nomCommissaire+(branche.telCommissaire?' – '+branche.telCommissaire:'')]
-  ];
-  el.innerHTML=rows.filter(r=>r[1]).map(r=>`
-    <div class="biv-row"><span class="biv-key">${r[0]}</span><span class="biv-val">${r[1]}</span></div>`).join('');
-}
+async function doLogout(){if(fsUnsub){fsUnsub();fsUnsub=null;}await fbAuth.signOut().catch(()=>{});}
 
-/* ================================================
-   LOGIN SCREEN LOGIC
-================================================ */
-function showApp(){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app').style.display='flex';
-}
-function showLoginScreen(){
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('app').style.display='none';
-}
 function switchTab(tab){
   document.getElementById('tab-login').classList.toggle('active',tab==='login');
   document.getElementById('tab-register').classList.toggle('active',tab==='register');
   document.getElementById('form-login').style.display=tab==='login'?'block':'none';
   document.getElementById('form-register').style.display=tab==='register'?'block':'none';
-  document.getElementById('login-err').textContent='';
-  document.getElementById('register-err').textContent='';
+  document.getElementById('login-err').textContent='';document.getElementById('register-err').textContent='';
 }
 
-document.getElementById('btn-login').addEventListener('click',async()=>{
-  const email=document.getElementById('l-email').value.trim();
-  const pwd=document.getElementById('l-pwd').value;
-  if(!email||!pwd){document.getElementById('login-err').textContent='Veuillez remplir tous les champs.';return;}
-  document.getElementById('btn-login').textContent='Connexion…';
-  const r=await loginUser(email,pwd);
-  document.getElementById('btn-login').textContent='🔐 Se connecter';
-  if(!r.ok)document.getElementById('login-err').textContent=r.msg;
-});
+/* =====================================================
+   RÔLES
+===================================================== */
+function applyRole(){
+  document.body.classList.remove('role-admin','role-responsable','role-utilisateur');
+  document.body.classList.add('role-'+currentRole);
+  const nameEl=document.getElementById('user-name');if(nameEl)nameEl.textContent=currentName;
+  const badge=document.getElementById('role-badge');
+  if(badge){const map={admin:'admin',responsable:'responsable',utilisateur:'utilisateur'};badge.className='role-badge '+(map[currentRole]||'utilisateur');badge.textContent=ROLE_LABELS[currentRole]||'👤';}
+  const ai=document.getElementById('my-account-info');
+  if(ai)ai.innerHTML=`<strong>Nom :</strong> ${currentName}<br><strong>E-mail :</strong> ${currentUser?.email||''}<br><strong>Rôle :</strong> ${ROLE_LABELS[currentRole]||currentRole}`;
+  const bro=document.getElementById('branch-info-readonly');if(bro)bro.style.display=currentRole==='admin'?'none':'block';
+}
 
-document.getElementById('btn-register').addEventListener('click',async()=>{
-  const name=document.getElementById('r-name').value.trim();
-  const email=document.getElementById('r-email').value.trim();
-  const phone=document.getElementById('r-phone').value.trim();
-  const pwd=document.getElementById('r-pwd').value;
-  if(!name||!email||!pwd){document.getElementById('register-err').textContent='Veuillez remplir les champs obligatoires.';return;}
-  document.getElementById('btn-register').textContent='Création…';
-  const r=await registerUser(name,email,phone,pwd);
-  document.getElementById('btn-register').textContent='✅ Créer mon compte';
-  if(!r.ok)document.getElementById('register-err').textContent=r.msg;
-});
+/* =====================================================
+   FIRESTORE SYNC
+===================================================== */
+function startRealtimeSync(){
+  if(fsUnsub)fsUnsub();
+  fsUnsub=fbDb.collection('aasg_journees').onSnapshot(async snap=>{
+    setSyncState('syncing','Sync…');
+    for(const ch of snap.docChanges()){
+      if(ch.type==='added'||ch.type==='modified'){
+        const data={...ch.doc.data(),date:ch.doc.id};
+        await dbPut('journees',data);
+        if(currentDate===ch.doc.id){renderDeps();updateTotals();}
+      }
+    }
+    setSyncState('synced','Synchronisé ✓');
+    const av=document.querySelector('.view.active');
+    if(av){if(av.id==='view-history')renderHistory();if(av.id==='view-rapport')renderRapport();}
+  },err=>{setSyncState('offline','Hors ligne');});
+}
 
-document.getElementById('btn-reset-pwd').addEventListener('click',()=>{
-  const email=document.getElementById('l-email').value.trim();
-  if(!email){document.getElementById('login-err').textContent='Entrez votre e-mail d\'abord.';return;}
-  resetPassword(email);
-});
+async function fbSaveJournee(rec){
+  setSyncState('syncing','Enregistrement…');
+  try{await fbDb.collection('aasg_journees').doc(rec.date).set(rec);setSyncState('synced','Synchronisé ✓');}
+  catch(e){setSyncState('offline','Local seulement');}
+}
+async function fbSaveBranche(data){
+  try{
+    const d={...data};delete d.logo;delete d.cachet;
+    await fbDb.collection('aasg_config').doc('branche').set(d,{merge:true});
+    if(data.logo||data.cachet)await fbDb.collection('aasg_config').doc('branche_media').set({logo:data.logo||'',cachet:data.cachet||''},{merge:true});
+    return true;
+  }catch(e){return false;}
+}
+async function fbLoadBranche(){
+  try{
+    const[b,m]=await Promise.all([fbDb.collection('aasg_config').doc('branche').get(),fbDb.collection('aasg_config').doc('branche_media').get()]);
+    return{...(b.exists?b.data():{}),...(m.exists?m.data():{})};
+  }catch(e){return null;}
+}
+async function loadFirestoreUsers(){
+  try{const s=await fbDb.collection('aasg_users').orderBy('createdAt').get();return s.docs.map(d=>({uid:d.id,...d.data()}));}
+  catch(e){return[];}
+}
+async function updateUserRole(uid,role){
+  try{await fbDb.collection('aasg_users').doc(uid).update({role});return true;}catch(e){return false;}
+}
 
-document.getElementById('btn-logout').addEventListener('click',async()=>{await logoutUser();});
-
-/* ================================================
+/* =====================================================
    DATE UTILS
-================================================ */
+===================================================== */
 const JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 const MOIS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-function todayStr(){return new Date().toISOString().split('T')[0];}
-function dateObj(s){return new Date(s+'T00:00:00');}
-function fmtFR(s){const d=dateObj(s);return `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;}
-function fmtShort(s){const d=dateObj(s);return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;}
-function fmtMoney(n){return Math.round(n||0).toLocaleString('fr-FR');}
-function fmtMoneyFCFA(n){return fmtMoney(n)+' FCFA';}
-function nowDateTime(){const d=new Date();return `${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;}
+const todayStr=()=>new Date().toISOString().split('T')[0];
+const dateObj=s=>new Date(s+'T00:00:00');
+const fmtFR=s=>{const d=dateObj(s);return `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;};
+const fmtShort=s=>{const d=dateObj(s);return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;};
+const fmtMoney=n=>Math.round(n||0).toLocaleString('fr-FR');
+const fmtMoneyFCFA=n=>fmtMoney(n)+' FCFA';
+const nowDT=()=>{const d=new Date();return `${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;};
 
-/* ================================================
+/* =====================================================
    APP STATE
-================================================ */
+===================================================== */
 const TODAY=todayStr();
 let currentDate=TODAY;
 let settings={c1:{nom:'',tel:''},c2:{nom:'',tel:''},c3:{nom:'',tel:''}};
-let branche={nomEglise:'',nomBranche:'',codeBranche:'',ville:'',pays:'',
-  nomResponsable:'',fonctionResponsable:'',nomCommissaire:'',telCommissaire:'',logo:'',cachet:''};
+let branche={nomEglise:'',nomBranche:'',codeBranche:'',ville:'',pays:'',nomResponsable:'',fonctionResponsable:'',nomCommissaire:'',telCommissaire:'',logo:'',cachet:''};
 let deps=[],depId=0;
-const DEF_CATS=['Électricité','Location de chaises','Sonorisation',
-  "Rafraîchissement des orateurs",'Action sociale',
-  "Achat de cartouches d'encre",'Transport','Carburant',
-  'Hébergement','Communication','Autres dépenses'];
+const DEF_CATS=['Électricité','Location de chaises','Sonorisation',"Rafraîchissement des orateurs",'Action sociale',"Achat de cartouches d'encre",'Transport','Carburant','Hébergement','Communication','Autres dépenses'];
+const resizeImage=(file,mW,mH,q)=>new Promise(res=>{const rd=new FileReader();rd.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>mW){h=h*mW/w;w=mW;}if(h>mH){w=w*mH/h;h=mH;}c.width=Math.round(w);c.height=Math.round(h);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q));};img.src=e.target.result;};rd.readAsDataURL(file);});
+const toast=(msg,ms=2500)=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms);};
 
-/* ================================================
-   IMAGE UTILS
-================================================ */
-function resizeImage(file,mW,mH,q){return new Promise(res=>{
-  const rd=new FileReader();rd.onload=e=>{
-    const img=new Image();img.onload=()=>{
-      const c=document.createElement('canvas');let w=img.width,h=img.height;
-      if(w>mW){h=h*mW/w;w=mW;}if(h>mH){w=w*mH/h;h=mH;}
-      c.width=Math.round(w);c.height=Math.round(h);
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-      res(c.toDataURL('image/jpeg',q));
-    };img.src=e.target.result;
-  };rd.readAsDataURL(file);
-});}
-
-/* ================================================
-   TOAST
-================================================ */
-function toast(msg,ms=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms);}
-
-/* ================================================
+/* =====================================================
    NAVIGATION
-================================================ */
+===================================================== */
 function goTo(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
-  document.querySelector(`.nav-btn[data-v="${name}"]`).classList.add('active');
+  const nb=document.querySelector(`.nav-btn[data-v="${name}"]`);if(nb)nb.classList.add('active');
   if(name==='history')renderHistory();
   if(name==='rapport')renderRapport();
+  if(name==='settings')loadSettingsView();
 }
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.v)));
 
-/* ================================================
+/* =====================================================
    BRANCH BAR
-================================================ */
+===================================================== */
 function updateBranchBar(){
   const bar=document.getElementById('branch-bar');
   if(!branche.nomEglise&&!branche.nomBranche){bar.style.display='none';return;}
@@ -1072,10 +766,16 @@ function updateBranchBar(){
   document.getElementById('bb-code').textContent=branche.codeBranche||'';
   document.getElementById('bb-city').textContent=[branche.ville,branche.pays].filter(Boolean).join(', ');
 }
+function renderBranchReadonly(){
+  const el=document.getElementById('branch-readonly-content');if(!el)return;
+  if(!branche.nomEglise){el.innerHTML='<div style="color:var(--dim);font-size:13px">Paramètres non encore configurés.</div>';return;}
+  const rows=[['Église',branche.nomEglise],['Branche',branche.nomBranche],['Code',branche.codeBranche],['Ville',branche.ville],['Pays',branche.pays],['Premier Responsable',branche.nomResponsable+(branche.fonctionResponsable?' ('+branche.fonctionResponsable+')':'')],['Commissaire',branche.nomCommissaire+(branche.telCommissaire?' – '+branche.telCommissaire:'')]];
+  el.innerHTML=rows.filter(r=>r[1]).map(r=>`<div class="biv-row"><span class="biv-key">${r[0]}</span><span class="biv-val">${r[1]}</span></div>`).join('');
+}
 
-/* ================================================
-   TODAY VIEW
-================================================ */
+/* =====================================================
+   VUE AUJOURD'HUI
+===================================================== */
 function updateDateDisplay(){
   const d=dateObj(currentDate);
   document.getElementById('hdr-date').textContent=fmtFR(currentDate);
@@ -1086,8 +786,8 @@ function updateDateDisplay(){
   document.getElementById('btn-back-today').style.display=isToday?'none':'flex';
   document.getElementById('save-ind').style.display='none';
 }
-function getRecTotal(){return[...document.querySelectorAll('.rec')].reduce((s,i)=>s+(parseFloat(i.value)||0),0);}
-function getDepTotal(){return deps.reduce((s,d)=>s+(d.amount||0),0);}
+const getRecTotal=()=>[...document.querySelectorAll('.rec')].reduce((s,i)=>s+(parseFloat(i.value)||0),0);
+const getDepTotal=()=>deps.reduce((s,d)=>s+(d.amount||0),0);
 function updateTotals(){
   const tr=getRecTotal(),td=getDepTotal(),rj=tr-td;
   document.getElementById('tot-rec').textContent=fmtMoneyFCFA(tr);
@@ -1113,11 +813,10 @@ async function loadDay(dateStr){
   deps=[];depId=0;
   const rec=await dbGet('journees',dateStr);
   if(rec){
-    const r=rec.recettes||{};
+    const r=rec.recettes||{},ef=rec.effectif||{};
     document.getElementById('r-off').value=r.offrandes||'';document.getElementById('r-dim').value=r.dimes||'';
     document.getElementById('r-gra').value=r.actionGrace||'';document.getElementById('r-don').value=r.dons||'';
     document.getElementById('r-mat').value=r.materielsSpirituels||'';document.getElementById('r-aut').value=r.autresRecettes||'';
-    const ef=rec.effectif||{};
     document.getElementById('eff-h').value=ef.hommes||'';document.getElementById('eff-f').value=ef.femmes||'';
     document.getElementById('eff-e').value=ef.enfants||'';updateEffectif();
     const act=rec.activity||'',sel=document.getElementById('act-sel');
@@ -1131,10 +830,7 @@ async function loadDay(dateStr){
 document.getElementById('act-sel').addEventListener('change',e=>{document.getElementById('act-other').style.display=e.target.value==='Autre'?'block':'none';});
 document.querySelectorAll('.rec').forEach(i=>i.addEventListener('input',updateTotals));
 document.getElementById('btn-back-today').addEventListener('click',()=>loadDay(TODAY));
-function updateEffectif(){
-  const h=+document.getElementById('eff-h').value||0,f=+document.getElementById('eff-f').value||0,e=+document.getElementById('eff-e').value||0;
-  document.getElementById('eff-total').textContent=(h+f+e).toLocaleString('fr-FR');
-}
+function updateEffectif(){const h=+document.getElementById('eff-h').value||0,f=+document.getElementById('eff-f').value||0,e=+document.getElementById('eff-e').value||0;document.getElementById('eff-total').textContent=(h+f+e).toLocaleString('fr-FR');}
 document.querySelectorAll('.eff').forEach(i=>i.addEventListener('input',updateEffectif));
 
 /* DÉPENSES */
@@ -1142,29 +838,21 @@ function renderDeps(){
   const el=document.getElementById('dep-list');el.innerHTML='';
   deps.forEach((d,idx)=>{
     const row=document.createElement('div');row.className='exp-row';
-    row.innerHTML=`<div class="fl">${d.label}</div>
-      <input type="number" class="fi dep-inp" value="${d.amount||''}" placeholder="0" min="0" data-i="${idx}" style="width:118px">
-      <button class="btn-rm" data-i="${idx}">✕</button>`;
+    row.innerHTML=`<div class="fl">${d.label}</div><input type="number" class="fi dep-inp" value="${d.amount||''}" placeholder="0" min="0" data-i="${idx}" style="width:118px"><button class="btn-rm" data-i="${idx}">✕</button>`;
     el.appendChild(row);
   });
   el.querySelectorAll('.dep-inp').forEach(inp=>inp.addEventListener('input',e=>{deps[+e.target.dataset.i].amount=parseFloat(e.target.value)||0;updateTotals();}));
   el.querySelectorAll('.btn-rm').forEach(btn=>btn.addEventListener('click',e=>{deps.splice(+e.target.dataset.i,1);renderDeps();updateTotals();}));
 }
-function openDepModal(){
-  const grid=document.getElementById('cat-grid');grid.innerHTML='';
-  DEF_CATS.forEach(cat=>{const b=document.createElement('button');b.className='cat-btn';b.textContent=cat;b.addEventListener('click',()=>{addDep(cat);closeDepModal();});grid.appendChild(b);});
-  document.getElementById('dep-custom').value='';document.getElementById('mo-dep').classList.add('open');
-}
-function closeDepModal(){document.getElementById('mo-dep').classList.remove('open');}
-function addDep(label){deps.push({id:++depId,label,amount:0});renderDeps();updateTotals();}
+function openDepModal(){const grid=document.getElementById('cat-grid');grid.innerHTML='';DEF_CATS.forEach(cat=>{const b=document.createElement('button');b.className='cat-btn';b.textContent=cat;b.addEventListener('click',()=>{addDep(cat);closeDepModal();});grid.appendChild(b);});document.getElementById('dep-custom').value='';document.getElementById('mo-dep').classList.add('open');}
+const closeDepModal=()=>document.getElementById('mo-dep').classList.remove('open');
+const addDep=label=>{deps.push({id:++depId,label,amount:0});renderDeps();updateTotals();};
 document.getElementById('btn-add-dep').addEventListener('click',openDepModal);
 document.getElementById('mo-dep-close').addEventListener('click',closeDepModal);
 document.getElementById('mo-dep').addEventListener('click',e=>{if(e.target===document.getElementById('mo-dep'))closeDepModal();});
-document.getElementById('btn-confirm-dep').addEventListener('click',()=>{
-  const lbl=document.getElementById('dep-custom').value.trim();if(!lbl){toast('⚠️ Veuillez saisir un libellé');return;}addDep(lbl);closeDepModal();
-});
+document.getElementById('btn-confirm-dep').addEventListener('click',()=>{const lbl=document.getElementById('dep-custom').value.trim();if(!lbl){toast('⚠️ Veuillez saisir un libellé');return;}addDep(lbl);closeDepModal();});
 
-/* SAVE */
+/* ENREGISTREMENT */
 document.getElementById('btn-save').addEventListener('click',async()=>{
   const act=document.getElementById('act-sel').value;
   const activity=act==='Autre'?(document.getElementById('act-other').value.trim()||'Autre'):act;
@@ -1173,262 +861,144 @@ document.getElementById('btn-save').addEventListener('click',async()=>{
   const recettes={offrandes:+document.getElementById('r-off').value||0,dimes:+document.getElementById('r-dim').value||0,actionGrace:+document.getElementById('r-gra').value||0,dons:+document.getElementById('r-don').value||0,materielsSpirituels:+document.getElementById('r-mat').value||0,autresRecettes:+document.getElementById('r-aut').value||0};
   const totalRecettes=Object.values(recettes).reduce((s,v)=>s+v,0);
   const totalDepenses=getDepTotal();
-  await dbPut('journees',{date:currentDate,activity,effectif,recettes,depenses:deps.map(d=>({...d})),totalRecettes,totalDepenses,soldeDuJour:totalRecettes-totalDepenses,savedAt:Date.now()});
-  document.getElementById('save-ind').style.display='flex';toast('✅ Journée enregistrée !');updateCumule(totalRecettes-totalDepenses);
+  const record={date:currentDate,activity,effectif,recettes,depenses:deps.map(d=>({...d})),totalRecettes,totalDepenses,soldeDuJour:totalRecettes-totalDepenses,savedAt:Date.now(),savedBy:currentName||'',savedByUid:currentUser?.uid||''};
+  await dbPut('journees',record);
+  await fbSaveJournee(record);
+  document.getElementById('save-ind').style.display='flex';
+  toast('✅ Journée enregistrée et synchronisée !');
+  updateCumule(totalRecettes-totalDepenses);
+  try{fbAnalytics&&fbAnalytics.logEvent('save_journee',{date:currentDate});}catch(e){}
 });
 
-/* ================================================
-   PDF GENERATION — DOCUMENT PROFESSIONNEL
-================================================ */
+/* =====================================================
+   PDF PROFESSIONNEL A4
+===================================================== */
 async function openPDF(dateFilter){
   const all=await dbGetAll('journees');
   const list=(dateFilter?all.filter(j=>j.date===dateFilter):all).sort((a,b)=>a.date.localeCompare(b.date));
-  const b=branche;
-  let tR=0,tD=0,tS=0;
-
-  /* Build day blocks */
+  const b=branche;let tR=0,tD=0,tS=0;
   let dayBlocks='';
-  list.forEach((j,idx)=>{
+  list.forEach(j=>{
     tR+=j.totalRecettes;tD+=j.totalDepenses;tS+=j.soldeDuJour;
-    const r=j.recettes||{};const ef=j.effectif||{};
-    const recRows=[
-      ['Offrandes',r.offrandes||0],['Dîmes',r.dimes||0],
-      ['Action de grâce',r.actionGrace||0],['Dons',r.dons||0],
-      ['Matériels spirituels',r.materielsSpirituels||0],['Autres recettes',r.autresRecettes||0]
-    ].filter(x=>x[1]>0);
+    const r=j.recettes||{},ef=j.effectif||{};
+    const recRows=[['Offrandes',r.offrandes||0],['Dîmes',r.dimes||0],['Action de grâce',r.actionGrace||0],['Dons',r.dons||0],['Matériels spirituels',r.materielsSpirituels||0],['Autres recettes',r.autresRecettes||0]].filter(x=>x[1]>0);
     const depRows=(j.depenses||[]).filter(d=>d.amount>0);
     const sign=j.soldeDuJour>=0?'+':'';
-
-    dayBlocks+=`
-    <div class="day-block${idx>0?' page-break-auto':''}">
-      <div class="day-title">
-        <span>${fmtFR(j.date)}</span>
-        <span style="font-weight:normal;font-size:10pt">Activité : ${j.activity||'—'}</span>
-      </div>`;
-
-    /* Effectif */
-    if(ef.total||ef.hommes||ef.femmes||ef.enfants){dayBlocks+=`
-      <div class="section-title">Présences</div>
-      <table class="balance-table">
-        <tr><th class="td-c">Hommes</th><th class="td-c">Femmes</th><th class="td-c">Enfants</th><th class="td-c" style="background:#dce8f5">TOTAL</th></tr>
-        <tr><td class="td-c">${ef.hommes||0}</td><td class="td-c">${ef.femmes||0}</td><td class="td-c">${ef.enfants||0}</td><td class="td-c total-cell">${ef.total||0}</td></tr>
-      </table>`;}
-
-    /* Recettes */
-    dayBlocks+=`
-      <div class="section-title">Recettes</div>
-      <table>
-        <tr><th>Désignation</th><th class="td-r">Montant (FCFA)</th></tr>`;
-    if(recRows.length){recRows.forEach(([lbl,amt])=>{dayBlocks+=`<tr><td>${lbl}</td><td class="td-r">${fmtMoney(amt)}</td></tr>`;});}
-    else{dayBlocks+=`<tr><td colspan="2" style="text-align:center;color:#999;font-style:italic">Aucune recette saisie</td></tr>`;}
-    dayBlocks+=`<tr class="total-row"><td><strong>TOTAL RECETTES</strong></td><td class="td-r"><strong>${fmtMoney(j.totalRecettes)}</strong></td></tr></table>`;
-
-    /* Dépenses */
-    if(depRows.length){dayBlocks+=`
-      <div class="section-title">Dépenses</div>
-      <table>
-        <tr><th>Désignation</th><th class="td-r">Montant (FCFA)</th></tr>`;
-      depRows.forEach(d=>{dayBlocks+=`<tr><td>${d.label}</td><td class="td-r">${fmtMoney(d.amount)}</td></tr>`;});
-      dayBlocks+=`<tr class="total-row"><td><strong>TOTAL DÉPENSES</strong></td><td class="td-r"><strong>${fmtMoney(j.totalDepenses)}</strong></td></tr></table>`;}
-
-    /* Solde du jour */
-    dayBlocks+=`
-      <table style="margin-top:6px">
-        <tr style="background:#f0f8e8">
-          <td style="font-weight:bold;border:2px solid #555;font-size:11pt">Reste du jour</td>
-          <td class="td-r" style="font-weight:bold;border:2px solid #555;font-size:12pt;color:${j.soldeDuJour>=0?'#1a6b2f':'#b91c1c'}">${sign}${fmtMoney(j.soldeDuJour)}</td>
-        </tr>
-      </table>
-    </div>`;
+    dayBlocks+=`<div class="db">
+      <div class="dt"><span>${fmtFR(j.date)}</span><span style="font-weight:normal;font-size:10pt">Activité : ${j.activity||'—'}</span></div>`;
+    if(ef.total||ef.hommes||ef.femmes||ef.enfants){dayBlocks+=`<p class="st">Présences</p>
+      <table><tr><th class="tc">Hommes</th><th class="tc">Femmes</th><th class="tc">Enfants</th><th class="tc" style="background:#dce8f5">TOTAL</th></tr>
+      <tr><td class="tc">${ef.hommes||0}</td><td class="tc">${ef.femmes||0}</td><td class="tc">${ef.enfants||0}</td><td class="tc" style="font-weight:bold;font-size:13pt;background:#f0f6ff">${ef.total||0}</td></tr></table>`;}
+    dayBlocks+=`<p class="st">Recettes</p><table><tr><th>Désignation</th><th class="tr">Montant (FCFA)</th></tr>`;
+    if(recRows.length)recRows.forEach(([l,a])=>{dayBlocks+=`<tr><td>${l}</td><td class="tr">${fmtMoney(a)}</td></tr>`;});
+    else dayBlocks+=`<tr><td colspan="2" style="text-align:center;color:#999;font-style:italic">Aucune recette saisie</td></tr>`;
+    dayBlocks+=`<tr class="tr-tot"><td><strong>TOTAL RECETTES</strong></td><td class="tr"><strong>${fmtMoney(j.totalRecettes)}</strong></td></tr></table>`;
+    if(depRows.length){dayBlocks+=`<p class="st">Dépenses</p><table><tr><th>Désignation</th><th class="tr">Montant (FCFA)</th></tr>`;depRows.forEach(d=>{dayBlocks+=`<tr><td>${d.label}</td><td class="tr">${fmtMoney(d.amount)}</td></tr>`;});dayBlocks+=`<tr class="tr-tot"><td><strong>TOTAL DÉPENSES</strong></td><td class="tr"><strong>${fmtMoney(j.totalDepenses)}</strong></td></tr></table>`;}
+    dayBlocks+=`<table style="margin-top:6px"><tr style="background:${j.soldeDuJour>=0?'#e8f5e9':'#fce4e4'}"><td style="font-weight:bold;border:2px solid #444;font-size:11pt;padding:8px 12px">Reste du jour</td><td class="tr" style="font-weight:bold;border:2px solid #444;font-size:13pt;color:${j.soldeDuJour>=0?'#1a6b2f':'#b91c1c'};padding:8px 12px">${sign}${fmtMoney(j.soldeDuJour)}</td></tr></table>`;
+    if(j.savedBy)dayBlocks+=`<p style="font-size:8.5pt;color:#999;margin-top:4px;text-align:right">Enregistré par : ${j.savedBy}</p>`;
+    dayBlocks+='</div>';
   });
-
-  /* Totaux généraux */
-  let totalsBlock='';
-  if(list.length>1){
-    const allFromDB=await dbGetAll('journees');
-    const sorted=allFromDB.sort((a,b)=>a.date.localeCompare(b.date));
-    let cumul=0;
-    const rows=sorted.map(j=>{cumul+=j.soldeDuJour;return{date:fmtFR(j.date),act:j.activity||'—',rec:j.totalRecettes,dep:j.totalDepenses,sol:j.soldeDuJour};});
-    totalsBlock=`
-    <div style="page-break-before:always">
-      <div class="section-title" style="font-size:12pt">Récapitulatif général</div>
-      <table>
-        <tr><th>Date</th><th>Activité</th><th class="td-r">Recettes</th><th class="td-r">Dépenses</th><th class="td-r">Solde</th></tr>
-        ${rows.map(r=>`<tr><td style="font-size:9.5pt">${r.date}</td><td style="font-size:9.5pt">${r.act}</td><td class="td-r">${fmtMoney(r.rec)}</td><td class="td-r">${fmtMoney(r.dep)}</td><td class="td-r" style="color:${r.sol>=0?'#1a6b2f':'#b91c1c'};font-weight:bold">${fmtMoney(r.sol)}</td></tr>`).join('')}
-        <tr style="background:#e8f0fe;border-top:3px solid #333">
-          <td colspan="2" style="font-weight:bold;font-size:11pt">TOTAUX GÉNÉRAUX</td>
-          <td class="td-r" style="font-weight:bold;color:#1a6b2f">${fmtMoney(tR)}</td>
-          <td class="td-r" style="font-weight:bold;color:#b91c1c">${fmtMoney(tD)}</td>
-          <td class="td-r" style="font-weight:bold;font-size:12pt;color:${tS>=0?'#1a6b2f':'#b91c1c'}">${fmtMoney(tS)}</td>
-        </tr>
-      </table>
-    </div>`;
-  }
-
-  /* Letterhead */
-  const logoHTML=b.logo?`<img src="${b.logo}" style="max-width:80px;max-height:70px;object-fit:contain">`:'<div style="width:80px;height:70px"></div>';
-  const cachetHTML=b.cachet?`<img src="${b.cachet}" style="max-width:80px;max-height:70px;object-fit:contain">`:'<div style="width:80px;height:70px"></div>';
-  const period=list.length===1?`du ${fmtFR(list[0].date)}`:(list.length>1?`du ${fmtShort(list[0].date)} au ${fmtShort(list[list.length-1].date)}`:'');
-
-  const html=`<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>Rapport de Caisse — ${b.nomEglise||'AASG'}</title>
+  let totBlock='';
+  if(list.length>1){totBlock=`<div style="page-break-before:always"><p class="st" style="font-size:12pt">Récapitulatif général</p><table><tr><th>Date</th><th>Activité</th><th class="tc">Présents</th><th class="tr">Recettes</th><th class="tr">Dépenses</th><th class="tr">Solde</th></tr>${list.map(j=>`<tr><td style="font-size:9pt">${fmtShort(j.date)}</td><td style="font-size:9pt">${j.activity||'—'}</td><td class="tc">${(j.effectif&&j.effectif.total)||0}</td><td class="tr">${fmtMoney(j.totalRecettes)}</td><td class="tr">${fmtMoney(j.totalDepenses)}</td><td class="tr" style="font-weight:bold;color:${j.soldeDuJour>=0?'#1a6b2f':'#b91c1c'}">${fmtMoney(j.soldeDuJour)}</td></tr>`).join('')}<tr style="background:#e8f0fe"><td colspan="3" style="font-weight:bold;font-size:11pt">TOTAUX GÉNÉRAUX</td><td class="tr" style="font-weight:bold;color:#1a6b2f">${fmtMoney(tR)}</td><td class="tr" style="font-weight:bold;color:#b91c1c">${fmtMoney(tD)}</td><td class="tr" style="font-weight:bold;font-size:12pt;color:${tS>=0?'#1a6b2f':'#b91c1c'}">${fmtMoney(tS)}</td></tr></table></div>`;}
+  const period=list.length===1?`du ${fmtFR(list[0]?.date||TODAY)}`:(list.length>1?`du ${fmtShort(list[0].date)} au ${fmtShort(list[list.length-1].date)}`:'');
+  const logoH=b.logo?`<img src="${b.logo}" style="max-width:75px;max-height:65px;object-fit:contain">`:'<div style="width:75px;height:65px"></div>';
+  const cachetH=b.cachet?`<img src="${b.cachet}" style="max-width:75px;max-height:65px;object-fit:contain">`:'<div style="width:75px;height:65px"></div>';
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Rapport — ${b.nomEglise||'AASG'}</title>
 <style>
-  @page{size:A4;margin:2cm 2.5cm}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#111;line-height:1.55}
-  h1{font-size:14pt;text-align:center;text-transform:uppercase;letter-spacing:1px}
-  table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:10.5pt}
-  th{background:#e8e8e8;font-weight:bold;padding:7px 10px;border:1px solid #888;text-align:left}
-  td{padding:6px 10px;border:1px solid #bbb}
-  .td-r{text-align:right;font-family:'Courier New',monospace}
-  .td-c{text-align:center}
-  .total-row{background:#f2f2f2}
-  .total-row td{border-top:2px solid #555;font-weight:bold}
-  .total-cell{font-weight:bold;background:#dce8f5;font-size:12pt}
-  .balance-table th{text-align:center}
-  .day-block{margin-bottom:22px;page-break-inside:avoid}
-  .day-title{display:flex;justify-content:space-between;align-items:center;
-    background:#2c3e6b;color:#fff;padding:8px 12px;font-weight:bold;font-size:11pt;margin-bottom:8px;border-radius:2px}
-  .section-title{font-size:10pt;font-weight:bold;text-transform:uppercase;
-    border-bottom:2px solid #2c3e6b;color:#2c3e6b;padding-bottom:3px;margin:12px 0 6px}
-  .page-break-auto{page-break-before:auto}
-  .lh-table{border:none;margin-bottom:0}
-  .lh-table td{border:none;vertical-align:middle;padding:4px}
-  .sig-block{width:46%;display:inline-block;vertical-align:top;text-align:center}
-  .sig-block .name{font-weight:bold;font-size:11pt;margin-bottom:3px}
-  .sig-block .role{font-size:9.5pt;color:#555;margin-bottom:35px}
-  .sig-block .line{border-top:1px solid #333;width:85%;margin:0 auto 4px}
-  .sig-block .label{font-size:9pt;color:#777;font-style:italic}
-  .doc-footer{margin-top:16px;padding-top:8px;border-top:1px solid #ccc;
-    font-size:9pt;color:#888;display:flex;justify-content:space-between}
-  .box-title{text-align:center;font-size:13pt;font-weight:bold;text-transform:uppercase;
-    border:2px solid #2c3e6b;color:#2c3e6b;padding:8px;margin:12px 0 4px;letter-spacing:1px}
-  .doc-meta{font-size:9.5pt;color:#444;border:1px solid #ddd;padding:8px 12px;
-    background:#fafafa;margin-bottom:14px;line-height:1.7}
-  hr.thick{border:none;border-top:3px double #2c3e6b;margin:10px 0}
-  @media print{.no-print{display:none!important}}
-</style>
-</head>
-<body>
-<!-- LETTERHEAD -->
-<table class="lh-table">
-  <tr>
-    <td style="width:90px;text-align:center">${logoHTML}</td>
-    <td style="text-align:center;padding:0 10px">
-      <div style="font-size:15pt;font-weight:bold;text-transform:uppercase;color:#2c3e6b;letter-spacing:1px">${b.nomEglise||'APÔTRE AUSIAS SAINTE GESTION'}</div>
-      ${b.nomBranche?`<div style="font-size:11pt;margin-top:4px">${b.nomBranche}</div>`:''}
-      <div style="font-size:9pt;color:#555;margin-top:3px">${[b.codeBranche?'Code : '+b.codeBranche:'',b.ville,b.pays].filter(Boolean).join(' — ')}</div>
-    </td>
-    <td style="width:90px;text-align:center">${cachetHTML}</td>
-  </tr>
-</table>
-<hr class="thick">
-
-<div class="box-title">RAPPORT DE CAISSE ${period}</div>
-
-<div class="doc-meta">
-  <strong>Édité le :</strong> ${nowDateTime()}<br>
-  ${b.nomResponsable?`<strong>Premier Responsable :</strong> ${b.nomResponsable}${b.fonctionResponsable?' — '+b.fonctionResponsable:''}<br>`:''}
-  ${b.nomCommissaire?`<strong>Commissaire aux Comptes :</strong> ${b.nomCommissaire}${b.telCommissaire?' | Tél : '+b.telCommissaire:''}<br>`:''}
-  ${currentUser?`<strong>Établi par :</strong> ${currentUser.displayName||currentUser.email}<br>`:''}
+@page{size:A4;margin:2cm 2.5cm}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#111;line-height:1.55}
+table{width:100%;border-collapse:collapse;margin-bottom:10px}
+th{background:#e8e8e8;font-weight:bold;padding:7px 10px;border:1px solid #888;text-align:left}
+td{padding:6px 10px;border:1px solid #bbb}
+.tr{text-align:right;font-family:'Courier New',monospace}
+.tc{text-align:center}
+.tr-tot{background:#f2f2f2}.tr-tot td{border-top:2px solid #555;font-weight:bold}
+.db{margin-bottom:20px;page-break-inside:avoid}
+.dt{display:flex;justify-content:space-between;align-items:center;background:#1e3a6e;color:#fff;padding:8px 12px;font-weight:bold;font-size:11pt;margin-bottom:8px;border-radius:2px}
+.st{font-size:10pt;font-weight:bold;text-transform:uppercase;border-bottom:2px solid #1e3a6e;color:#1e3a6e;padding-bottom:3px;margin:12px 0 6px}
+.lh td{border:none;vertical-align:middle;padding:4px}
+.sb{width:46%;display:inline-block;vertical-align:top;text-align:center}
+.sb .sn{font-weight:bold;font-size:11pt;margin-bottom:3px}
+.sb .sr{font-size:9.5pt;color:#555;margin-bottom:38px}
+.sb .sl{border-top:1px solid #333;width:85%;margin:0 auto 4px}
+.sb .slb{font-size:9pt;color:#777;font-style:italic}
+.bt{text-align:center;font-size:13pt;font-weight:bold;text-transform:uppercase;border:2px solid #1e3a6e;color:#1e3a6e;padding:8px;margin:12px 0 6px;letter-spacing:1px}
+.dm{font-size:9.5pt;color:#444;border:1px solid #ddd;padding:8px 12px;background:#fafafa;margin-bottom:14px;line-height:1.7}
+.ft{margin-top:16px;padding-top:8px;border-top:1px solid #ccc;font-size:9pt;color:#888;display:flex;justify-content:space-between}
+hr.hk{border:none;border-top:3px double #1e3a6e;margin:10px 0}
+@media print{.np{display:none!important}}
+</style></head><body>
+<table class="lh"><tr><td style="width:85px;text-align:center">${logoH}</td>
+<td style="text-align:center;padding:0 10px">
+<div style="font-size:15pt;font-weight:bold;text-transform:uppercase;color:#1e3a6e;letter-spacing:1px">${b.nomEglise||'APÔTRE AUSIAS SAINTE GESTION'}</div>
+${b.nomBranche?`<div style="font-size:11pt;margin-top:4px">${b.nomBranche}</div>`:''}
+<div style="font-size:9pt;color:#555;margin-top:3px">${[b.codeBranche?'Code : '+b.codeBranche:'',b.ville,b.pays].filter(Boolean).join(' — ')}</div>
+</td><td style="width:85px;text-align:center">${cachetH}</td></tr></table>
+<hr class="hk">
+<div class="bt">RAPPORT DE CAISSE ${period}</div>
+<div class="dm">
+<strong>Édité le :</strong> ${nowDT()}<br>
+${b.nomResponsable?`<strong>Premier Responsable :</strong> ${b.nomResponsable}${b.fonctionResponsable?' — '+b.fonctionResponsable:''}<br>`:''}
+${b.nomCommissaire?`<strong>Commissaire aux Comptes :</strong> ${b.nomCommissaire}${b.telCommissaire?' | Tél : '+b.telCommissaire:''}<br>`:''}
+${currentName?`<strong>Établi par :</strong> ${currentName} (${ROLE_LABELS[currentRole]||currentRole})<br>`:''}
 </div>
-
-${list.length===0?'<p style="text-align:center;color:#999;font-style:italic;margin:40px 0">Aucune journée enregistrée.</p>':''}
-
-${dayBlocks}
-${totalsBlock}
-
-<!-- SIGNATURES -->
+${!list.length?'<p style="text-align:center;color:#999;font-style:italic;margin:40px 0">Aucune journée enregistrée.</p>':''}
+${dayBlocks}${totBlock}
 <div style="margin-top:30px;page-break-inside:avoid">
-  <div class="section-title" style="font-size:11pt">Signatures et approbation</div>
-  <div style="margin-top:20px;display:flex;justify-content:space-between">
-    <div class="sig-block">
-      <div class="name">${b.nomResponsable||'Le Premier Responsable'}</div>
-      <div class="role">${b.fonctionResponsable||''}</div>
-      <div class="line"></div>
-      <div class="label">Signature et cachet</div>
-    </div>
-    <div class="sig-block">
-      <div class="name">${b.nomCommissaire||'Le Commissaire aux Comptes'}</div>
-      <div class="role">${b.telCommissaire?'Tél : '+b.telCommissaire:''}</div>
-      <div class="line"></div>
-      <div class="label">Signature et cachet</div>
-    </div>
-  </div>
-</div>
-
-<div class="doc-footer">
-  <span>Apôtre Ausias Sainte Gestion${b.codeBranche?' — Branche '+b.codeBranche:''}</span>
-  <span>Document généré le ${nowDateTime()}</span>
-</div>
-
-<div class="no-print" style="text-align:center;margin-top:20px;padding:16px">
-  <button onclick="window.print()" style="padding:12px 30px;background:#2c3e6b;color:#fff;border:none;border-radius:6px;font-size:13pt;cursor:pointer;font-family:Arial">🖨️ Imprimer / Enregistrer en PDF</button>
-</div>
-</body></html>`;
-
-  const win=window.open('','_blank');
-  if(!win){toast('⚠️ Autorisez les popups pour générer le PDF');return;}
-  win.document.write(html);win.document.close();win.focus();
-  setTimeout(()=>win.print(),600);
+<p class="st" style="font-size:11pt">Signatures et approbation</p>
+<div style="margin-top:22px;display:flex;justify-content:space-between">
+<div class="sb"><div class="sn">${b.nomResponsable||'Le Premier Responsable'}</div><div class="sr">${b.fonctionResponsable||''}</div><div class="sl"></div><div class="slb">Signature et cachet</div></div>
+<div class="sb"><div class="sn">${b.nomCommissaire||'Le Commissaire aux Comptes'}</div><div class="sr">${b.telCommissaire?'Tél : '+b.telCommissaire:''}</div><div class="sl"></div><div class="slb">Signature et cachet</div></div>
+</div></div>
+<div class="ft"><span>Apôtre Ausias Sainte Gestion${b.codeBranche?' — '+b.codeBranche:''}</span><span>${nowDT()}</span></div>
+<div class="np" style="text-align:center;margin-top:20px;padding:16px">
+<button onclick="window.print()" style="padding:12px 32px;background:#1e3a6e;color:#fff;border:none;border-radius:6px;font-size:13pt;cursor:pointer;font-family:Arial">🖨️ Imprimer / Enregistrer en PDF</button>
+</div></body></html>`;
+  const win=window.open('','_blank');if(!win){toast('⚠️ Autorisez les popups pour le PDF');return;}
+  win.document.write(html);win.document.close();win.focus();setTimeout(()=>win.print(),700);
 }
-
 document.getElementById('btn-pdf-today').addEventListener('click',()=>openPDF(currentDate));
 document.getElementById('btn-pdf-all').addEventListener('click',()=>openPDF(null));
 
-/* ================================================
-   WHATSAPP (texte court pour mobile)
-================================================ */
-let _waModeDate=null;
-async function buildWAMsg(dateFilter){
+/* =====================================================
+   WHATSAPP
+===================================================== */
+let _waDate=null;
+async function buildWAMsg(df){
   const all=await dbGetAll('journees');
-  const list=(dateFilter?all.filter(j=>j.date===dateFilter):all).sort((a,b)=>a.date.localeCompare(b.date));
-  const b=branche;
-  let txt=`*${b.nomEglise||'Apôtre Ausias Sainte Gestion'}*\n`;
-  if(b.nomBranche)txt+=`${b.nomBranche}\n`;
-  txt+=`*RAPPORT DE CAISSE*\n`;
-  txt+=`_${nowDateTime()}_\n`;
-  txt+=`${'─'.repeat(32)}\n`;
+  const list=(df?all.filter(j=>j.date===df):all).sort((a,b)=>a.date.localeCompare(b.date));
+  const b=branche;let txt=`*${b.nomEglise||'Apôtre Ausias Sainte Gestion'}*\n`;
+  if(b.nomBranche)txt+=`_${b.nomBranche}_\n`;
+  txt+=`*RAPPORT DE CAISSE*\n_${nowDT()}_\n${'─'.repeat(30)}\n`;
   list.forEach(j=>{
-    txt+=`\n📅 *${fmtFR(j.date)}*\n`;
-    txt+=`🎯 ${j.activity||'—'}\n`;
-    if(j.effectif&&j.effectif.total)txt+=`👥 Présents : ${j.effectif.total} (H:${j.effectif.hommes||0} F:${j.effectif.femmes||0} E:${j.effectif.enfants||0})\n`;
-    txt+=`💰 Recettes : *${fmtMoneyFCFA(j.totalRecettes)}*\n`;
-    txt+=`📤 Dépenses : *${fmtMoneyFCFA(j.totalDepenses)}*\n`;
-    txt+=`💎 Reste : *${fmtMoneyFCFA(j.soldeDuJour)}*\n`;
+    txt+=`\n📅 *${fmtFR(j.date)}*\n🎯 ${j.activity||'—'}\n`;
+    if(j.effectif&&j.effectif.total)txt+=`👥 Présents : *${j.effectif.total}* (H:${j.effectif.hommes||0} F:${j.effectif.femmes||0} E:${j.effectif.enfants||0})\n`;
+    txt+=`💰 Recettes : *${fmtMoneyFCFA(j.totalRecettes)}*\n📤 Dépenses : *${fmtMoneyFCFA(j.totalDepenses)}*\n💎 Reste : *${fmtMoneyFCFA(j.soldeDuJour)}*\n`;
   });
-  const tR=list.reduce((s,j)=>s+j.totalRecettes,0);
-  const tD=list.reduce((s,j)=>s+j.totalDepenses,0);
-  if(list.length>1){txt+=`\n${'═'.repeat(32)}\n*TOTAUX*\n💰 ${fmtMoneyFCFA(tR)}\n📤 ${fmtMoneyFCFA(tD)}\n💎 *${fmtMoneyFCFA(tR-tD)}*\n`;}
-  if(b.nomResponsable)txt+=`\n_Signé : ${b.nomResponsable}_`;
+  const tR=list.reduce((s,j)=>s+j.totalRecettes,0),tD=list.reduce((s,j)=>s+j.totalDepenses,0);
+  if(list.length>1)txt+=`\n${'═'.repeat(30)}\n*TOTAUX*\n💰 ${fmtMoneyFCFA(tR)}\n📤 ${fmtMoneyFCFA(tD)}\n💎 *${fmtMoneyFCFA(tR-tD)}*\n`;
+  if(b.nomResponsable)txt+=`\n_${b.nomResponsable}_`;
   return txt;
 }
 async function openWAModal(df){
-  _waModeDate=df||null;
+  _waDate=df||null;
   document.getElementById('mo-wa-sub').textContent=df?`Rapport du ${fmtShort(df)}`:'Rapport général';
   ['c1','c2','c3'].forEach(k=>{const s=settings[k];document.getElementById(`wa-${k}-lbl`).textContent=`Contrôleur ${k[1]}${s.nom?' — '+s.nom:''}`;});
   document.getElementById('mo-wa').classList.add('open');
 }
-function closeWAModal(){document.getElementById('mo-wa').classList.remove('open');}
-async function sendWA(key){
-  const s=settings[key];if(!s||!s.tel){toast(`⚠️ Numéro Contrôleur ${key[1]} non configuré`);return;}
-  const msg=await buildWAMsg(_waModeDate);window.open(`https://wa.me/${s.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
-}
-document.getElementById('wa-c1').addEventListener('click',async()=>{closeWAModal();await sendWA('c1');});
-document.getElementById('wa-c2').addEventListener('click',async()=>{closeWAModal();await sendWA('c2');});
-document.getElementById('wa-c3').addEventListener('click',async()=>{closeWAModal();await sendWA('c3');});
-document.getElementById('wa-all').addEventListener('click',async()=>{closeWAModal();for(let i=1;i<=3;i++){await new Promise(r=>setTimeout(r,i===1?0:900));await sendWA(`c${i}`);}toast('📲 Envoi lancé');});
+const closeWAModal=()=>document.getElementById('mo-wa').classList.remove('open');
+async function sendWA(key){const s=settings[key];if(!s||!s.tel){toast(`⚠️ Contrôleur ${key[1]} non configuré`);return;}const msg=await buildWAMsg(_waDate);window.open(`https://wa.me/${s.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');}
+['c1','c2','c3'].forEach(k=>{document.getElementById(`wa-${k}`).addEventListener('click',async()=>{closeWAModal();await sendWA(k);});});
+document.getElementById('wa-all').addEventListener('click',async()=>{closeWAModal();for(let i=1;i<=3;i++){await new Promise(r=>setTimeout(r,i===1?0:900));await sendWA(`c${i}`);}toast('📲 Envois lancés');});
 document.getElementById('mo-wa-close').addEventListener('click',closeWAModal);
 document.getElementById('mo-wa').addEventListener('click',e=>{if(e.target===document.getElementById('mo-wa'))closeWAModal();});
 document.getElementById('btn-wa-today').addEventListener('click',()=>openWAModal(currentDate));
 document.getElementById('btn-wa-all').addEventListener('click',()=>openWAModal(null));
 
-/* ================================================
-   HISTORY
-================================================ */
+/* =====================================================
+   HISTORIQUE
+===================================================== */
 async function renderHistory(){
   const all=await dbGetAll('journees');all.sort((a,b)=>b.date.localeCompare(a.date));
   const q=document.getElementById('hist-search').value.toLowerCase().trim();
@@ -1438,181 +1008,109 @@ async function renderHistory(){
   el.innerHTML='';
   list.forEach(j=>{
     const cls=j.soldeDuJour>=0?'pos':'neg';const it=document.createElement('div');it.className='h-item';
-    it.innerHTML=`<div class="h-hdr">
-      <div><div class="h-date">${fmtFR(j.date)}</div><div class="h-act">${j.activity||'—'}</div></div>
-      <div class="h-solde ${cls}">${fmtMoneyFCFA(j.soldeDuJour)}</div></div>
-      <div class="h-nums">
-        <span>👥 <b>${(j.effectif&&j.effectif.total)||0}</b></span>
-        <span>💰 <b class="pos">${fmtMoney(j.totalRecettes)}</b> FCFA</span>
-        <span>📤 <b class="neg">${fmtMoney(j.totalDepenses)}</b> FCFA</span>
-      </div>`;
+    it.innerHTML=`<div class="h-hdr"><div><div class="h-date">${fmtFR(j.date)}</div><div class="h-act">${j.activity||'—'}</div></div><div class="h-solde ${cls}">${fmtMoneyFCFA(j.soldeDuJour)}</div></div>
+      <div class="h-nums"><span>👥 <b>${(j.effectif&&j.effectif.total)||0}</b></span><span>💰 <b class="pos">${fmtMoney(j.totalRecettes)}</b> FCFA</span><span>📤 <b class="neg">${fmtMoney(j.totalDepenses)}</b> FCFA</span></div>`;
     it.addEventListener('click',()=>{goTo('today');loadDay(j.date);});el.appendChild(it);
   });
 }
 document.getElementById('hist-search').addEventListener('input',renderHistory);
 
-/* ================================================
-   RAPPORT VIEW
-================================================ */
+/* =====================================================
+   RAPPORT
+===================================================== */
 async function renderRapport(){
   const all=await dbGetAll('journees');
-  const tR=all.reduce((s,j)=>s+(j.totalRecettes||0),0);
-  const tD=all.reduce((s,j)=>s+(j.totalDepenses||0),0);const tS=tR-tD;
-  document.getElementById('s-jours').textContent=all.length;
-  document.getElementById('s-rec').textContent=fmtMoneyFCFA(tR);
-  document.getElementById('s-dep').textContent=fmtMoneyFCFA(tD);
+  const tR=all.reduce((s,j)=>s+(j.totalRecettes||0),0),tD=all.reduce((s,j)=>s+(j.totalDepenses||0),0),tS=tR-tD;
+  document.getElementById('s-jours').textContent=all.length;document.getElementById('s-rec').textContent=fmtMoneyFCFA(tR);document.getElementById('s-dep').textContent=fmtMoneyFCFA(tD);
   const sEl=document.getElementById('s-solde');sEl.textContent=fmtMoneyFCFA(tS);sEl.className='stat-val '+(tS>=0?'pos':'neg');
   const el=document.getElementById('rpt-hist');all.sort((a,b)=>b.date.localeCompare(a.date));
   if(!all.length){el.innerHTML=`<div class="empty"><div class="empty-i">📊</div><div>Aucune donnée</div></div>`;return;}
   el.innerHTML='';
-  all.forEach(j=>{
-    const cls=j.soldeDuJour>=0?'pos':'neg';const it=document.createElement('div');it.className='h-item';it.style.cursor='default';
-    it.innerHTML=`<div class="h-hdr">
-      <div><div class="h-date" style="font-size:13px">${fmtFR(j.date)}</div><div class="h-act">${j.activity||'—'}</div></div>
-      <div class="h-solde ${cls}" style="font-size:14px">${fmtMoneyFCFA(j.soldeDuJour)}</div></div>`;
-    el.appendChild(it);
-  });
+  all.forEach(j=>{const cls=j.soldeDuJour>=0?'pos':'neg';const it=document.createElement('div');it.className='h-item';it.style.cursor='default';
+    it.innerHTML=`<div class="h-hdr"><div><div class="h-date" style="font-size:13px">${fmtFR(j.date)}</div><div class="h-act">${j.activity||'—'}</div></div><div class="h-solde ${cls}" style="font-size:14px">${fmtMoneyFCFA(j.soldeDuJour)}</div></div>`;
+    el.appendChild(it);});
 }
 
-/* ================================================
-   SETTINGS — BRANCH
-================================================ */
+/* =====================================================
+   PARAMÈTRES
+===================================================== */
 function loadBrancheIntoForm(){
-  ['b-eglise','b-branche','b-code','b-ville','b-pays','b-resp-nom','b-resp-fn','b-comm-nom','b-comm-tel'].forEach(id=>{
-    const map={
-      'b-eglise':'nomEglise','b-branche':'nomBranche','b-code':'codeBranche',
-      'b-ville':'ville','b-pays':'pays','b-resp-nom':'nomResponsable',
-      'b-resp-fn':'fonctionResponsable','b-comm-nom':'nomCommissaire','b-comm-tel':'telCommissaire'
-    };
-    const el=document.getElementById(id);if(el)el.value=branche[map[id]]||'';
-  });
+  const map={'b-eglise':'nomEglise','b-branche':'nomBranche','b-code':'codeBranche','b-ville':'ville','b-pays':'pays','b-resp-nom':'nomResponsable','b-resp-fn':'fonctionResponsable','b-comm-nom':'nomCommissaire','b-comm-tel':'telCommissaire'};
+  Object.entries(map).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.value=branche[k]||'';});
   if(branche.logo){document.getElementById('logo-preview').src=branche.logo;document.getElementById('logo-preview').style.display='block';document.getElementById('logo-clear').style.display='inline-block';}
   if(branche.cachet){document.getElementById('cachet-preview').src=branche.cachet;document.getElementById('cachet-preview').style.display='block';document.getElementById('cachet-clear').style.display='inline-block';}
 }
-function readBrancheFromForm(){
-  return{
-    nomEglise:document.getElementById('b-eglise').value.trim(),
-    nomBranche:document.getElementById('b-branche').value.trim(),
-    codeBranche:document.getElementById('b-code').value.trim().toUpperCase(),
-    ville:document.getElementById('b-ville').value.trim(),
-    pays:document.getElementById('b-pays').value.trim(),
-    nomResponsable:document.getElementById('b-resp-nom').value.trim(),
-    fonctionResponsable:document.getElementById('b-resp-fn').value.trim(),
-    nomCommissaire:document.getElementById('b-comm-nom').value.trim(),
-    telCommissaire:document.getElementById('b-comm-tel').value.trim(),
-    logo:branche.logo||'',cachet:branche.cachet||''
-  };
-}
 document.getElementById('btn-save-branche').addEventListener('click',async()=>{
-  branche=readBrancheFromForm();
+  branche={nomEglise:document.getElementById('b-eglise').value.trim(),nomBranche:document.getElementById('b-branche').value.trim(),codeBranche:document.getElementById('b-code').value.trim().toUpperCase(),ville:document.getElementById('b-ville').value.trim(),pays:document.getElementById('b-pays').value.trim(),nomResponsable:document.getElementById('b-resp-nom').value.trim(),fonctionResponsable:document.getElementById('b-resp-fn').value.trim(),nomCommissaire:document.getElementById('b-comm-nom').value.trim(),telCommissaire:document.getElementById('b-comm-tel').value.trim(),logo:branche.logo||'',cachet:branche.cachet||''};
   await dbPut('settings',{key:'branche',value:branche});
-  let fbSaved=false;if(fbConnected&&branche.codeBranche)fbSaved=await fbSaveBranche(branche);
+  const ok=await fbSaveBranche(branche);
   updateBranchBar();renderBranchReadonly();
-  toast(`✅ Branche enregistrée${fbSaved?' + Firebase ☁️':' (local)'}`);
+  toast(`✅ Branche enregistrée${ok?' + Firebase ☁️':' localement'}`);
 });
-document.getElementById('logo-file').addEventListener('change',async e=>{
-  const file=e.target.files[0];if(!file)return;branche.logo=await resizeImage(file,300,150,0.82);
-  document.getElementById('logo-preview').src=branche.logo;document.getElementById('logo-preview').style.display='block';document.getElementById('logo-clear').style.display='inline-block';
-});
+document.getElementById('logo-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;branche.logo=await resizeImage(f,300,150,.82);document.getElementById('logo-preview').src=branche.logo;document.getElementById('logo-preview').style.display='block';document.getElementById('logo-clear').style.display='inline-block';});
 document.getElementById('logo-clear').addEventListener('click',()=>{branche.logo='';document.getElementById('logo-preview').style.display='none';document.getElementById('logo-clear').style.display='none';document.getElementById('logo-file').value='';});
-document.getElementById('cachet-file').addEventListener('change',async e=>{
-  const file=e.target.files[0];if(!file)return;branche.cachet=await resizeImage(file,200,200,0.82);
-  document.getElementById('cachet-preview').src=branche.cachet;document.getElementById('cachet-preview').style.display='block';document.getElementById('cachet-clear').style.display='inline-block';
-});
+document.getElementById('cachet-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;branche.cachet=await resizeImage(f,200,200,.82);document.getElementById('cachet-preview').src=branche.cachet;document.getElementById('cachet-preview').style.display='block';document.getElementById('cachet-clear').style.display='inline-block';});
 document.getElementById('cachet-clear').addEventListener('click',()=>{branche.cachet='';document.getElementById('cachet-preview').style.display='none';document.getElementById('cachet-clear').style.display='none';document.getElementById('cachet-file').value='';});
 
-/* ================================================
-   SETTINGS — FIREBASE
-================================================ */
-document.getElementById('fb-toggle-cfg').addEventListener('click',()=>{
-  const f=document.getElementById('fb-cfg-fields');f.classList.toggle('open');
-  document.getElementById('fb-toggle-cfg').textContent=f.classList.contains('open')?'▲ Réduire':'⚙️ Configurer';
-});
-function loadFbConfigIntoForm(){
-  const cfg=getFbConfig();if(!cfg)return;
-  document.getElementById('fb-admin-email').value=cfg.adminEmail||'';
-  document.getElementById('fb-apikey').value=cfg.apiKey||'';
-  document.getElementById('fb-authdomain').value=cfg.authDomain||'';
-  document.getElementById('fb-projectid').value=cfg.projectId||'';
-  document.getElementById('fb-bucket').value=cfg.storageBucket||'';
-  document.getElementById('fb-senderid').value=cfg.messagingSenderId||'';
-  document.getElementById('fb-appid').value=cfg.appId||'';
-}
-document.getElementById('btn-fb-connect').addEventListener('click',async()=>{
-  const cfg={
-    adminEmail:document.getElementById('fb-admin-email').value.trim(),
-    apiKey:document.getElementById('fb-apikey').value.trim(),
-    authDomain:document.getElementById('fb-authdomain').value.trim(),
-    projectId:document.getElementById('fb-projectid').value.trim(),
-    storageBucket:document.getElementById('fb-bucket').value.trim(),
-    messagingSenderId:document.getElementById('fb-senderid').value.trim(),
-    appId:document.getElementById('fb-appid').value.trim()
-  };
-  if(!cfg.projectId){toast('⚠️ Project ID obligatoire');return;}
-  if(!cfg.adminEmail){toast('⚠️ E-mail administrateur obligatoire');return;}
-  saveFbConfig(cfg);toast('🔥 Connexion à Firebase…');
-  const ok=await initFirebase(cfg,true);
-  if(ok)toast('✅ Firebase connecté ! Les autres utilisateurs verront l\'écran de connexion.');
-  else toast('❌ Connexion Firebase échouée. Vérifiez la configuration.',4000);
-});
-document.getElementById('btn-fb-clear').addEventListener('click',()=>{
-  localStorage.removeItem('aasg_fb_config');
-  ['fb-admin-email','fb-apikey','fb-authdomain','fb-projectid','fb-bucket','fb-senderid','fb-appid'].forEach(id=>{document.getElementById(id).value='';});
-  fbDb=null;fbConnected=false;setFbBadge('offline');toast('🗑️ Configuration Firebase effacée');
-});
-
-/* ================================================
-   SETTINGS — CONTROLLERS
-================================================ */
-async function loadSettings(){
+async function loadSettingsLocal(){
   const s=await dbGet('settings','controleurs');
-  if(s){settings=s.value;
-    document.getElementById('c1n').value=settings.c1.nom||'';document.getElementById('c1t').value=settings.c1.tel||'';
-    document.getElementById('c2n').value=settings.c2.nom||'';document.getElementById('c2t').value=settings.c2.tel||'';
-    document.getElementById('c3n').value=settings.c3.nom||'';document.getElementById('c3t').value=settings.c3.tel||'';}
+  if(s){settings=s.value;['c1','c2','c3'].forEach(k=>{document.getElementById(k+'n').value=settings[k].nom||'';document.getElementById(k+'t').value=settings[k].tel||'';});}
 }
 document.getElementById('btn-save-set').addEventListener('click',async()=>{
-  settings={c1:{nom:document.getElementById('c1n').value.trim(),tel:document.getElementById('c1t').value.trim()},
-    c2:{nom:document.getElementById('c2n').value.trim(),tel:document.getElementById('c2t').value.trim()},
-    c3:{nom:document.getElementById('c3n').value.trim(),tel:document.getElementById('c3t').value.trim()}};
+  settings={c1:{nom:document.getElementById('c1n').value.trim(),tel:document.getElementById('c1t').value.trim()},c2:{nom:document.getElementById('c2n').value.trim(),tel:document.getElementById('c2t').value.trim()},c3:{nom:document.getElementById('c3n').value.trim(),tel:document.getElementById('c3t').value.trim()}};
   await dbPut('settings',{key:'controleurs',value:settings});toast('✅ Contrôleurs enregistrés !');
 });
 
-/* ================================================
-   LOAD ALL APP DATA
-================================================ */
-async function loadAppData(){
-  await loadSettings();
-  const bRec=await dbGet('settings','branche');
-  if(bRec&&bRec.value)branche={...branche,...bRec.value};
-  // Try to pull from Firebase
-  if(fbDb&&branche.codeBranche){
-    const fbData=await fbLoadBranche(branche.codeBranche);
-    if(fbData){branche={...branche,...fbData};await dbPut('settings',{key:'branche',value:branche});}
-  }
-  loadBrancheIntoForm();loadFbConfigIntoForm();
-  updateBranchBar();renderBranchReadonly();applyAdminRole();
+async function loadUsersPanel(){
+  const el=document.getElementById('users-list');if(!el)return;
+  el.innerHTML='<div style="color:var(--dim);font-size:13px;padding:8px 0">Chargement…</div>';
+  const users=await loadFirestoreUsers();
+  if(!users.length){el.innerHTML='<div class="empty"><div class="empty-i">👥</div><div>Aucun utilisateur trouvé</div></div>';return;}
+  el.innerHTML='';
+  users.forEach(u=>{
+    const item=document.createElement('div');item.className='user-item';
+    item.innerHTML=`<div class="user-item-info"><div class="user-item-name">${u.name||'—'}</div><div class="user-item-email">${u.email||''}</div></div>
+      <select class="role-select" data-uid="${u.uid}">
+        <option value="utilisateur"${u.role==='utilisateur'?' selected':''}>👤 Utilisateur</option>
+        <option value="responsable"${u.role==='responsable'?' selected':''}>🔑 Responsable</option>
+        <option value="admin"${u.role==='admin'?' selected':''}>👑 Admin</option>
+      </select>
+      <button class="btn-role-save" data-uid="${u.uid}">✓</button>`;
+    el.appendChild(item);
+  });
+  el.querySelectorAll('.btn-role-save').forEach(btn=>{btn.addEventListener('click',async()=>{
+    const uid=btn.dataset.uid,sel=el.querySelector(`.role-select[data-uid="${uid}"]`);
+    const ok=await updateUserRole(uid,sel.value);toast(ok?'✅ Rôle mis à jour !':'❌ Erreur');
+  });});
+}
+document.getElementById('btn-refresh-users').addEventListener('click',loadUsersPanel);
+
+function loadSettingsView(){loadSettingsLocal();loadBrancheIntoForm();renderBranchReadonly();if(currentRole==='admin')loadUsersPanel();}
+
+/* =====================================================
+   CHARGEMENT INITIAL
+===================================================== */
+async function loadAllData(){
+  const fbB=await fbLoadBranche();
+  if(fbB&&fbB.nomEglise){branche={...branche,...fbB};await dbPut('settings',{key:'branche',value:branche});}
+  else{const loc=await dbGet('settings','branche');if(loc&&loc.value)branche={...branche,...loc.value};}
+  await loadSettingsLocal();
+  updateBranchBar();renderBranchReadonly();
   await loadDay(TODAY);
 }
 
-/* ================================================
-   INIT
-================================================ */
+/* =====================================================
+   INITIALISATION PRINCIPALE
+===================================================== */
 async function init(){
   await openDB();
-  const cfg=getFbConfig();
-  if(cfg&&cfg.projectId){
-    // Firebase configured → require login
-    const ok=await initFirebase(cfg);
-    if(!ok){
-      // Firebase failed → offline mode, no auth
-      showApp();await loadAppData();
-    }
-    // auth state listener will handle showApp/showLoginScreen
-  } else {
-    // No Firebase → no login required, full admin mode
-    isAdmin=true;applyAdminRole();
-    showApp();await loadAppData();
+  setSyncState('syncing','Initialisation…');
+  const ok=await initFirebase();
+  if(ok){startAuthListener();}
+  else{
+    setSyncState('offline','Hors ligne');
+    const sub=document.getElementById('login-sub');
+    if(sub)sub.textContent='⚠️ Connexion Internet requise pour la première utilisation.';
   }
 }
 
