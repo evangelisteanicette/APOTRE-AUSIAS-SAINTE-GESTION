@@ -365,6 +365,13 @@
     <div class="sg">
       <div class="sg-title">👤 Mon compte</div>
       <div id="my-account-info" class="info-box">Chargement…</div>
+      <!-- BOUTON RÉCLAMER ADMIN (visible si pas encore admin) -->
+      <div id="claim-admin-zone" style="display:none;margin-bottom:10px">
+        <div class="info-box" style="border-color:rgba(245,197,24,0.4);color:var(--gold);margin-bottom:8px">
+          ⚠️ Vous n'avez pas encore le rôle Administrateur. Si vous êtes le responsable de cette application, appuyez ci-dessous pour réclamer l'accès.
+        </div>
+        <button class="btn btn-gold" id="btn-claim-admin">👑 Réclamer le statut Administrateur</button>
+      </div>
       <button class="btn btn-ghost" onclick="doLogout()" style="margin-top:0">⏏ Se déconnecter</button>
     </div>
     <!-- GESTION UTILISATEURS (admin) -->
@@ -655,8 +662,49 @@ function switchTab(tab){
 }
 
 /* =====================================================
-   RÔLES
+   RÉCLAMER LE STATUT ADMIN
 ===================================================== */
+async function claimAdmin(){
+  if(!currentUser){toast('⚠️ Vous devez être connecté');return;}
+  const btn=document.getElementById('btn-claim-admin');
+  btn.textContent='Vérification…';btn.disabled=true;
+  try{
+    // Check if an admin already exists
+    const adminDoc=await fbDb.collection('aasg_config').doc('admin').get();
+    if(adminDoc.exists&&adminDoc.data().adminUid&&adminDoc.data().adminUid!==currentUser.uid){
+      toast('❌ Un administrateur existe déjà. Contactez-le pour changer votre rôle.');
+      btn.textContent='👑 Réclamer le statut Administrateur';btn.disabled=false;return;
+    }
+    // Set this user as admin
+    await fbDb.collection('aasg_users').doc(currentUser.uid).set({
+      name:currentName||currentUser.displayName||currentUser.email,
+      email:currentUser.email,role:'admin',
+      updatedAt:Date.now()
+    },{merge:true});
+    await fbDb.collection('aasg_config').doc('admin').set({
+      adminUid:currentUser.uid,adminEmail:currentUser.email,setAt:Date.now()
+    });
+    currentRole='admin';
+    applyRole();
+    document.getElementById('claim-admin-zone').style.display='none';
+    toast('✅ Vous êtes maintenant Administrateur 👑 ! Rechargez la page.');
+    setTimeout(()=>location.reload(),2000);
+  }catch(e){
+    toast('❌ Erreur : '+e.message+' — Vérifiez les règles Firestore.');
+    btn.textContent='👑 Réclamer le statut Administrateur';btn.disabled=false;
+  }
+}
+
+async function checkClaimAdminVisibility(){
+  if(!currentUser||currentRole==='admin'){
+    const z=document.getElementById('claim-admin-zone');if(z)z.style.display='none';return;
+  }
+  const z=document.getElementById('claim-admin-zone');if(z)z.style.display='block';
+  const btn=document.getElementById('btn-claim-admin');
+  if(btn)btn.addEventListener('click',claimAdmin);
+}
+
+
 function applyRole(){
   document.body.classList.remove('role-admin','role-responsable','role-utilisateur');
   document.body.classList.add('role-'+currentRole);
@@ -666,6 +714,7 @@ function applyRole(){
   const ai=document.getElementById('my-account-info');
   if(ai)ai.innerHTML=`<strong>Nom :</strong> ${currentName}<br><strong>E-mail :</strong> ${currentUser?.email||''}<br><strong>Rôle :</strong> ${ROLE_LABELS[currentRole]||currentRole}`;
   const bro=document.getElementById('branch-info-readonly');if(bro)bro.style.display=currentRole==='admin'?'none':'block';
+  checkClaimAdminVisibility();
 }
 
 /* =====================================================
