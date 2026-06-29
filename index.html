@@ -620,8 +620,18 @@ document.getElementById('btn-login').addEventListener('click',async()=>{
   const err=document.getElementById('login-err');
   if(!email||!pwd){err.textContent='Veuillez remplir tous les champs.';return;}
   const btn=document.getElementById('btn-login');btn.textContent='Connexion…';btn.disabled=true;err.textContent='';
-  try{await fbAuth.signInWithEmailAndPassword(email,pwd);}
-  catch(e){err.textContent=fbErr(e);btn.textContent='🔐 Se connecter';btn.disabled=false;}
+  try{
+    // Attendre que Firebase soit prêt
+    if(!fbAuth){
+      btn.textContent='Initialisation…';
+      await initFirebase();
+      if(!fbAuth){
+        err.textContent='Firebase non disponible. Vérifiez votre connexion Internet.';
+        btn.textContent='🔐 Se connecter';btn.disabled=false;return;
+      }
+    }
+    await fbAuth.signInWithEmailAndPassword(email,pwd);
+  }catch(e){err.textContent=fbErr(e);btn.textContent='🔐 Se connecter';btn.disabled=false;}
 });
 
 document.getElementById('btn-register').addEventListener('click',async()=>{
@@ -631,15 +641,39 @@ document.getElementById('btn-register').addEventListener('click',async()=>{
   if(!name||!email||!pwd){err.textContent='Remplissez les champs obligatoires (*).';return;}
   const btn=document.getElementById('btn-register');btn.textContent='Création…';btn.disabled=true;err.textContent='';
   try{
-    const adminSnap=await fbDb.collection('aasg_config').doc('admin').get().catch(()=>null);
-    const isFirst=!adminSnap||!adminSnap.exists;
+    // Attendre que Firebase soit prêt
+    if(!fbAuth||!fbDb){
+      err.textContent='';btn.textContent='Initialisation Firebase…';
+      await initFirebase();
+      if(!fbAuth||!fbDb){
+        err.textContent='Firebase non disponible. Vérifiez votre connexion Internet.';
+        btn.textContent='✅ Créer mon compte';btn.disabled=false;return;
+      }
+    }
+    // Vérifier si un admin existe déjà
+    let isFirst=false;
+    try{
+      const adminSnap=await fbDb.collection('aasg_config').doc('admin').get();
+      isFirst=!adminSnap.exists;
+    }catch(e){isFirst=false;}
     const role=isFirst?'admin':'utilisateur';
+    // Créer le compte Firebase Auth
     const cred=await fbAuth.createUserWithEmailAndPassword(email,pwd);
     await cred.user.updateProfile({displayName:name});
-    await fbDb.collection('aasg_users').doc(cred.user.uid).set({name,email,phone:phone||'',role,createdAt:Date.now(),lastLogin:Date.now()});
-    if(isFirst)await fbDb.collection('aasg_config').doc('admin').set({adminUid:cred.user.uid,adminEmail:email,setAt:Date.now()});
+    // Enregistrer dans Firestore
+    await fbDb.collection('aasg_users').doc(cred.user.uid).set({
+      name,email,phone:phone||'',role,createdAt:Date.now(),lastLogin:Date.now()
+    });
+    if(isFirst){
+      await fbDb.collection('aasg_config').doc('admin').set({
+        adminUid:cred.user.uid,adminEmail:email,setAt:Date.now()
+      });
+    }
     try{fbAnalytics&&fbAnalytics.logEvent('sign_up',{method:'email'});}catch(e){}
-  }catch(e){err.textContent=fbErr(e);btn.textContent='✅ Créer mon compte';btn.disabled=false;}
+  }catch(e){
+    err.textContent=fbErr(e);
+    btn.textContent='✅ Créer mon compte';btn.disabled=false;
+  }
 });
 
 document.getElementById('btn-reset-pwd').addEventListener('click',async()=>{
